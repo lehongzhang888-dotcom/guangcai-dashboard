@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建筑工程事业部 — 全景数据看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  background: #0a1628;
+  color: #e8e8e8;
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0f1f3a; }
+::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 3px; }
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #0f1f3a 0%, #1a2f52 100%);
+  border-bottom: 2px solid #c9a84c;
+  padding: 20px 24px 14px;
+  text-align: center;
+}
+.header h1 {
+  font-size: 26px;
+  color: #c9a84c;
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(201,168,76,0.3);
+}
+.header .subtitle {
+  font-size: 13px;
+  color: #8899bb;
+  margin-top: 4px;
+  letter-spacing: 2px;
+}
+
+/* KPI Bar */
+.kpi-bar {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  padding: 16px 24px;
+  background: #0d1a30;
+  border-bottom: 1px solid #1a2f52;
+}
+.kpi-card {
+  background: linear-gradient(135deg, #112240 0%, #0f1f3a 100%);
+  border: 1px solid #1a2f52;
+  border-radius: 8px;
+  padding: 14px 16px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.kpi-card:hover { border-color: #c9a84c; transform: translateY(-2px); }
+.kpi-card .kpi-label { font-size: 12px; color: #8899bb; margin-bottom: 4px; }
+.kpi-card .kpi-value { font-size: 24px; font-weight: 700; color: #fff; }
+.kpi-card .kpi-value.gold { color: #c9a84c; }
+.kpi-card .kpi-value.green { color: #4ecdc4; }
+.kpi-card .kpi-value.red { color: #ff6b6b; }
+.kpi-card .kpi-sub { font-size: 11px; color: #667799; margin-top: 2px; }
+
+/* Tabs */
+.tab-bar {
+  display: flex;
+  background: #0d1a30;
+  border-bottom: 2px solid #1a2f52;
+  padding: 0 24px;
+  overflow-x: auto;
+  gap: 0;
+}
+.tab-btn {
+  padding: 12px 28px;
+  font-size: 14px;
+  color: #8899bb;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.3s;
+  white-space: nowrap;
+  letter-spacing: 1px;
+}
+.tab-btn:hover { color: #c9a84c; }
+.tab-btn.active {
+  color: #c9a84c;
+  border-bottom-color: #c9a84c;
+  background: linear-gradient(to top, rgba(201,168,76,0.08), transparent);
+}
+
+/* Main Content */
+.main { padding: 16px 24px; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Grid Layouts */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.chart-card, .table-card {
+  background: linear-gradient(135deg, #112240 0%, #0f1f3a 100%);
+  border: 1px solid #1a2f52;
+  border-radius: 8px;
+  padding: 16px;
+}
+.chart-card .card-title, .table-card .card-title {
+  font-size: 14px;
+  color: #c9a84c;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a2f52;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.chart-card .card-title .badge {
+  font-size: 11px;
+  background: #1a2f52;
+  color: #8899bb;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.chart-wrap { position: relative; height: 320px; }
+.chart-wrap-sm { position: relative; height: 260px; }
+
+/* Tables */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: #0d1a30;
+  color: #c9a84c;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 500;
+  border-bottom: 1px solid #1a2f52;
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid rgba(26,47,82,0.5);
+  color: #ccd;
+}
+.data-table tr:hover td { background: rgba(201,168,76,0.05); }
+.status-good { color: #4ecdc4; font-weight: 600; }
+.status-mid { color: #ffd93d; font-weight: 600; }
+.status-bad { color: #ff6b6b; font-weight: 600; }
+.text-right { text-align: right; }
+.text-gold { color: #c9a84c; }
+.text-muted { color: #667799; }
+
+/* Sort Controls */
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.sort-bar label { font-size: 12px; color: #8899bb; }
+.sort-bar select, .sort-bar input {
+  background: #0d1a30;
+  border: 1px solid #1a2f52;
+  color: #e8e8e8;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.sort-bar select:focus, .sort-bar input:focus { outline: none; border-color: #c9a84c; }
+
+/* Sub-panel titles */
+.sub-title {
+  font-size: 13px;
+  color: #c9a84c;
+  margin-bottom: 8px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* Footer */
+.footer {
+  border-top: 1px solid #1a2f52;
+  padding: 16px 24px;
+  text-align: center;
+  font-size: 12px;
+  color: #556677;
+}
+.footer span { margin: 0 12px; }
+
+/* Error */
+.error-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(10,22,40,0.95);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.error-overlay.show { display: flex; }
+.error-overlay .err-icon { font-size: 48px; color: #ff6b6b; margin-bottom: 16px; }
+.error-overlay .err-text { font-size: 16px; color: #ff6b6b; margin-bottom: 8px; }
+.error-overlay .err-detail { font-size: 13px; color: #8899bb; max-width: 500px; text-align: center; }
+.error-overlay .retry-btn {
+  margin-top: 16px;
+  padding: 8px 32px;
+  background: #c9a84c;
+  color: #0a1628;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.error-overlay .retry-btn:hover { background: #dbb956; }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 80px 20px;
+  color: #8899bb;
+}
+.loading .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid #1a2f52;
+  border-top-color: #c9a84c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 1199px) {
+  .kpi-bar { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  .header h1 { font-size: 20px; letter-spacing: 3px; }
+  .kpi-bar { grid-template-columns: repeat(2, 1fr); padding: 12px; gap: 8px; }
+  .tab-bar { padding: 0 12px; }
+  .tab-btn { padding: 10px 14px; font-size: 12px; }
+  .main { padding: 12px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-4 { grid-template-columns: 1fr; }
+  .kpi-card .kpi-value { font-size: 18px; }
+  .chart-wrap { height: 240px; }
+  .chart-wrap-sm { height: 200px; }
+  .data-table { font-size: 11px; }
+  .data-table th, .data-table td { padding: 5px 6px; }
+  .footer span { display: block; margin: 4px 0; }
+}
+
+/* Filter controls for city tab */
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-row select, .filter-row input {
+  background: #0d1a30;
+  border: 1px solid #1a2f52;
+  color: #e8e8e8;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.filter-row select:focus, .filter-row input:focus { outline: none; border-color: #c9a84c; }
+
+/* Scrollable table wrapper */
+.table-scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+
+<div class="error-overlay" id="errorOverlay">
+  <div class="err-icon">&#9888;</div>
+  <div class="err-text">数据加载失败</div>
+  <div class="err-detail" id="errorDetail"></div>
+  <button class="retry-btn" onclick="location.reload()">重新加载</button>
+</div>
+
+<div id="loadingScreen" class="loading">
+  <div class="spinner"></div>
+  <div>数据加载中...</div>
+</div>
+
+<div id="app" style="display:none">
+
+<div class="header">
+  <h1>建筑工程事业部 · 全景数据看板</h1>
+  <div class="subtitle">广材管道 — 基地发货效率全景分析</div>
+</div>
+
+<div class="kpi-bar" id="kpiBar"></div>
+
+<div class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="tab1">基地分析</button>
+  <button class="tab-btn" data-tab="tab2">区域分析</button>
+  <button class="tab-btn" data-tab="tab3">城市详情</button>
+  <button class="tab-btn" data-tab="tab4">产品分析</button>
+  <button class="tab-btn" data-tab="tab5">辅助维度</button>
+</div>
+
+<div class="main">
+
+<!-- Tab 1: 基地分析 -->
+<div class="tab-content active" id="tab1">
+  <div class="grid-2">
+    <div class="chart-card">
+      <div class="card-title">基地最优率排行 <span class="badge">按最优率降序</span></div>
+      <div class="chart-wrap"><canvas id="baseOptimalChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">基地金额分布 <span class="badge">最优 vs 非最优</span></div>
+      <div class="chart-wrap"><canvas id="baseStackChart"></canvas></div>
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="card-title">基地明细</div>
+    <div class="table-scroll">
+      <table class="data-table" id="baseTable"><thead><tr>
+        <th>基地名称</th><th class="text-right">最优率</th><th class="text-right">总金额(万)</th>
+        <th class="text-right">最优金额(万)</th><th class="text-right">非最优金额(万)</th>
+        <th class="text-right">覆盖省份</th><th class="text-right">覆盖城市</th>
+        <th class="text-right">未交货金额(万)</th><th>状态</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 2: 区域分析 -->
+<div class="tab-content" id="tab2">
+  <div class="grid-2">
+    <div class="chart-card">
+      <div class="card-title">区域最优率 TOP15 <span class="badge">横柱状图</span></div>
+      <div class="chart-wrap"><canvas id="regionOptimalChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">区域非最优金额 TOP10</div>
+      <div class="chart-wrap"><canvas id="regionNoAmtChart"></canvas></div>
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="card-title">区域明细表</div>
+    <div class="table-scroll">
+      <table class="data-table" id="regionTable"><thead><tr>
+        <th>区域</th><th class="text-right">总金额(万)</th><th class="text-right">最优率</th>
+        <th class="text-right">最优金额(万)</th><th class="text-right">非最优金额(万)</th>
+        <th class="text-right">订单数</th><th class="text-right">覆盖基地</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 3: 城市详情 -->
+<div class="tab-content" id="tab3">
+  <div class="table-card">
+    <div class="card-title">
+      城市详情 TOP30
+      <span class="badge">来源: dim3_city</span>
+    </div>
+    <div class="sort-bar">
+      <label>排序:</label>
+      <select id="citySortSelect">
+        <option value="optimal_rate_desc">最优率 ↓</option>
+        <option value="optimal_rate_asc">最优率 ↑</option>
+        <option value="total_amt_desc">总金额 ↓</option>
+        <option value="total_amt_asc">总金额 ↑</option>
+      </select>
+      <label>最优率筛选:</label>
+      <select id="cityFilterSelect">
+        <option value="all">全部</option>
+        <option value="good">≥90% (优秀)</option>
+        <option value="bad">&lt;50% (待改进)</option>
+      </select>
+    </div>
+    <div class="table-scroll">
+      <table class="data-table" id="cityTable"><thead><tr>
+        <th>城市</th><th>所属省份</th><th>最优基地</th><th class="text-right">总金额(万)</th>
+        <th class="text-right">最优率</th><th class="text-right">最优金额(万)</th>
+        <th class="text-right">非最优金额(万)</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 4: 产品分析 -->
+<div class="tab-content" id="tab4">
+  <div class="grid-2">
+    <div class="chart-card">
+      <div class="card-title">产品金额占比 <span class="badge">环形图</span></div>
+      <div class="chart-wrap"><canvas id="materialDonutChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">各产品最优率 <span class="badge">柱状图</span></div>
+      <div class="chart-wrap"><canvas id="materialBarChart"></canvas></div>
+    </div>
+  </div>
+  <div class="table-card">
+    <div class="card-title">产品明细表</div>
+    <div class="table-scroll">
+      <table class="data-table" id="materialTable"><thead><tr>
+        <th>产品类别</th><th class="text-right">总金额(万)</th><th class="text-right">最优率</th>
+        <th class="text-right">最优金额(万)</th><th class="text-right">非最优金额(万)</th>
+        <th class="text-right">订单数</th><th class="text-right">数量</th>
+      </tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 5: 辅助维度 -->
+<div class="tab-content" id="tab5">
+  <div class="grid-4">
+    <div class="chart-card">
+      <div class="card-title">装运条件分布</div>
+      <div class="chart-wrap-sm"><canvas id="shipConditionChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">需求状态分布</div>
+      <div class="chart-wrap-sm"><canvas id="demandStatusChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">月度趋势 <span class="badge" style="font-size:10px">最优率+金额</span></div>
+      <div class="chart-wrap-sm"><canvas id="monthlyChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">改工厂影响分析</div>
+      <div class="chart-wrap-sm"><canvas id="factoryChangedChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<div class="footer">
+  <span>数据更新时间: <span id="updateTime">—</span></span>
+  <span>数据来源: 广材管道发货系统</span>
+  <span>建筑工程事业部 · 全景数据看板 v1.0</span>
+</div>
+
+</div><!-- /app -->
+
+<script>
+(async function() {
+  let data;
+  try {
+    const res = await fetch('data.json?_t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    data = await res.json();
+  } catch(e) {
+    document.getElementById('errorDetail').textContent = e.message || '未知错误';
+    document.getElementById('errorOverlay').classList.add('show');
+    return;
+  }
+
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+
+  const s = data.summary;
+  // KPI cards
+  document.getElementById('kpiBar').innerHTML = `
+    <div class="kpi-card"><div class="kpi-label">总交货金额</div><div class="kpi-value gold">${s.total_amt.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}<span style="font-size:12px;color:#667799">万</span></div><div class="kpi-sub">${s.total_orders}笔订单</div></div>
+    <div class="kpi-card"><div class="kpi-label">最优发货率</div><div class="kpi-value ${s.total_optimal_rate >= 60 ? 'green' : 'gold'}">${s.total_optimal_rate.toFixed(1)}%</div><div class="kpi-sub">最优 ${s.yes_amt.toFixed(0)}万 / 非最优 ${s.no_amt.toFixed(0)}万</div></div>
+    <div class="kpi-card"><div class="kpi-label">总订单数</div><div class="kpi-value">${s.total_orders.toLocaleString()}</div><div class="kpi-sub">笔</div></div>
+    <div class="kpi-card"><div class="kpi-label">最优基地 (>90%)</div><div class="kpi-value green">${s.optimal_bases_count}</div><div class="kpi-sub">个基地</div></div>
+    <div class="kpi-card"><div class="kpi-label">待改进基地 (<30%)</div><div class="kpi-value red">${s.critical_bases_count}</div><div class="kpi-sub">个基地</div></div>
+    <div class="kpi-card"><div class="kpi-label">非最优损失</div><div class="kpi-value red">${s.no_amt.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}<span style="font-size:12px;color:#667799">万</span></div><div class="kpi-sub">占总金额 ${(s.no_amt / s.total_amt * 100).toFixed(1)}%</div></div>
+  `;
+
+  // Tab switching
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+      // Trigger chart resize
+      setTimeout(() => {
+        Chart.instances.forEach(c => c.resize());
+      }, 100);
+    });
+  });
+
+  // Utility: format number
+  const nf = v => { let n = Number(v); return isNaN(n) ? '0' : n.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
+  const nf0 = v => { let n = Number(v); return isNaN(n) ? '0' : n.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','); };
+
+  // Color palettes
+  const goldColors = ['#c9a84c','#dbb956','#b8963a','#e8c86a','#a88430'];
+  const greenColors = ['#4ecdc4','#45b7aa','#6dd5ce','#3ba99e','#5ed5cb'];
+  const redColors = ['#ff6b6b','#e05555','#ff8888','#cc4444','#ffaaaa'];
+  const optColors = ['#4ecdc4','#ffd93d','#ff6b6b'];
+
+  function statusClass(rate) {
+    if (rate >= 90) return 'status-good';
+    if (rate >= 70) return 'status-mid';
+    return 'status-bad';
+  }
+
+  function statusLabel(rate) {
+    if (rate >= 90) return '优秀';
+    if (rate >= 70) return '良好';
+    if (rate >= 50) return '一般';
+    return '待改进';
+  }
+  function statusLabelR(rate) {
+    if (rate >= 90) return '优秀';
+    if (rate >= 50) return '一般';
+    return '待改进';
+  }
+
+  function barColor(rate) {
+    return rate >= 90 ? '#4ecdc4' : rate >= 70 ? '#ffd93d' : '#ff6b6b';
+  }
+
+  // ============================================
+  // TAB 1: 基地分析
+  // ============================================
+  const bases = data.dim1_base.filter(b => b.name !== '未知').sort((a, b) => b.optimal_rate - a.optimal_rate);
+  const baseNames = bases.map(b => b.name);
+  const baseRates = bases.map(b => b.optimal_rate);
+  const baseTotal = bases.map(b => b.total_amt);
+  const baseYes = bases.map(b => b.yes_amt);
+  const baseNo = bases.map(b => b.no_amt);
+  const baseColors = bases.map(b => barColor(b.optimal_rate));
+
+  new Chart(document.getElementById('baseOptimalChart'), {
+    type: 'bar',
+    data: {
+      labels: baseNames,
+      datasets: [{ label: '最优率 %', data: baseRates, backgroundColor: baseColors, borderColor: baseColors.map(c => c), borderWidth: 1, borderRadius: 3 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { min: 0, max: 100, grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => v + '%' } },
+        y: { grid: { display: false }, ticks: { color: '#ccd', font: { size: 11 } } }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('baseStackChart'), {
+    type: 'bar',
+    data: {
+      labels: baseNames,
+      datasets: [
+        { label: '最优金额', data: baseYes, backgroundColor: '#4ecdc4', borderRadius: 3 },
+        { label: '非最优金额', data: baseNo, backgroundColor: '#ff6b6b', borderRadius: 3 }
+      ]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { stacked: true, grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => nf0(v) } },
+        y: { stacked: true, grid: { display: false }, ticks: { color: '#ccd', font: { size: 11 } } }
+      },
+      plugins: { legend: { labels: { color: '#ccd', boxWidth: 12, padding: 8 } } }
+    }
+  });
+
+  const baseTbody = document.querySelector('#baseTable tbody');
+  bases.forEach(b => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${b.name}</td>
+      <td class="text-right ${statusClass(b.optimal_rate)}">${b.optimal_rate.toFixed(1)}%</td>
+      <td class="text-right">${nf(b.total_amt)}</td>
+      <td class="text-right">${nf(b.yes_amt)}</td>
+      <td class="text-right">${nf(b.no_amt)}</td>
+      <td class="text-right">${b.region_count}</td>
+      <td class="text-right">${b.city_count}</td>
+      <td class="text-right">${nf(b.undelivered_amt)}</td>
+      <td><span class="${statusClass(b.optimal_rate)}">${statusLabel(b.optimal_rate)}</span></td>
+    `;
+    baseTbody.appendChild(tr);
+  });
+
+  // ============================================
+  // TAB 2: 区域分析
+  // ============================================
+  const regions = data.dim2_region.filter(r => r.name !== '未知').sort((a, b) => b.optimal_rate - a.optimal_rate);
+  const regionTop15 = regions.slice(0, 15);
+  const regionNames15 = regionTop15.map(r => r.name);
+  const regionRates15 = regionTop15.map(r => r.optimal_rate);
+  const regionColors15 = regionTop15.map(r => barColor(r.optimal_rate));
+
+  new Chart(document.getElementById('regionOptimalChart'), {
+    type: 'bar',
+    data: {
+      labels: regionNames15,
+      datasets: [{ label: '最优率 %', data: regionRates15, backgroundColor: regionColors15, borderColor: regionColors15, borderWidth: 1, borderRadius: 3 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.x.toFixed(1) + '%' } } },
+      scales: {
+        x: { min: 0, max: 100, grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => v + '%' } },
+        y: { grid: { display: false }, ticks: { color: '#ccd', font: { size: 10 } } }
+      }
+    }
+  });
+
+  const regionByNoAmt = regions.slice().sort((a, b) => b.no_amt - a.no_amt).slice(0, 10);
+  new Chart(document.getElementById('regionNoAmtChart'), {
+    type: 'bar',
+    data: {
+      labels: regionByNoAmt.map(r => r.name),
+      datasets: [{ label: '非最优金额(万)', data: regionByNoAmt.map(r => r.no_amt), backgroundColor: '#ff6b6b', borderRadius: 3 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => nf0(v) } },
+        y: { grid: { display: false }, ticks: { color: '#ccd', font: { size: 10 } } }
+      }
+    }
+  });
+
+  const regionTbody = document.querySelector('#regionTable tbody');
+  regions.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.name}</td>
+      <td class="text-right">${nf(r.total_amt)}</td>
+      <td class="text-right ${statusClass(r.optimal_rate)}">${r.optimal_rate.toFixed(1)}%</td>
+      <td class="text-right">${nf(r.yes_amt)}</td>
+      <td class="text-right">${nf(r.no_amt)}</td>
+      <td class="text-right">${r.orders}</td>
+      <td class="text-right">${r.base_count}</td>
+    `;
+    regionTbody.appendChild(tr);
+  });
+
+  // ============================================
+  // TAB 3: 城市详情
+  // ============================================
+  const cities = data.dim3_city;
+  function renderCityTable(citiesArr) {
+    const tbody = document.querySelector('#cityTable tbody');
+    tbody.innerHTML = '';
+    citiesArr.forEach(c => {
+      const tr = document.createElement('tr');
+      const cls = c.optimal_rate >= 90 ? 'status-good' : c.optimal_rate < 50 ? 'status-bad' : '';
+      tr.innerHTML = `
+        <td>${c.name}</td>
+        <td>${c.region}</td>
+        <td>${c.optimal_base}</td>
+        <td class="text-right">${nf(c.total_amt)}</td>
+        <td class="text-right ${cls}">${c.optimal_rate.toFixed(1)}%</td>
+        <td class="text-right">${nf(c.yes_amt)}</td>
+        <td class="text-right">${nf(c.no_amt)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function filterAndSortCities() {
+    const sortVal = document.getElementById('citySortSelect').value;
+    const filterVal = document.getElementById('cityFilterSelect').value;
+    let arr = cities.slice();
+    if (filterVal === 'good') arr = arr.filter(c => c.optimal_rate >= 90);
+    else if (filterVal === 'bad') arr = arr.filter(c => c.optimal_rate < 50);
+    const [field, dir] = sortVal.split('_');
+    arr.sort((a, b) => dir === 'desc' ? b[field] - a[field] : a[field] - b[field]);
+    renderCityTable(arr);
+  }
+
+  document.getElementById('citySortSelect').addEventListener('change', filterAndSortCities);
+  document.getElementById('cityFilterSelect').addEventListener('change', filterAndSortCities);
+  renderCityTable(cities);
+
+  // ============================================
+  // TAB 4: 产品分析
+  // ============================================
+  const materials = data.dim4_material;
+  const matNames = materials.map(m => m.name.length > 10 ? m.name.slice(0, 10) + '…' : m.name);
+  const matAmt = materials.map(m => m.total_amt);
+  const matRates = materials.map(m => m.optimal_rate);
+  const matColors = ['#c9a84c','#4ecdc4','#ff6b6b','#ffd93d','#45b7aa','#e05555','#dbb956','#6dd5ce','#ff8888','#3ba99e','#cc4444','#ffaaaa'];
+
+  new Chart(document.getElementById('materialDonutChart'), {
+    type: 'doughnut',
+    data: {
+      labels: materials.map(m => m.name),
+      datasets: [{ data: matAmt, backgroundColor: matColors, borderColor: '#112240', borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: '#ccd', boxWidth: 12, padding: 6, font: { size: 10 } } },
+        tooltip: { callbacks: { label: ctx => {
+          const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+          return ctx.label + ': ' + nf(ctx.parsed) + '万 (' + (ctx.parsed / total * 100).toFixed(1) + '%)';
+        }}}
+      }
+    }
+  });
+
+  const matSorted = materials.slice().sort((a, b) => b.optimal_rate - a.optimal_rate);
+  new Chart(document.getElementById('materialBarChart'), {
+    type: 'bar',
+    data: {
+      labels: matSorted.map(m => m.name.length > 10 ? m.name.slice(0, 10) + '…' : m.name),
+      datasets: [{ label: '最优率 %', data: matSorted.map(m => m.optimal_rate), backgroundColor: matSorted.map(m => barColor(m.optimal_rate)), borderRadius: 3 }]
+    },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { min: 0, max: 100, grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => v + '%' } },
+        y: { grid: { display: false }, ticks: { color: '#ccd', font: { size: 10 } } }
+      }
+    }
+  });
+
+  const matTbody = document.querySelector('#materialTable tbody');
+  materials.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${m.name}</td>
+      <td class="text-right">${nf(m.total_amt)}</td>
+      <td class="text-right ${statusClass(m.optimal_rate)}">${m.optimal_rate.toFixed(1)}%</td>
+      <td class="text-right">${nf(m.yes_amt)}</td>
+      <td class="text-right">${nf(m.no_amt)}</td>
+      <td class="text-right">${m.orders}</td>
+      <td class="text-right">${m.qty.toLocaleString()}</td>
+    `;
+    matTbody.appendChild(tr);
+  });
+
+  // ============================================
+  // TAB 5: 辅助维度
+  // ============================================
+  // 装运条件 饼图
+  const ship = data.drill_ship_condition;
+  new Chart(document.getElementById('shipConditionChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ship.map(s => s.name + '\n(' + s.optimal_rate.toFixed(1) + '%)'),
+      datasets: [{ data: ship.map(s => s.total_amt), backgroundColor: ['#c9a84c','#4ecdc4','#ff6b6b'], borderColor: '#112240', borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#ccd', boxWidth: 12, padding: 6, font: { size: 10 } } },
+        tooltip: { callbacks: { label: ctx => ctx.label.replace('\n',' ') + ': ' + nf(ctx.parsed) + '万' } }
+      }
+    }
+  });
+
+  // 需求状态 饼图
+  const demand = data.drill_demand_status;
+  new Chart(document.getElementById('demandStatusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: demand.map(d => d.name),
+      datasets: [{ data: demand.map(d => d.total_amt), backgroundColor: ['#4ecdc4','#c9a84c','#ffd93d','#ff6b6b'], borderColor: '#112240', borderWidth: 2 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#ccd', boxWidth: 12, padding: 6, font: { size: 10 } } },
+        tooltip: { callbacks: { label: ctx => ctx.label + ': ' + nf(ctx.parsed) + '万' } }
+      }
+    }
+  });
+
+  // 月度趋势 折线图
+  const monthly = data.drill_monthly;
+  const months = monthly.map(m => m.month);
+  const monthAmt = monthly.map(m => m.total_amt);
+  const monthRate = monthly.map(m => m.optimal_rate);
+  new Chart(document.getElementById('monthlyChart'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: '金额(万)', data: monthAmt, yAxisID: 'y1', borderColor: '#c9a84c', backgroundColor: 'rgba(201,168,76,0.1)', fill: true, tension: 0.3, pointRadius: 2, borderWidth: 2 },
+        { label: '最优率 %', data: monthRate, yAxisID: 'y2', borderColor: '#4ecdc4', tension: 0.3, pointRadius: 2, borderWidth: 2 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#ccd', boxWidth: 12, padding: 6, font: { size: 10 } } }
+      },
+      scales: {
+        x: { grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', font: { size: 9 }, maxTicksLimit: 8 } },
+        y1: { position: 'left', grid: { color: '#1a2f52' }, ticks: { color: '#c9a84c', callback: v => nf0(v) } },
+        y2: { position: 'right', grid: { display: false }, min: 0, max: 100, ticks: { color: '#4ecdc4', callback: v => v + '%' } }
+      }
+    }
+  });
+
+  // 改工厂影响分析 柱状图
+  const fc = data.drill_factory_changed;
+  new Chart(document.getElementById('factoryChangedChart'), {
+    type: 'bar',
+    data: {
+      labels: fc.map(f => '改工厂: ' + f.name),
+      datasets: [
+        { label: '金额(万)', data: fc.map(f => f.total_amt), backgroundColor: ['#c9a84c','#4ecdc4'], borderRadius: 3 },
+        { label: '最优率 %', data: fc.map(f => f.optimal_rate), backgroundColor: ['rgba(201,168,76,0.3)','rgba(78,205,196,0.3)'], borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#ccd', boxWidth: 12, padding: 6, font: { size: 10 } } } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#ccd', font: { size: 11 } } },
+        y: { grid: { color: '#1a2f52' }, ticks: { color: '#8899bb', callback: v => typeof v === 'number' ? nf0(v) : v } }
+      }
+    }
+  });
+
+  // Update time
+  document.getElementById('updateTime').textContent = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+})();
+</script>
+</body>
+</html>
