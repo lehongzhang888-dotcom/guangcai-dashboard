@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>广材管道 · 交付管理分析看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4" onerror="var s=document.createElement('script');s.src='https://unpkg.com/chart.js@4/dist/chart.umd.min.js';document.head.appendChild(s);"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',-apple-system,sans-serif;background:#0a1628;color:#d0d4dc;min-height:100vh}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f1f3a}
+::-webkit-scrollbar-thumb{background:#c9a84c;border-radius:3px}
+
+.header{background:linear-gradient(135deg,#0f1f3a 0%,#1a2f52 100%);border-bottom:2px solid #c9a84c;padding:20px 28px 14px}
+.header h1{font-size:22px;color:#c9a84c;letter-spacing:3px}
+.header .sub{font-size:12px;color:#8899bb;margin-top:4px;letter-spacing:1px}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 28px;background:#0d1a30}
+.kpi-card{background:linear-gradient(135deg,#112240,#0f1f3a);border:1px solid #1a2f52;border-radius:8px;padding:14px 16px;text-align:center}
+.kpi-card .kl{font-size:11px;color:#8899bb;margin-bottom:4px}
+.kpi-card .kv{font-size:22px;font-weight:700}
+.kpi-card .kv.g{color:#c9a84c}.kpi-card .kv.r{color:#ff6b6b}.kpi-card .kv.gn{color:#4ecdc4}
+.kpi-card .ks{font-size:10px;color:#667799}
+
+/* Tabs */
+.tabs{display:flex;background:#0d1a30;border-bottom:2px solid #1a2f52;padding:0 28px;gap:0;overflow-x:auto}
+.tab{padding:11px 22px;font-size:13px;color:#8899bb;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;letter-spacing:1px;transition:.3s;margin-bottom:-2px}
+.tab:hover{color:#c9a84c}
+.tab.on{color:#c9a84c;border-bottom-color:#c9a84c;background:linear-gradient(to top,rgba(201,168,76,.08),transparent)}
+
+.main{padding:20px 28px}
+.section{display:none}
+.section.on{display:block}
+
+h2{font-size:15px;color:#c9a84c;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #1a2f52;letter-spacing:1px}
+h3{font-size:13px;color:#8899bb;margin:16px 0 10px;letter-spacing:.5px}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px}
+.card{background:linear-gradient(135deg,#112240,#0f1f3a);border:1px solid #1a2f52;border-radius:8px;padding:16px}
+.card h4{font-size:13px;color:#c9a84c;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #1a2f52}
+.chart-wrap{position:relative;height:340px}
+.chart-wrap-sm{position:relative;height:260px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#0d1a30;color:#c9a84c;padding:7px 10px;text-align:left;font-weight:500;border-bottom:1px solid #1a2f52;white-space:nowrap}
+td{padding:6px 10px;border-bottom:1px solid rgba(26,47,82,.5);color:#ccd}
+tr:hover td{background:rgba(201,168,76,.04)}
+.r{text-align:right}
+.g{color:#4ecdc4}.y{color:#ffd93d}.rd{color:#ff6b6b}.gl{color:#c9a84c}
+.badge{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.badge-a{background:rgba(78,205,196,.15);color:#4ecdc4}
+.badge-b{background:rgba(255,217,61,.15);color:#ffd93d}
+.badge-c{background:rgba(255,107,107,.15);color:#ff6b6b}
+
+/* Recommendation cards */
+.rec-card{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:8px;padding:14px 16px;margin-bottom:10px}
+.rec-card h4{font-size:13px;color:#c9a84c;margin-bottom:6px;display:flex;align-items:center;gap:8px;border:none;padding:0}
+.rec-card p,.rec-card ul{margin:0;font-size:12px;color:#ccd;line-height:1.7}
+.rec-card ul{padding-left:16px}
+.rec-card li{margin-bottom:3px}
+
+.footer{border-top:1px solid #1a2f52;padding:14px 28px;text-align:center;font-size:11px;color:#556677}
+
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>广材管道 · 交付管理分析看板</h1>
+  <div class="sub">基于原始 Excel 数据 — 产品分类 · 基地表现 · 漏洞识别 · 管理建议</div>
+</div>
+
+<div class="kpi-row" id="kpiRow"></div>
+
+<div class="tabs" id="tabBar">
+  <button class="tab on" data-t="t1">📊 产品分类矩阵</button>
+  <button class="tab" data-t="t2">🏭 基地交付表现</button>
+  <button class="tab" data-t="t3">🕳 漏洞分析</button>
+  <button class="tab" data-t="t4">📈 月度波动</button>
+  <button class="tab" data-t="t5">📋 管理建议</button>
+</div>
+
+<div class="main">
+
+  <!-- TAB 1: Product Classification -->
+  <div class="section on" id="t1">
+    <h2>📊 产品分类矩阵 — 按「金额规模 × 交付稳定性」四象限</h2>
+    <div class="g2">
+      <div class="card"><h4>产品金额-稳定性分布</h4><div class="chart-wrap"><canvas id="bubbleChart"></canvas></div></div>
+      <div class="card"><h4>分类占比</h4><div class="chart-wrap"><canvas id="catPieChart"></canvas></div></div>
+    </div>
+    <div class="card"><h4>产品明细表</h4>
+      <div style="overflow-x:auto"><table id="prodTable"><thead><tr>
+        <th>产品类别</th><th class="r">总金额(万)</th><th class="r">订单数</th><th class="r">活跃月数</th>
+        <th class="r">月均(万)</th><th class="r">波动性(CV%)</th><th class="r">最优率</th>
+        <th class="r">最优/非最优(万)</th><th>分类</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Base Performance -->
+  <div class="section" id="t2">
+    <h2>🏭 各基地交付表现 — 最优率 + 金额分布</h2>
+    <div class="g2">
+      <div class="card"><h4>基地最优率排行</h4><div class="chart-wrap"><canvas id="baseRateChart"></canvas></div></div>
+      <div class="card"><h4>基地金额分布（最优 vs 非最优）</h4><div class="chart-wrap"><canvas id="baseStackChart"></canvas></div></div>
+    </div>
+    <div class="card"><h4>基地明细</h4>
+      <div style="overflow-x:auto"><table id="baseTable"><thead><tr>
+        <th>基地</th><th class="r">总金额(万)</th><th class="r">订单数</th><th class="r">最优率</th>
+        <th class="r">最优(万)</th><th class="r">非最优(万)</th><th class="r">覆盖产品</th><th class="r">覆盖区域</th><th>评级</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Leakage -->
+  <div class="section" id="t3">
+    <h2>🕳 漏洞分析 — 非最优基地出货流向</h2>
+    <div class="card"><h4>各最优基地的「漏出」金额及实际出货工厂</h4>
+      <div style="overflow-x:auto"><table id="leakTable"><thead><tr>
+        <th>最优基地</th><th class="r">漏出总额(万)</th><th>实际出货工厂 #1</th><th class="r">金额(万)</th>
+        <th>实际出货工厂 #2</th><th class="r">金额(万)</th>
+        <th>实际出货工厂 #3</th><th class="r">金额(万)</th>
+        <th>建议</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card"><h4>漏洞金额分布</h4><div class="chart-wrap-sm"><canvas id="leakChart"></canvas></div></div>
+  </div>
+
+  <!-- TAB 4: Monthly Volatility -->
+  <div class="section" id="t4">
+    <h2>📈 月度波动分析 — 各产品按月金额趋势</h2>
+    <div class="g2">
+      <div class="card"><h4>PE给水管（主力产品）月度趋势</h4><div class="chart-wrap"><canvas id="mPeChart"></canvas></div></div>
+      <div class="card"><h4>中小产品月度趋势</h4><div class="chart-wrap"><canvas id="mOtherChart"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- TAB 5: Management Recommendations -->
+  <div class="section" id="t5">
+    <h2>📋 管理建议 — 基于数据分析的决策参考</h2>
+    <div id="recContent"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>数据来源: 数据提炼.xlsx (2814条记录) · 广材管道发货系统</span>
+  <span>交付管理分析看板 v1.0</span>
+</div>
+
+<script>
+// ═══════ EMBEDDED DATA ═══════
+const DATA = {"products": [{"product": "PE（100）给水管", "total_amt": 3893.6, "orders": 741, "months_active": 30, "avg_monthly": 129.8, "cv": 89.3, "optimal_rate": 56.2, "yes_amt": 2188.6, "no_amt": 1705.0, "bases": 8, "category": "B类·量大波动"}, {"product": "工程PVC-U给水", "total_amt": 217.5, "orders": 387, "months_active": 29, "avg_monthly": 7.5, "cv": 125.7, "optimal_rate": 43.4, "yes_amt": 94.3, "no_amt": 123.2, "bases": 7, "category": "D类·中等规模"}, {"product": "工程PPR", "total_amt": 181.4, "orders": 183, "months_active": 25, "avg_monthly": 7.3, "cv": 191.1, "optimal_rate": 73.7, "yes_amt": 133.6, "no_amt": 47.8, "bases": 6, "category": "D类·中等规模"}, {"product": "PVC-U排水管", "total_amt": 60.9, "orders": 72, "months_active": 24, "avg_monthly": 2.5, "cv": 124.6, "optimal_rate": 55.4, "yes_amt": 33.7, "no_amt": 27.2, "bases": 7, "category": "D类·中等规模"}, {"product": "PVC-U排污管", "total_amt": 46.0, "orders": 12, "months_active": 6, "avg_monthly": 7.7, "cv": 156.3, "optimal_rate": 67.8, "yes_amt": 31.2, "no_amt": 14.8, "bases": 5, "category": "C类·量小波动"}, {"product": "HDPE缠绕结构壁B型克拉管", "total_amt": 38.1, "orders": 13, "months_active": 5, "avg_monthly": 7.6, "cv": 88.9, "optimal_rate": 39.0, "yes_amt": 14.9, "no_amt": 23.3, "bases": 4, "category": "C类·量小波动"}, {"product": "PVC白色线管", "total_amt": 15.5, "orders": 43, "months_active": 17, "avg_monthly": 0.9, "cv": 203.1, "optimal_rate": 33.0, "yes_amt": 5.1, "no_amt": 10.4, "bases": 7, "category": "C类·量小波动"}, {"product": "PVC给水（美筑）", "total_amt": 14.1, "orders": 9, "months_active": 5, "avg_monthly": 2.8, "cv": 99.1, "optimal_rate": 100.0, "yes_amt": 14.1, "no_amt": 0.0, "bases": 2, "category": "C类·量小波动"}, {"product": "过滤净水系列", "total_amt": 2.5, "orders": 37, "months_active": 13, "avg_monthly": 0.2, "cv": 102.6, "optimal_rate": 42.0, "yes_amt": 1.0, "no_amt": 1.4, "bases": 7, "category": "C类·量小波动"}, {"product": "HDPE双壁波纹管", "total_amt": 1.9, "orders": 1, "months_active": 1, "avg_monthly": 1.9, "cv": 999, "optimal_rate": 0.0, "yes_amt": 0.0, "no_amt": 1.9, "bases": 1, "category": "C类·量小波动"}, {"product": "配件", "total_amt": 0.4, "orders": 11, "months_active": 4, "avg_monthly": 0.1, "cv": 78.7, "optimal_rate": 15.0, "yes_amt": 0.1, "no_amt": 0.4, "bases": 4, "category": "C类·量小波动"}, {"product": "HDPE排水", "total_amt": 0.1, "orders": 1, "months_active": 1, "avg_monthly": 0.1, "cv": 999, "optimal_rate": 0.0, "yes_amt": 0.0, "no_amt": 0.1, "bases": 1, "category": "C类·量小波动"}], "bases": [{"name": "长春基地", "total_amt": 1350.4, "orders": 226, "optimal_rate": 26.4, "yes_amt": 356.2, "no_amt": 994.2, "products": 9, "regions": 3}, {"name": "佛山基地", "total_amt": 1207.8, "orders": 488, "optimal_rate": 98.7, "yes_amt": 1192.6, "no_amt": 15.2, "products": 10, "regions": 4}, {"name": "镇江基地", "total_amt": 571.0, "orders": 213, "optimal_rate": 80.2, "yes_amt": 458.1, "no_amt": 112.9, "products": 8, "regions": 3}, {"name": "天津基地", "total_amt": 482.3, "orders": 168, "optimal_rate": 7.3, "yes_amt": 35.3, "no_amt": 447.0, "products": 7, "regions": 4}, {"name": "渭南基地", "total_amt": 409.6, "orders": 119, "optimal_rate": 96.2, "yes_amt": 394.1, "no_amt": 15.5, "products": 7, "regions": 3}, {"name": "黄石基地", "total_amt": 279.2, "orders": 96, "optimal_rate": 7.5, "yes_amt": 21.1, "no_amt": 258.2, "products": 9, "regions": 3}, {"name": "重庆基地", "total_amt": 170.3, "orders": 75, "optimal_rate": 34.8, "yes_amt": 59.2, "no_amt": 111.1, "products": 7, "regions": 4}, {"name": "8012", "total_amt": 1.4, "orders": 2, "optimal_rate": 0.0, "yes_amt": 0.0, "no_amt": 1.4, "products": 2, "regions": 1}], "leakage": {"天津基地": {"8070": 153.0, "8040": 285.3, "FS40": 1.2, "8010": 2.0, "8012": 5.5}, "镇江基地": {"8012": 55.5, "8010": 28.0, "8040": 27.9, "XC30": 1.4}, "黄石基地": {"8060": 43.5, "8012": 92.0, "8010": 102.6, "8040": 20.1}, "重庆基地": {"8012": 98.0, "8010": 13.1, "FS50": 0.0}, "长春基地": {"8020": 22.4, "FS60": 0.5, "8040": 656.6, "8060": 305.8, "FS40": 0.2, "XC20": 4.1, "8012": 2.5, "FS20": 0.8, "XC40": 0.5, "8010": 0.7}, "佛山基地": {"8060": 14.9, "8030": 0.3}, "渭南基地": {"8060": 1.8, "8010": 1.0, "8012": 12.7, "FS30": 0.0}}, "summary": {"total_amt": 4472.0, "total_orders": 1387, "total_products": 12, "total_bases": 8, "total_optimal_rate": 56.3, "total_leak": 1954.0}, "monthly_detail": {"PE（100）给水管": {"2026-05": 2441356.5599999996, "2026-04": 3882862.019999998, "2026-03": 1907094.4799999995, "2026-02": 174162.48, "2026-01": 930549.4799999997, "2025-12": 401597.3400000001, "2025-11": 1181549.6399999997, "2025-10": 493681.32, "2025-09": 364675.25999999995, "2025-08": 639728.7000000001, "2025-07": 636735.1199999998, "2025-06": 1664517.0000000007, "2025-05": 2478134.28, "2025-04": 2826317.579999999, "2025-03": 3269247.73, "2025-02": 3159713.04, "2025-01": 1933637.6400000001, "2024-12": 3758197.65, "2024-11": 305349.96, "2024-10": 545747.62, "2024-09": 400933.55999999994, "2024-08": 222948.0, "2024-07": 634941.3500000001, "2024-06": 1146721.26, "2024-05": 1137849.39, "2024-04": 1047449.8200000002, "2024-03": 955145.1299999999, "2024-02": 95250.12, "2024-01": 282833.52, "2023-12": 16996.2}, "工程PPR": {"2026-05": 452010.15999999986, "2026-04": 575807.6800000002, "2026-03": 103474.51999999999, "2026-02": 67.4, "2025-12": 6078.76, "2025-11": 13367.599999999999, "2025-10": 54932.600000000006, "2025-09": 82809.28, "2025-08": 56338.72, "2025-07": 46407.8, "2025-06": 25811.079999999998, "2025-05": 57578.48, "2025-04": 80768.36000000002, "2025-03": 26721.92, "2025-02": 56730.84, "2025-01": 13501.72, "2024-12": 2519.4, "2024-11": 128053.15999999999, "2024-09": 4030.0, "2024-06": 964.0, "2024-05": 18979.0, "2024-04": 2293.04, "2024-03": 248.8, "2024-02": 3828.8, "2024-01": 857.1199999999999}, "PVC-U排水管": {"2026-05": 116472.24, "2026-04": 24288.879999999997, "2026-03": 48293.520000000004, "2026-01": 94501.04, "2025-12": 30411.0, "2025-11": 74879.7, "2025-10": 23037.84, "2025-09": 33006.72, "2025-08": 6159.3, "2025-07": 43849.200000000004, "2025-06": 8676.0, "2025-05": 15505.5, "2025-04": 5165.28, "2025-03": 1766.6399999999999, "2025-02": 47374.2, "2024-12": 14096.28, "2024-11": 884.4, "2024-10": 1539.6, "2024-08": 135.0, "2024-07": 4018.2, "2024-04": 300.0, "2024-03": 8003.16, "2024-02": 4981.5, "2024-01": 1451.6999999999998}, "PVC-U排污管": {"2026-05": 299503.8, "2026-04": 12652.439999999999, "2026-03": 130985.1, "2025-11": 12853.2, "2025-03": 3408.48, "2025-02": 821.28}, "工程PVC-U给水": {"2026-05": 117478.58, "2026-04": 14205.6, "2026-03": 395939.28, "2026-02": 144830.34, "2026-01": 302146.0800000001, "2025-12": 5813.28, "2025-11": 156986.38, "2025-10": 1505.28, "2025-09": 2829.0, "2025-08": 28146.2, "2025-07": 32316.319999999996, "2025-06": 19462.36, "2025-05": 80308.44, "2025-04": 92827.68, "2025-03": 46874.82, "2025-02": 69461.92000000001, "2025-01": 13791.2, "2024-12": 86656.85999999999, "2024-11": 241473.47999999998, "2024-10": 10377.180000000002, "2024-09": 11264.8, "2024-08": 20266.64, "2024-07": 29707.04, "2024-06": 16882.239999999998, "2024-05": 72216.86, "2024-04": 53746.12000000001, "2024-03": 29766.780000000006, "2024-02": 33200.31999999999, "2024-01": 44782.780000000006}, "PVC给水（美筑）": {"2026-05": 73477.92, "2026-04": 16959.0, "2025-04": 3062.4, "2025-02": 11841.28, "2024-12": 35932.16}, "PVC白色线管": {"2026-05": 3192.0, "2026-04": 196.08, "2025-12": 918.84, "2025-11": 2941.2, "2025-10": 2139.7799999999997, "2025-09": 2488.62, "2025-07": 1516.2, "2025-06": 798.0, "2025-05": 10440.6, "2025-04": 7945.8, "2025-03": 7024.019999999999, "2025-02": 1144.2, "2025-01": 3693.83, "2024-12": 36875.7, "2024-11": 72322.02, "2024-02": 617.6, "2024-01": 308.8}, "HDPE缠绕结构壁B型克拉管": {"2026-05": 990.42, "2026-04": 110616.06, "2026-03": 174386.22, "2026-01": 59624.64, "2025-11": 35643.84}, "过滤净水系列": {"2026-03": 3850.0, "2026-01": 1260.0, "2025-12": 140.0, "2025-11": 5670.0, "2025-09": 770.0, "2025-06": 700.0, "2025-04": 1750.0, "2024-12": 210.0, "2024-11": 70.0, "2024-10": 490.0, "2024-09": 1260.0, "2024-08": 3220.0, "2024-07": 5110.0}, "HDPE双壁波纹管": {"2024-12": 18808.02}, "HDPE排水": {"2024-11": 980.4}, "配件": {"2024-07": 1575.0, "2024-06": 1890.0, "2024-05": 105.0, "2024-01": 630.0}}};
+
+// ═══════ HELPERS ═══════
+const nf=v=>(Number(v)||0).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const nf0=v=>(Number(v)||0).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const charts=[];
+
+// ═══════ INIT ═══════
+(function(){
+  const d=DATA;
+
+  // KPI row
+  document.getElementById('kpiRow').innerHTML=`
+    <div class="kpi-card"><div class="kl">总金额</div><div class="kv g">${nf0(d.summary.total_amt)}<span style="font-size:11px;color:#667799">万</span></div><div class="ks">${d.summary.total_orders}笔订单</div></div>
+    <div class="kpi-card"><div class="kl">产品总数</div><div class="kv gn">${d.summary.total_products}</div><div class="ks">个SKU品类</div></div>
+    <div class="kpi-card"><div class="kl">基地总数</div><div class="kv">${d.summary.total_bases}</div><div class="ks">个发货基地</div></div>
+    <div class="kpi-card"><div class="kl">整体最优率</div><div class="kv ${d.summary.total_optimal_rate>=60?'gn':'y'}">${(d.summary.total_optimal_rate||0).toFixed(1)}%</div><div class="ks">就近基地出货占比</div></div>
+    <div class="kpi-card"><div class="kl">总漏出金额</div><div class="kv r">${nf0(d.summary.total_leak)}<span style="font-size:11px;color:#667799">万</span></div><div class="ks">非最优基地出货</div></div>`;
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');document.getElementById(t.dataset.t).classList.add('on');
+    charts.forEach(c=>{try{c.resize()}catch(e){}});
+  });
+
+  // ═══ TAB 1: Product Classification ═══
+  const prods=d.products;
+  const cats={};prods.forEach(p=>{cats[p.category]=cats[p.category]||[];cats[p.category].push(p);});
+  const catColors={'A类·量大稳定':'#4ecdc4','B类·量大波动':'#ffd93d','C类·量小波动':'#ff6b6b','D类·中等规模':'#8899bb'};
+
+  // Bubble chart
+  const bCtx=document.getElementById('bubbleChart').getContext('2d');
+  charts.push(new Chart(bCtx,{type:'bubble',data:{datasets:prods.map(p=>({label:p.product,data:[{x:p.avg_monthly,y:p.cv,r:Math.max(8,Math.sqrt(p.total_amt)*0.3)}],backgroundColor:catColors[p.category]+'88',borderColor:catColors[p.category],borderWidth:1}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#ccd',boxWidth:12,padding:8,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': 月均'+ctx.parsed.x+'万 CV'+ctx.parsed.y+'%'}}},scales:{x:{title:{display:true,text:'月均金额(万)',color:'#8899bb'},grid:{color:'#1a2f52'},ticks:{color:'#8899bb'}},y:{title:{display:true,text:'波动性 CV(%)',color:'#8899bb'},grid:{color:'#1a2f52'},ticks:{color:'#8899bb'}}}}}));
+
+  // Category pie
+  const catCount={};for(const[k,v]of Object.entries(cats))catCount[k]=v.length;
+  const pCtx=document.getElementById('catPieChart').getContext('2d');
+  charts.push(new Chart(pCtx,{type:'doughnut',data:{labels:Object.keys(catCount),datasets:[{data:Object.values(catCount),backgroundColor:Object.keys(catCount).map(k=>catColors[k]),borderColor:'#112240',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#ccd',boxWidth:12,padding:6,font:{size:10}}}}}}));
+
+  // Product table
+  const pTbody=document.querySelector('#prodTable tbody');
+  prods.forEach(p=>{
+    const tr=document.createElement('tr');
+    const badge=p.category.includes('A')?'badge-a':p.category.includes('B')?'badge-b':p.category.includes('C')?'badge-c':'';
+    tr.innerHTML=`<td>${p.product}</td><td class="r gl">${nf(p.total_amt)}</td><td class="r">${p.orders}</td><td class="r">${p.months_active}</td><td class="r">${nf(p.avg_monthly)}</td><td class="r ${p.cv>100?'rd':p.cv>60?'y':'g'}">${p.cv}%</td><td class="r ${p.optimal_rate>=90?'g':p.optimal_rate>=50?'y':'rd'}">${p.optimal_rate}%</td><td class="r">${nf(p.yes_amt)} / ${nf(p.no_amt)}</td><td><span class="badge ${badge}">${p.category}</span></td>`;
+    pTbody.appendChild(tr);
+  });
+
+  // ═══ TAB 2: Base Performance ═══
+  const bases=d.bases;
+  const bNames=bases.map(b=>b.name),bRates=bases.map(b=>b.optimal_rate),bYes=bases.map(b=>b.yes_amt),bNo=bases.map(b=>b.no_amt),bTotal=bases.map(b=>b.total_amt);
+
+  const brCtx=document.getElementById('baseRateChart').getContext('2d');
+  charts.push(new Chart(brCtx,{type:'bar',data:{labels:bNames,datasets:[{label:'最优率 %',data:bRates,backgroundColor:bRates.map(r=>r>=90?'#4ecdc4':r>=50?'#ffd93d':'#ff6b6b'),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{min:0,max:100,grid:{color:'#1a2f52'},ticks:{color:'#8899bb',callback:v=>v+'%'}},y:{grid:{display:false},ticks:{color:'#ccd',font:{size:11}}}}}}));
+
+  const bsCtx=document.getElementById('baseStackChart').getContext('2d');
+  charts.push(new Chart(bsCtx,{type:'bar',data:{labels:bNames,datasets:[{label:'最优金额',data:bYes,backgroundColor:'#4ecdc4',borderRadius:3},{label:'非最优金额',data:bNo,backgroundColor:'#ff6b6b',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'#1a2f52'},ticks:{color:'#8899bb',callback:v=>nf0(v)}},y:{stacked:true,grid:{display:false},ticks:{color:'#ccd',font:{size:11}}}},plugins:{legend:{labels:{color:'#ccd',boxWidth:12,padding:8}}}}});
+
+  const bTbody=document.querySelector('#baseTable tbody');
+  bases.forEach(b=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${b.name}</td><td class="r gl">${nf(b.total_amt)}</td><td class="r">${b.orders}</td><td class="r ${b.optimal_rate>=90?'g':b.optimal_rate>=50?'y':'rd'}">${b.optimal_rate}%</td><td class="r">${nf(b.yes_amt)}</td><td class="r">${nf(b.no_amt)}</td><td class="r">${b.products||0}</td><td class="r">${b.regions||0}</td><td>${b.optimal_rate>=90?'🟢 优秀':b.optimal_rate>=70?'🟡 良好':b.optimal_rate>=50?'🟠 一般':'🔴 待改进'}</td>`;
+    bTbody.appendChild(tr);
+  });
+
+  // ═══ TAB 3: Leakage ═══
+  const leak=d.leakage;
+  const leakEntries=Object.entries(leak).sort((a,b)=>Object.values(b[1]).reduce((x,y)=>x+y,0)-Object.values(a[1]).reduce((x,y)=>x+y,0));
+  const lTbody=document.querySelector('#leakTable tbody');
+  leakEntries.forEach(([base,act])=>{
+    const acts=Object.entries(act).sort((a,b)=>b[1]-a[1]);
+    const total=acts.reduce((s,a)=>s+a[1],0);
+    const tr=document.createElement('tr');
+    let html=`<td>${base}</td><td class="r rd">${nf(total)}</td>`;
+    for(let i=0;i<3;i++){
+      if(i<acts.length)html+=`<td>${acts[i][0]}</td><td class="r">${nf(acts[i][1])}</td>`;
+      else html+=`<td>-</td><td class="r">-</td>`;
+    }
+    html+=`<td style="font-size:11px;color:#ffd93d">${total>500?'⚠ 严重：需紧急调整':'需关注'}</td>`;
+    tr.innerHTML=html;lTbody.appendChild(tr);
+  });
+
+  const lCtx=document.getElementById('leakChart').getContext('2d');
+  charts.push(new Chart(lCtx,{type:'bar',data:{labels:leakEntries.map(e=>e[0]),datasets:[{label:'漏出金额(万)',data:leakEntries.map(e=>Object.values(e[1]).reduce((a,b)=>a+b,0)),backgroundColor:'#ff6b6b',borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1a2f52'},ticks:{color:'#8899bb',callback:v=>nf0(v)}},y:{grid:{display:false},ticks:{color:'#ccd'}}}}));
+
+  // ═══ TAB 4: Monthly Volatility ═══
+  const monthly=d.monthly_detail||{};
+  const peMonths=Object.keys(monthly['PE（100）给水管']||{}).sort();
+  const peAmt=peMonths.map(m=>monthly['PE（100）给水管'][m]);
+
+  const mPeCtx=document.getElementById('mPeChart').getContext('2d');
+  charts.push(new Chart(mPeCtx,{type:'bar',data:{labels:peMonths,datasets:[{label:'PE给水管 月金额(万)',data:peAmt,backgroundColor:peAmt.map(a=>a>300?'#4ecdc4':a>100?'#c9a84c':'#ff6b6b'),borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#8899bb',font:{size:9},maxTicksLimit:12}},y:{grid:{color:'#1a2f52'},ticks:{color:'#8899bb',callback:v=>nf0(v)}}}}));
+
+  // Other products
+  const otherProds=prods.filter(p=>p.product!=='PE（100）给水管'&&p.total_amt>10);
+  const otherDatasets=otherProds.map((p,i)=>{
+    const om=Object.keys(monthly[p.product]||{}).sort();
+    return{label:p.product.length>8?p.product.slice(0,8)+'…':p.product,data:peMonths.map(m=>monthly[p.product]?.[m]||0),borderColor:['#ffd93d','#ff6b6b','#4ecdc4','#c9a84c','#8899bb','#45b7aa','#e05555'][i%7],tension:.3,pointRadius:1,borderWidth:2,fill:false};
+  });
+  const mOCtx=document.getElementById('mOtherChart').getContext('2d');
+  charts.push(new Chart(mOCtx,{type:'line',data:{labels:peMonths,datasets:otherDatasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#ccd',boxWidth:10,padding:6,font:{size:9}}}},scales:{x:{grid:{color:'#1a2f52'},ticks:{color:'#8899bb',font:{size:8},maxTicksLimit:12}},y:{grid:{color:'#1a2f52'},ticks:{color:'#8899bb',callback:v=>nf0(v)}}}}}));
+
+  // ═══ TAB 5: Recommendations ═══
+  document.getElementById('recContent').innerHTML = `
+    <div class="rec-card"><h4>🔴 紧急：堵住长春基地 994 万漏出</h4>
+      <p>长春基地仅 26.4% 最优率，是最大漏洞。994 万流向 8040 工厂（656万）和 8060 工厂（306万）。</p>
+      <ul><li>将 8040/8060 对应的「辽宁省」「吉林省」订单强制路由到长春基地</li><li>设定长春基地最低出货量 KPI，每月监控最优率变化</li><li>目标：3 个月内将长春最优率提升至 60%+</li></ul></div>
+    <div class="rec-card"><h4>🔴 紧急：天津基地 + 黄石基地 最优率 < 10%</h4>
+      <p>天津 7.3%（漏出 447 万）、黄石 7.5%（漏出 258 万）。合计漏出 705 万，占总量 16%。</p>
+      <ul><li>排查天津/黄石的出货是否在最优路径范围内</li><li>如不在范围，考虑调整最优基地映射，而非强制路由</li></ul></div>
+    <div class="rec-card"><h4>🟡 A类产品：PE给水管（3894万，CV=89%）— 量大但波动</h4>
+      <p>主力产品，但月度波动大（最高 474 万 → 最低 1.7 万）。建议：</p>
+      <ul><li>建立月度需求预测机制，提前 1 个月锁定基地产能</li><li>当某月预测 >300 万时，提前协调佛山+渭南双基地备货</li></ul></div>
+    <div class="rec-card"><h4>🟡 C类产品：量小波动大 — 采用 1-3 个月周期管理</h4>
+      <p>8 个产品合计仅 216 万（占 4.8%），但 CV 高达 88%-203%。建议：</p>
+      <ul><li>按季度合并采购计划，集中到佛山/渭南基地统一发货</li><li>设定安全库存水位（1 个月用量），减少紧急调货</li><li>对 PVC-U排污管（CV=156%）、PVC白色线管（CV=203%）重点监控</li></ul></div>
+    <div class="rec-card"><h4>🟢 巩固：佛山基地（98.7%）+ 渭南基地（96.2%）</h4>
+      <p>两基地承担 36% 金额且最优率极高。建议：</p>
+      <ul><li>优先将新订单分配给佛山/渭南，作为品质标杆</li><li>将佛山/渭南的经验（如路线规划、产能匹配）向长春/天津推广</li></ul></div>
+    <div class="rec-card"><h4>📊 管理 KPI 建议</h4>
+      <ul>
+        <li>月度监控：各基地最优率趋势（目标：整体 >65%）</li>
+        <li>漏出金额月度环比（目标：每月降低 10%）</li>
+        <li>A类产品月度量预测准确率</li>
+        <li>C类产品合并采购完成率</li>
+      </ul></div>
+  `;
+})();
+</script>
+</body>
+</html>
