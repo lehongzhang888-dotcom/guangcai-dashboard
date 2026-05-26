@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建筑工程事业部 · 基地发货效率全景分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;
+  background:#0a1628;color:#e0e6f0;overflow:hidden;width:100vw;height:100vh;
+  user-select:none;
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#0f1d35}
+::-webkit-scrollbar-thumb{background:#2a4a7f;border-radius:2px}
+
+/* ===== Container ===== */
+#app{
+  position:relative;width:100vw;height:100vh;overflow:hidden;
+}
+#loading{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:#0a1628;z-index:9999;font-size:20px;color:#f0d68a;
+  transition:opacity .8s;
+}
+#loading.hidden{opacity:0;pointer-events:none}
+
+/* ===== Acts ===== */
+.act{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 1s ease;pointer-events:none;
+  padding:40px 60px;
+}
+.act.active{opacity:1;pointer-events:auto}
+.act.exiting{opacity:0}
+
+/* ===== Progress Bar ===== */
+#progress-bar{
+  position:fixed;bottom:0;left:0;height:3px;z-index:1000;
+  background:linear-gradient(90deg,#d4a843,#f0d68a);
+  width:0%;transition:width .1s linear;
+}
+#progress-label{
+  position:fixed;bottom:10px;right:20px;z-index:1000;
+  font-size:12px;color:rgba(224,230,240,.4);font-family:monospace;
+}
+#replay-btn{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%);z-index:1000;
+  background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.4);
+  color:#f0d68a;padding:8px 24px;border-radius:20px;cursor:pointer;
+  font-size:14px;opacity:0;transition:opacity .6s;font-family:inherit;
+}
+#replay-btn:hover{background:rgba(212,168,67,.3)}
+#replay-btn.show{opacity:1}
+
+/* ===== Act 0 – Title ===== */
+.title-main{
+  font-size:52px;font-weight:700;color:#f0d68a;letter-spacing:4px;
+  text-shadow:0 0 40px rgba(212,168,67,.2);
+  opacity:0;transform:scale(.6);transition:none;
+}
+.act.active .title-main.animate{
+  animation:titleIn 2s ease-out .2s forwards;
+}
+.title-sub{
+  font-size:28px;font-weight:400;color:#e0e6f0;letter-spacing:6px;margin-top:16px;
+  opacity:0;transform:translateY(10px);
+}
+.act.active .title-sub.animate{
+  animation:fadeUp .8s ease-out 1.8s forwards;
+}
+.title-date{
+  font-size:14px;color:rgba(224,230,240,.5);margin-top:12px;letter-spacing:2px;
+  opacity:0;
+}
+.act.active .title-date.animate{
+  animation:fadeIn 1s ease-out 2.6s forwards;
+}
+.title-divider{
+  height:2px;width:0;background:linear-gradient(90deg,transparent,#d4a843,transparent);
+  margin-top:24px;border-radius:1px;
+}
+.act.active .title-divider.animate{
+  animation:dividerOut 1.2s ease-out 3.2s forwards;
+}
+
+/* ===== Act 1 – KPI Cards ===== */
+.act-1-inner{
+  display:flex;flex-direction:column;align-items:center;gap:32px;
+}
+.kpi-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:24px;
+}
+.kpi-card{
+  background:linear-gradient(135deg,rgba(15,29,53,.8),rgba(26,47,85,.6));
+  border:1px solid rgba(42,74,127,.5);border-radius:14px;
+  padding:28px 36px;min-width:240px;text-align:center;
+  opacity:0;transform:translateY(30px);transition:none;
+}
+.kpi-card.animate{
+  animation:cardIn .6s ease-out forwards;
+}
+.kpi-card .kpi-label{
+  font-size:14px;color:rgba(224,230,240,.6);letter-spacing:1px;margin-bottom:8px;
+}
+.kpi-card .kpi-value{
+  font-size:38px;font-weight:700;letter-spacing:1px;font-variant-numeric:tabular-nums;
+}
+.kpi-card .kpi-unit{
+  font-size:16px;font-weight:400;color:rgba(224,230,240,.6);margin-left:4px;
+}
+.kpi-card.gold .kpi-value{color:#f0d68a}
+.kpi-card.green .kpi-value{color:#4cd964}
+.kpi-card.white .kpi-value{color:#e0e6f0}
+.kpi-card.red .kpi-value{color:#ff3b30}
+.kpi-summary{
+  font-size:18px;color:rgba(224,230,240,.7);letter-spacing:2px;
+  opacity:0;transition:none;
+}
+.kpi-summary.animate{animation:fadeIn 1s ease-out forwards}
+
+/* ===== Act 2 – Ranking ===== */
+.act-2-inner{
+  width:100%;max-width:1300px;display:flex;flex-direction:column;gap:16px;
+}
+.act-title{
+  font-size:26px;font-weight:600;color:#f0d68a;letter-spacing:3px;text-align:center;
+  opacity:0;transition:none;
+}
+.act-title.animate{animation:fadeIn .8s ease-out forwards}
+.act-2-body{
+  display:flex;gap:40px;flex:1;min-height:0;
+}
+.ranking-left{flex:1.3;display:flex;flex-direction:column;justify-content:center;gap:10px}
+.ranking-right{flex:1;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:none;}
+.ranking-right.animate{animation:fadeIn 1s ease-out forwards}
+
+.ranking-bar-row{
+  display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(-20px);
+  transition:none;
+}
+.ranking-bar-row.animate{
+  animation:barSlideIn .5s ease-out forwards;
+}
+.ranking-bar-label{
+  width:72px;font-size:14px;text-align:right;flex-shrink:0;color:#aab;
+}
+.ranking-bar-track{
+  flex:1;height:28px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;
+  position:relative;
+}
+.ranking-bar-fill{
+  height:100%;border-radius:4px;width:0;transition:width 1s cubic-bezier(.25,.46,.45,.94);
+}
+.ranking-bar-fill.grown{width:var(--target-width)}
+.ranking-bar-pct{
+  width:52px;font-size:15px;font-weight:600;flex-shrink:0;
+  opacity:0;transition:opacity .3s;
+}
+.ranking-bar-pct.show{opacity:1}
+
+/* ===== Act 3 – Problem Focus ===== */
+.act-3-inner{
+  width:100%;max-width:1300px;display:flex;flex-direction:column;gap:16px;
+}
+.act-3-top{
+  display:flex;gap:20px;justify-content:center;flex-wrap:wrap;
+}
+.problem-card{
+  background:linear-gradient(135deg,rgba(60,10,10,.4),rgba(100,20,20,.2));
+  border:1px solid rgba(255,59,48,.35);border-radius:12px;
+  padding:20px 28px;min-width:200px;text-align:center;
+  opacity:0;transform:scale(.9);transition:none;
+  box-shadow:0 0 20px rgba(255,59,48,.08);
+}
+.problem-card.animate{
+  animation:cardPop .5s ease-out forwards;
+}
+.problem-card.pulse{
+  animation:redPulse 2s ease-in-out infinite;
+}
+.problem-card .pc-name{
+  font-size:16px;color:#ff6b6b;font-weight:600;margin-bottom:4px;
+}
+.problem-card .pc-rate{
+  font-size:32px;font-weight:700;color:#ff3b30;
+}
+.problem-card .pc-loss{
+  font-size:13px;color:rgba(255,59,48,.7);margin-top:4px;
+}
+.act-3-region-summary{
+  text-align:center;font-size:15px;color:rgba(255,59,48,.8);letter-spacing:1px;
+  opacity:0;transition:none;
+}
+.act-3-region-summary.animate{animation:fadeIn .8s ease-out forwards}
+.act-3-chart-wrap{
+  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:none;
+}
+.act-3-chart-wrap.animate{animation:fadeIn 1s ease-out forwards}
+.act-3-chart-inner{
+  width:100%;max-width:650px;height:180px;
+}
+
+/* ===== Act 4 – Suggestions ===== */
+.act-4-inner{
+  width:100%;max-width:1200px;display:flex;flex-direction:column;gap:18px;
+  align-items:center;
+}
+.act-4-benchmarks{
+  display:flex;gap:24px;flex-wrap:wrap;justify-content:center;
+}
+.bench-card{
+  background:linear-gradient(135deg,rgba(20,60,20,.3),rgba(30,80,30,.15));
+  border:1px solid rgba(76,217,100,.3);border-radius:12px;
+  padding:18px 28px;text-align:center;
+  opacity:0;transform:translateY(20px);transition:none;
+}
+.bench-card.animate{animation:cardIn .6s ease-out forwards}
+.bench-card .bc-label{font-size:13px;color:rgba(76,217,100,.7);margin-bottom:4px}
+.bench-card .bc-text{font-size:18px;color:#4cd964;font-weight:600}
+.act-4-suggestions{
+  display:flex;flex-direction:column;gap:12px;width:100%;max-width:800px;
+}
+.sug-item{
+  display:flex;align-items:center;gap:14px;
+  background:rgba(15,29,53,.6);border:1px solid rgba(42,74,127,.3);border-radius:10px;
+  padding:14px 22px;
+  opacity:0;transform:translateX(-20px);transition:none;
+}
+.sug-item.animate{animation:sugIn .5s ease-out forwards}
+.sug-item .sug-icon{font-size:20px;flex-shrink:0}
+.sug-item .sug-text{font-size:15px;color:#e0e6f0;line-height:1.6;letter-spacing:.5px}
+.sug-item .sug-arrow{
+  display:inline-block;color:#f0d68a;margin-right:6px;font-weight:700;
+}
+
+/* ===== Act 5 – Ending ===== */
+.act-5-inner{
+  text-align:center;gap:20px;
+}
+.ending-title{
+  position:absolute;top:40px;left:50%;transform:translateX(-50%);
+  font-size:24px;color:rgba(240,214,138,.7);letter-spacing:3px;
+  opacity:0;transition:none;
+}
+.ending-title.animate{animation:fadeIn 1s ease-out forwards}
+.ending-sub{
+  font-size:32px;font-weight:700;color:#f0d68a;letter-spacing:4px;
+  text-shadow:0 0 30px rgba(212,168,67,.15);
+  opacity:0;transform:translateY(20px);transition:none;
+}
+.ending-sub.animate{animation:fadeUp 1s ease-out .5s forwards}
+.ending-tagline{
+  font-size:20px;color:rgba(224,230,240,.5);letter-spacing:6px;margin-top:16px;
+  opacity:0;transition:none;
+}
+.ending-tagline.animate{animation:fadeIn 1s ease-out 1.5s forwards}
+
+/* ===== Particles ===== */
+.particles-container{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.particle-dot{
+  position:absolute;width:3px;height:3px;background:#f0d68a;border-radius:50%;
+  opacity:0;
+}
+.particle-dot.animate{
+  animation:particleFloat 3s ease-out forwards;
+}
+.particle-line{
+  position:absolute;height:1px;background:linear-gradient(90deg,transparent,#f0d68a,transparent);
+  opacity:0;
+}
+.particle-line.animate{
+  animation:lineFade 2.5s ease-out forwards;
+}
+
+/* ===== Keyframes ===== */
+@keyframes titleIn{
+  0%{opacity:0;transform:scale(.6)}
+  60%{opacity:1;transform:scale(1.05)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes fadeUp{
+  0%{opacity:0;transform:translateY(15px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{
+  0%{opacity:0}
+  100%{opacity:1}
+}
+@keyframes dividerOut{
+  0%{width:0}
+  100%{width:280px}
+}
+@keyframes cardIn{
+  0%{opacity:0;transform:translateY(30px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+@keyframes cardPop{
+  0%{opacity:0;transform:scale(.85)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes barSlideIn{
+  0%{opacity:0;transform:translateX(-15px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+@keyframes sugIn{
+  0%{opacity:0;transform:translateX(-20px)}
+  100%{opacity:1;transform:translateX(0)}
+}
+@keyframes redPulse{
+  0%,100%{box-shadow:0 0 10px rgba(255,59,48,.1);border-color:rgba(255,59,48,.35)}
+  50%{box-shadow:0 0 30px rgba(255,59,48,.3);border-color:rgba(255,59,48,.7)}
+}
+@keyframes particleFloat{
+  0%{opacity:0;transform:translateY(0) translateX(0)}
+  30%{opacity:1}
+  100%{opacity:0;transform:translateY(-120px) translateX(40px)}
+}
+@keyframes lineFade{
+  0%{opacity:0;transform:scaleX(0)}
+  40%{opacity:.6;transform:scaleX(1)}
+  100%{opacity:0;transform:scaleX(1)}
+}
+
+/* ===== Responsive ===== */
+@media(max-width:900px){
+  .act{padding:24px 20px}
+  .title-main{font-size:34px}
+  .title-sub{font-size:20px}
+  .kpi-grid{gap:12px}
+  .kpi-card{padding:20px 18px;min-width:150px}
+  .kpi-card .kpi-value{font-size:28px}
+  .act-2-body{flex-direction:column;gap:20px}
+  .ranking-bar-label{width:56px;font-size:12px}
+  .problem-card{padding:14px 18px;min-width:140px}
+  .problem-card .pc-rate{font-size:26px}
+  .act-4-benchmarks{flex-direction:column;align-items:center}
+  .sug-item{padding:12px 16px}
+  .sug-item .sug-text{font-size:13px}
+  .ending-sub{font-size:24px}
+  .ending-tagline{font-size:16px}
+}
+@media(max-width:500px){
+  .title-main{font-size:26px}
+  .title-sub{font-size:16px}
+  .kpi-grid{grid-template-columns:1fr}
+  .kpi-card{min-width:auto}
+  .act-title{font-size:20px}
+  .ranking-bar-label{width:44px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <span>加载数据中...</span>
+</div>
+
+<div id="app">
+
+<!-- Progress -->
+<div id="progress-bar"></div>
+<div id="progress-label">0:00</div>
+
+<!-- ===== Act 0: Title ===== -->
+<div id="act-0" class="act">
+  <div class="title-main" id="t0-main">建筑工程事业部</div>
+  <div class="title-sub" id="t0-sub">基地发货效率全景分析</div>
+  <div class="title-date" id="t0-date">数据周期：2023.12 – 2026.05</div>
+  <div class="title-divider" id="t0-divider"></div>
+</div>
+
+<!-- ===== Act 1: KPI Overview ===== -->
+<div id="act-1" class="act">
+  <div class="act-1-inner">
+    <div class="kpi-grid">
+      <div class="kpi-card gold" data-kpi="total_amt">
+        <div class="kpi-label">总交货金额</div>
+        <div class="kpi-value"><span class="kpi-num" data-target="4450.6" data-decimals="0" data-unit="万">0</span></div>
+      </div>
+      <div class="kpi-card green" data-kpi="optimal_rate">
+        <div class="kpi-label">最优发货率</div>
+        <div class="kpi-value"><span class="kpi-num" data-target="56.1" data-decimals="1" data-unit="%">0</span></div>
+      </div>
+      <div class="kpi-card white" data-kpi="total_orders">
+        <div class="kpi-label">总订单数</div>
+        <div class="kpi-value"><span class="kpi-num" data-target="2814" data-decimals="0" data-unit="笔">0</span></div>
+      </div>
+      <div class="kpi-card red" data-kpi="no_amt">
+        <div class="kpi-label">非最优损失</div>
+        <div class="kpi-value"><span class="kpi-num" data-target="1953.5" data-decimals="0" data-unit="万">0</span></div>
+      </div>
+    </div>
+    <div class="kpi-summary" id="kpi-summary">整体最优率不足60%，近2,000万存在改善空间</div>
+  </div>
+</div>
+
+<!-- ===== Act 2: Base Ranking ===== -->
+<div id="act-2" class="act">
+  <div class="act-2-inner">
+    <div class="act-title" id="a2-title">各基地最优发货率排行</div>
+    <div class="act-2-body">
+      <div class="ranking-left" id="ranking-bars"></div>
+      <div class="ranking-right" id="pie-wrap">
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Act 3: Problem Focus ===== -->
+<div id="act-3" class="act">
+  <div class="act-3-inner">
+    <div class="act-3-top" id="problem-cards"></div>
+    <div class="act-3-region-summary" id="region-summary"></div>
+    <div class="act-3-chart-wrap" id="province-chart-wrap">
+      <div class="act-3-chart-inner">
+        <canvas id="provinceChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Act 4: Suggestions ===== -->
+<div id="act-4" class="act">
+  <div class="act-4-inner">
+    <div class="act-4-benchmarks" id="benchmarks"></div>
+    <div class="act-4-suggestions" id="suggestions"></div>
+  </div>
+</div>
+
+<!-- ===== Act 5: Ending ===== -->
+<div id="act-5" class="act">
+  <div class="act-5-inner">
+    <div class="ending-title" id="e5-title">建筑工程事业部</div>
+    <div class="ending-sub" id="e5-sub">数据驱动决策</div>
+    <div class="ending-tagline" id="e5-tagline">建筑工程事业部 · 基地发货效率全景分析</div>
+  </div>
+  <div class="particles-container" id="particles"></div>
+</div>
+
+<!-- Replay -->
+<button id="replay-btn">↻ 重新播放</button>
+
+</div><!-- /app -->
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+let DATA = null;
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmtNum(n, d) {
+  if (d === 0) return Math.round(n).toLocaleString();
+  return n.toFixed(d).toLocaleString();
+}
+
+function animateNumber(el, target, decimals, duration, unit) {
+  const start = 0;
+  const startTime = performance.now();
+  function tick(now) {
+    const elapsed = now - startTime;
+    const p = Math.min(elapsed / duration, 1);
+    // ease-out cubic
+    const ep = 1 - Math.pow(1 - p, 3);
+    const val = start + (target - start) * ep;
+    let display;
+    if (decimals === 0) {
+      display = Math.round(val).toLocaleString();
+    } else {
+      display = val.toFixed(decimals);
+    }
+    el.textContent = display + (unit || '');
+    if (p < 1) requestAnimationFrame(tick);
+    else el.textContent = fmtNum(target, decimals) + (unit || '');
+  }
+  requestAnimationFrame(tick);
+}
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ============================================================
+// CHART INSTANCES
+// ============================================================
+let charts = {};
+
+function destroyChart(key) {
+  if (charts[key]) { charts[key].destroy(); delete charts[key]; }
+}
+
+// ============================================================
+// ACT SWITCHING
+// ============================================================
+let currentAct = -1;
+let timelineActive = false;
+let timelineStart = 0;
+let progressRAF = null;
+let timeouts = [];
+
+function clearAllTimeouts() {
+  timeouts.forEach(t => clearTimeout(t));
+  timeouts = [];
+}
+
+function setTO(fn, delay) {
+  const id = setTimeout(fn, delay);
+  timeouts.push(id);
+  return id;
+}
+
+function switchAct(num) {
+  document.querySelectorAll('.act').forEach(el => el.classList.remove('active'));
+  const actEl = document.getElementById(`act-${num}`);
+  if (actEl) actEl.classList.add('active');
+  currentAct = num;
+}
+
+// ============================================================
+// ACT-SPECIFIC LOGIC
+// ============================================================
+
+// --- Act 0: Title ---
+function playAct0() {
+  switchAct(0);
+  setTO(() => {
+    document.getElementById('t0-main').classList.add('animate');
+    document.getElementById('t0-sub').classList.add('animate');
+    document.getElementById('t0-date').classList.add('animate');
+    document.getElementById('t0-divider').classList.add('animate');
+  }, 100);
+}
+
+// --- Act 1: KPI cards ---
+function playAct1() {
+  switchAct(1);
+  const cards = document.querySelectorAll('#act-1 .kpi-card');
+  const kpiNums = document.querySelectorAll('#act-1 .kpi-num');
+  cards.forEach((card, i) => {
+    setTO(() => {
+      card.classList.add('animate');
+      const numEl = card.querySelector('.kpi-num');
+      if (numEl) {
+        const target = parseFloat(numEl.dataset.target);
+        const decimals = parseInt(numEl.dataset.decimals);
+        const unit = numEl.dataset.unit || '';
+        animateNumber(numEl, target, decimals, 1800, unit);
+      }
+    }, i * 500);
+  });
+  setTO(() => {
+    document.getElementById('kpi-summary').classList.add('animate');
+  }, cards.length * 500 + 800);
+}
+
+// --- Act 2: Ranking + Pie ---
+function buildRankingBars(bases) {
+  const container = document.getElementById('ranking-bars');
+  container.innerHTML = '';
+  // Sorted descending by optimal_rate
+  const sorted = [...bases].filter(b => b.name !== '未知').sort((a, b) => b.optimal_rate - a.optimal_rate);
+  const maxRate = Math.max(...sorted.map(b => b.optimal_rate));
+
+  sorted.forEach((base, i) => {
+    const pct = base.optimal_rate;
+    const barColor = pct >= 80 ? '#4cd964' : pct >= 50 ? '#ffcc00' : '#ff3b30';
+    const row = document.createElement('div');
+    row.className = 'ranking-bar-row';
+    row.style.setProperty('--delay', (i * 300) + 'ms');
+    row.innerHTML = `
+      <div class="ranking-bar-label">${base.name.replace('基地','')}</div>
+      <div class="ranking-bar-track">
+        <div class="ranking-bar-fill" style="background:${barColor};--target-width:${(pct/100)*100}%"></div>
+      </div>
+      <div class="ranking-bar-pct" id="rbp-${i}">${pct.toFixed(1)}%</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function animateRankingBars() {
+  const rows = document.querySelectorAll('#ranking-bars .ranking-bar-row');
+  const totalAnimTime = rows.length * 300 + 1200; // wait for all bars + pie
+
+  rows.forEach((row, i) => {
+    setTO(() => {
+      row.classList.add('animate');
+      // Grow bar after slide in
+      setTO(() => {
+        const fill = row.querySelector('.ranking-bar-fill');
+        const pct = row.querySelector('.ranking-bar-pct');
+        fill.classList.add('grown');
+        setTO(() => { pct.classList.add('show'); }, 400);
+      }, 400);
+    }, i * 300);
+  });
+
+  // Pie chart appears after a delay
+  setTO(() => {
+    document.getElementById('pie-wrap').classList.add('animate');
+    createPieChart();
+  }, rows.length * 300 + 600);
+}
+
+function createPieChart() {
+  destroyChart('pie');
+  const canvas = document.getElementById('pieChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const parent = canvas.parentElement;
+  canvas.width = parent.clientWidth || 320;
+  canvas.height = parent.clientHeight || 280;
+
+  const yesAmt = DATA.summary.yes_amt;
+  const noAmt = DATA.summary.no_amt;
+
+  // Register plugin for center text
+  const centerTextPlugin = {
+    id: 'centerText',
+    beforeDraw(chart) {
+      const {width, height, ctx} = chart;
+      ctx.save();
+      const total = chart.data.datasets[0].data.reduce((a,b) => a+b, 0);
+      const rate = total > 0 ? ((chart.data.datasets[0].data[0] / total) * 100).toFixed(1) : '0';
+      ctx.font = 'bold 22px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#e0e6f0';
+      ctx.fillText(rate + '%', width/2, height/2 - 10);
+      ctx.font = '12px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillStyle = 'rgba(224,230,240,.5)';
+      ctx.fillText('最优率', width/2, height/2 + 16);
+      ctx.restore();
+    }
+  };
+
+  charts.pie = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['最优发货', '非最优'],
+      datasets: [{
+        data: [yesAmt, noAmt],
+        backgroundColor: ['#4cd964', '#ff3b30'],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#aab',
+            font: {size: 13, family: '"PingFang SC","Microsoft YaHei",sans-serif'},
+            padding: 14,
+            usePointStyle: true
+          }
+        }
+      },
+      animation: {
+        animateRotate: true,
+        duration: 1200
+      }
+    },
+    plugins: [centerTextPlugin]
+  });
+}
+
+// --- Act 3: Problem Focus ---
+function buildProblemCards(bases) {
+  const container = document.getElementById('problem-cards');
+  container.innerHTML = '';
+  // Focus on bottom 3 bases by optimal_rate (excluding 未知)
+  const sorted = [...bases].filter(b => b.name !== '未知').sort((a, b) => a.optimal_rate - b.optimal_rate);
+  const worst3 = sorted.slice(0, 3);
+
+  worst3.forEach((base, i) => {
+    const card = document.createElement('div');
+    card.className = 'problem-card';
+    card.innerHTML = `
+      <div class="pc-name">${base.name}</div>
+      <div class="pc-rate">${base.optimal_rate.toFixed(1)}%</div>
+      <div class="pc-loss">损失 ${fmtNum(base.no_amt, 0)} 万</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function animateProblemCards() {
+  const cards = document.querySelectorAll('#problem-cards .problem-card');
+  cards.forEach((card, i) => {
+    setTO(() => {
+      card.classList.add('animate');
+      setTO(() => card.classList.add('pulse'), 500);
+    }, i * 500);
+  });
+}
+
+function buildRegionSummary(data) {
+  const regions = data.dim2_region;
+  const sorted = regions.filter(r => r.name !== '未知').sort((a, b) => b.no_amt - a.no_amt);
+  const top3 = sorted.slice(0, 3);
+  const totalNo = sorted.reduce((s, r) => s + r.no_amt, 0);
+  const top3Sum = top3.reduce((s, r) => s + r.no_amt, 0);
+  const pct = totalNo > 0 ? ((top3Sum / totalNo) * 100).toFixed(1) : '0';
+  const text = `三省区占总非最优金额${pct}%：${top3.map(r => r.name.replace('自治区','').replace('省','') + ' ' + fmtNum(r.no_amt, 0) + '万').join(' + ')}`;
+  document.getElementById('region-summary').textContent = text;
+  setTO(() => {
+    document.getElementById('region-summary').classList.add('animate');
+  }, 1800);
+}
+
+function createProvinceChart(data) {
+  destroyChart('province');
+  const canvas = document.getElementById('provinceChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const parent = canvas.parentElement;
+  canvas.width = parent.clientWidth || 600;
+  canvas.height = parent.clientHeight || 160;
+
+  const regions = data.dim2_region;
+  const sorted = regions.filter(r => r.name !== '未知').sort((a, b) => b.no_amt - a.no_amt);
+  const top5 = sorted.slice(0, 5);
+
+  const labels = top5.map(r => r.name.replace('自治区','').replace('省',''));
+  const values = top5.map(r => r.no_amt);
+  const colors = ['#ff3b30','#ff5e3a','#ff6b4a','#ff7b5a','#ff8b6a'];
+
+  charts.province = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: values,
+        backgroundColor: colors,
+        borderRadius: 3,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ctx.parsed.x.toFixed(1) + '万'
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,.05)' },
+          ticks: {
+            color: '#889',
+            font: {size: 11, family: '"PingFang SC","Microsoft YaHei",sans-serif'},
+            callback: v => v + '万'
+          }
+        },
+        y: {
+          grid: { display: false },
+          ticks: {
+            color: '#aab',
+            font: {size: 13, family: '"PingFang SC","Microsoft YaHei",sans-serif'}
+          }
+        }
+      },
+      animation: { duration: 1200 }
+    }
+  });
+}
+
+function animateProvinceChart() {
+  const wrap = document.getElementById('province-chart-wrap');
+  setTO(() => {
+    wrap.classList.add('animate');
+    createProvinceChart(DATA);
+  }, 2500);
+}
+
+// --- Act 4: Suggestions ---
+function buildSuggestions(data) {
+  const benchContainer = document.getElementById('benchmarks');
+
+  // Find top 2 bases
+  const sorted = [...data.dim1_base].filter(b => b.name !== '未知').sort((a, b) => b.optimal_rate - a.optimal_rate);
+  const top2 = sorted.slice(0, 2);
+
+  benchContainer.innerHTML = top2.map(b => `
+    <div class="bench-card">
+      <div class="bc-label">标杆基地</div>
+      <div class="bc-text">${b.name}（${b.optimal_rate.toFixed(1)}%）</div>
+    </div>
+  `).join('');
+
+  // Compute suggestion items
+  const regions = data.dim2_region;
+  const sortedRegions = regions.filter(r => r.name !== '未知').sort((a, b) => b.no_amt - a.no_amt);
+
+  const suggContainer = document.getElementById('suggestions');
+  suggContainer.innerHTML = `
+    <div class="sug-item">
+      <span class="sug-icon">&#127919;</span>
+      <span class="sug-text"><span class="sug-arrow">→</span>优先优化长春基地路向：辽宁（${fmtNum(sortedRegions.find(r=>r.name.includes('辽宁'))?.no_amt||0,0)}万）、黑龙江（${fmtNum(sortedRegions.find(r=>r.name.includes('黑龙江'))?.no_amt||0,0)}万）路由调整，预计减少损失 ${fmtNum((sortedRegions.find(r=>r.name.includes('辽宁'))?.no_amt||0)+(sortedRegions.find(r=>r.name.includes('黑龙江'))?.no_amt||0),0)} 万+</span>
+    </div>
+    <div class="sug-item">
+      <span class="sug-icon">&#127919;</span>
+      <span class="sug-text"><span class="sug-arrow">→</span>天津内蒙路向重规划：内蒙 ${fmtNum(sortedRegions.find(r=>r.name.includes('内蒙'))?.no_amt||0,0)} 万非最优金额需重新匹配基地</span>
+    </div>
+    <div class="sug-item">
+      <span class="sug-icon">&#127919;</span>
+      <span class="sug-text"><span class="sug-arrow">→</span>推广 ${top2[0]?.name||'佛山'}/${top2[1]?.name||'渭南'} 标杆经验：标准化省份-基地匹配规则，提升整体最优率</span>
+    </div>
+  `;
+}
+
+function animateSuggestions() {
+  const benchCards = document.querySelectorAll('#benchmarks .bench-card');
+  benchCards.forEach((card, i) => {
+    setTO(() => card.classList.add('animate'), i * 400);
+  });
+  const sugItems = document.querySelectorAll('#suggestions .sug-item');
+  sugItems.forEach((item, i) => {
+    setTO(() => item.classList.add('animate'), benchCards.length * 400 + i * 600);
+  });
+}
+
+// --- Act 5: Ending ---
+function playAct5() {
+  switchAct(5);
+  setTO(() => {
+    document.getElementById('e5-title').classList.add('animate');
+    document.getElementById('e5-sub').classList.add('animate');
+    document.getElementById('e5-tagline').classList.add('animate');
+  }, 100);
+
+  // Particles
+  setTO(() => {
+    const container = document.getElementById('particles');
+    container.innerHTML = '';
+    // Golden dots
+    for (let i = 0; i < 12; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'particle-dot';
+      dot.style.left = (10 + Math.random() * 80) + '%';
+      dot.style.top = (40 + Math.random() * 40) + '%';
+      dot.style.animationDuration = (2 + Math.random() * 2) + 's';
+      dot.style.animationDelay = (Math.random() * 1.5) + 's';
+      container.appendChild(dot);
+      setTO(() => dot.classList.add('animate'), 100);
+    }
+    // Golden lines
+    for (let i = 0; i < 5; i++) {
+      const line = document.createElement('div');
+      line.className = 'particle-line';
+      line.style.left = (15 + Math.random() * 70) + '%';
+      line.style.top = (50 + Math.random() * 30) + '%';
+      line.style.width = (60 + Math.random() * 120) + 'px';
+      line.style.animationDuration = (2 + Math.random() * 2) + 's';
+      line.style.animationDelay = (Math.random() * 1.5) + 's';
+      container.appendChild(line);
+      setTO(() => line.classList.add('animate'), 100);
+    }
+  }, 800);
+}
+
+// ============================================================
+// TIMELINE CONTROLLER
+// ============================================================
+function runTimeline() {
+  clearAllTimeouts();
+  Object.keys(charts).forEach(k => destroyChart(k));
+
+  // Reset all acts
+  document.querySelectorAll('.act').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.act [class*="animate"]').forEach(el => {
+    el.classList.remove('animate');
+  });
+  document.querySelectorAll('.ranking-bar-row').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.ranking-bar-fill').forEach(el => el.classList.remove('grown'));
+  document.querySelectorAll('.ranking-bar-pct').forEach(el => el.classList.remove('show'));
+  document.querySelectorAll('.ranking-right').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.problem-card').forEach(el => el.classList.remove('animate','pulse'));
+  document.querySelectorAll('.bench-card').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.sug-item').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.kpi-card').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.kpi-summary').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.act-title').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.act-3-region-summary').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.act-3-chart-wrap').forEach(el => el.classList.remove('animate'));
+  document.querySelectorAll('.act-5-inner > *').forEach(el => el.classList.remove('animate'));
+  document.getElementById('particles').innerHTML = '';
+  document.getElementById('kpi-summary').classList.remove('animate');
+  document.getElementById('replay-btn').classList.remove('show');
+
+  currentAct = -1;
+  timelineActive = true;
+  timelineStart = Date.now();
+
+  // Build static content
+  buildRankingBars(DATA.dim1_base);
+  buildProblemCards(DATA.dim1_base);
+  buildRegionSummary(DATA);
+  buildSuggestions(DATA);
+
+  // Progress bar
+  const TOTAL_MS = 52000;
+  if (progressRAF) cancelAnimationFrame(progressRAF);
+  function updateProgress() {
+    if (!timelineActive) return;
+    const elapsed = Date.now() - timelineStart;
+    const p = Math.min(elapsed / TOTAL_MS, 1);
+    document.getElementById('progress-bar').style.width = (p * 100) + '%';
+    const secs = Math.floor(elapsed / 1000);
+    const mins = Math.floor(secs / 60);
+    document.getElementById('progress-label').textContent = mins + ':' + (secs % 60).toString().padStart(2, '0');
+    if (p < 1) progressRAF = requestAnimationFrame(updateProgress);
+  }
+  progressRAF = requestAnimationFrame(updateProgress);
+
+  // === TIMELINE ===
+  // Act 0: 0-3s
+  playAct0();
+
+  // Act 1: 3-12s
+  setTO(() => playAct1(), 3000);
+
+  // Act 2: 12-24s
+  setTO(() => {
+    switchAct(2);
+    document.getElementById('a2-title').classList.add('animate');
+    animateRankingBars();
+  }, 12000);
+
+  // Act 3: 24-36s
+  setTO(() => {
+    switchAct(3);
+    animateProblemCards();
+    animateProvinceChart();
+  }, 24000);
+
+  // Act 4: 36-48s
+  setTO(() => {
+    switchAct(4);
+    animateSuggestions();
+  }, 36000);
+
+  // Act 5: 48-52s
+  setTO(() => {
+    playAct5();
+  }, 48000);
+
+  // End
+  setTO(() => {
+    timelineActive = false;
+    if (progressRAF) cancelAnimationFrame(progressRAF);
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('replay-btn').classList.add('show');
+  }, TOTAL_MS);
+}
+
+// ============================================================
+// REPLAY
+// ============================================================
+document.getElementById('replay-btn').addEventListener('click', () => {
+  runTimeline();
+});
+
+// ============================================================
+// RESIZE HANDLER
+// ============================================================
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    // Rebuild charts if their act is active
+    if (currentAct === 2 && charts.pie) {
+      destroyChart('pie');
+      createPieChart();
+    }
+    if (currentAct === 3 && charts.province) {
+      destroyChart('province');
+      createProvinceChart(DATA);
+    }
+  }, 300);
+});
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    const resp = await fetch('data.json');
+    DATA = await resp.json();
+  } catch (e) {
+    console.error('Failed to load data.json', e);
+    // Fallback: show error
+    document.getElementById('loading').innerHTML = '<span style="color:#ff3b30">数据加载失败，请确认 data.json 文件存在</span>';
+    return;
+  }
+  document.getElementById('loading').classList.add('hidden');
+  setTimeout(runTimeline, 600);
+}
+
+init();
+</script>
+</body>
+</html>
