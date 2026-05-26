@@ -1,1171 +1,2325 @@
 {
   "summary": {
-    "total_amt": 4450.6,
-    "total_orders": 2814,
-    "total_optimal_rate": 56.1,
-    "yes_amt": 2495.7,
-    "no_amt": 1953.5,
+    "total_amt": 4470.2,
+    "total_orders": 1386,
+    "yes_amt": 2516.6,
+    "no_amt": 1953.6999999999998,
+    "total_optimal_rate": 56.3,
     "optimal_bases_count": 2,
-    "critical_bases_count": 4
+    "critical_bases_count": 3
   },
   "dim1_base": [
     {
       "name": "长春基地",
-      "total_amt": 1345.8,
-      "total_orders": 562,
-      "optimal_rate": 26.1,
-      "yes_amt": 351.6,
-      "no_amt": 994.2,
-      "yes_orders": 256,
-      "no_orders": 306,
-      "region_count": 3,
-      "city_count": 28,
-      "no_region_count": 3,
-      "no_city_count": 23,
-      "material_count": 9,
+      "total_amt": 1350.4,
+      "total_orders": 226,
+      "yes_amt": 356.2,
+      "no_amt": 994.3000000000001,
+      "yes_orders": 66,
+      "no_orders": 160,
+      "region_count": 9,
+      "city_count": 52,
+      "material_count": 115,
       "undelivered_amt": 4.6,
-      "unshipped_amt": 43.4
+      "unshipped_amt": 43.4,
+      "optimal_rate": 26.4
     },
     {
       "name": "佛山基地",
-      "total_amt": 1207.7,
-      "total_orders": 982,
-      "optimal_rate": 98.7,
-      "yes_amt": 1192.5,
-      "no_amt": 15.2,
-      "yes_orders": 976,
-      "no_orders": 6,
-      "region_count": 4,
-      "city_count": 22,
-      "no_region_count": 2,
-      "no_city_count": 2,
-      "material_count": 10,
+      "total_amt": 1207.9,
+      "total_orders": 488,
+      "yes_amt": 1192.6,
+      "no_amt": 15.200000000000001,
+      "yes_orders": 486,
+      "no_orders": 2,
+      "region_count": 10,
+      "city_count": 42,
+      "material_count": 186,
       "undelivered_amt": 0.1,
-      "unshipped_amt": 12.2
+      "unshipped_amt": 12.2,
+      "optimal_rate": 98.7
     },
     {
       "name": "镇江基地",
-      "total_amt": 554.8,
-      "total_orders": 358,
-      "optimal_rate": 79.7,
-      "yes_amt": 441.9,
-      "no_amt": 112.9,
-      "yes_orders": 158,
-      "no_orders": 200,
-      "region_count": 3,
-      "city_count": 30,
-      "no_region_count": 3,
-      "no_city_count": 26,
-      "material_count": 8,
+      "total_amt": 571.0,
+      "total_orders": 213,
+      "yes_amt": 458.1,
+      "no_amt": 112.89999999999999,
+      "yes_orders": 107,
+      "no_orders": 106,
+      "region_count": 9,
+      "city_count": 49,
+      "material_count": 120,
       "undelivered_amt": 16.2,
-      "unshipped_amt": 18.6
+      "unshipped_amt": 18.6,
+      "optimal_rate": 80.2
     },
     {
       "name": "天津基地",
       "total_amt": 482.3,
-      "total_orders": 312,
-      "optimal_rate": 7.3,
+      "total_orders": 168,
       "yes_amt": 35.3,
       "no_amt": 447.0,
-      "yes_orders": 122,
-      "no_orders": 190,
-      "region_count": 4,
-      "city_count": 23,
-      "no_region_count": 4,
-      "no_city_count": 20,
-      "material_count": 7,
+      "yes_orders": 55,
+      "no_orders": 113,
+      "region_count": 9,
+      "city_count": 36,
+      "material_count": 95,
       "undelivered_amt": 0.0,
-      "unshipped_amt": 5.4
+      "unshipped_amt": 5.4,
+      "optimal_rate": 7.3
     },
     {
       "name": "渭南基地",
-      "total_amt": 409.6,
-      "total_orders": 150,
-      "optimal_rate": 96.2,
-      "yes_amt": 394.1,
-      "no_amt": 15.5,
-      "yes_orders": 140,
-      "no_orders": 10,
-      "region_count": 3,
-      "city_count": 31,
-      "no_region_count": 2,
-      "no_city_count": 8,
-      "material_count": 7,
+      "total_amt": 407.8,
+      "total_orders": 118,
+      "yes_amt": 394.0,
+      "no_amt": 13.8,
+      "yes_orders": 110,
+      "no_orders": 8,
+      "region_count": 8,
+      "city_count": 51,
+      "material_count": 42,
       "undelivered_amt": 0.0,
-      "unshipped_amt": 1.6
+      "unshipped_amt": 1.6,
+      "optimal_rate": 96.6
     },
     {
       "name": "黄石基地",
-      "total_amt": 278.8,
-      "total_orders": 258,
-      "optimal_rate": 7.6,
+      "total_amt": 279.3,
+      "total_orders": 96,
       "yes_amt": 21.1,
-      "no_amt": 257.7,
-      "yes_orders": 33,
-      "no_orders": 225,
-      "region_count": 3,
-      "city_count": 17,
-      "no_region_count": 3,
-      "no_city_count": 16,
-      "material_count": 9,
+      "no_amt": 258.2,
+      "yes_orders": 7,
+      "no_orders": 89,
+      "region_count": 7,
+      "city_count": 26,
+      "material_count": 119,
       "undelivered_amt": 0.5,
-      "unshipped_amt": 0.5
+      "unshipped_amt": 0.5,
+      "optimal_rate": 7.6
     },
     {
       "name": "重庆基地",
       "total_amt": 170.3,
-      "total_orders": 189,
-      "optimal_rate": 34.8,
-      "yes_amt": 59.2,
+      "total_orders": 75,
+      "yes_amt": 59.3,
       "no_amt": 111.1,
-      "yes_orders": 42,
-      "no_orders": 147,
-      "region_count": 4,
-      "city_count": 8,
-      "no_region_count": 4,
-      "no_city_count": 6,
-      "material_count": 7,
+      "yes_orders": 19,
+      "no_orders": 56,
+      "region_count": 8,
+      "city_count": 13,
+      "material_count": 77,
       "undelivered_amt": 0.0,
-      "unshipped_amt": 0.0
+      "unshipped_amt": 0.0,
+      "optimal_rate": 34.8
     },
     {
-      "name": "未知",
+      "name": "8012",
       "total_amt": 1.4,
-      "total_orders": 3,
-      "optimal_rate": 0.0,
+      "total_orders": 2,
       "yes_amt": 0.0,
-      "no_amt": 0.0,
+      "no_amt": 1.4,
       "yes_orders": 0,
-      "no_orders": 0,
+      "no_orders": 2,
       "region_count": 1,
       "city_count": 1,
-      "no_region_count": 0,
-      "no_city_count": 0,
-      "material_count": 2,
+      "material_count": 3,
       "undelivered_amt": 0.0,
-      "unshipped_amt": 0.0
+      "unshipped_amt": 0.0,
+      "optimal_rate": 0.0
     }
   ],
   "dim2_region": [
     {
       "name": "辽宁省",
-      "total_amt": 760.1,
-      "orders": 431,
-      "optimal_rate": 30.2,
-      "yes_amt": 229.9,
-      "no_amt": 530.2,
-      "base_count": 1,
-      "city_count": 15
+      "total_amt": 760.9,
+      "orders": 188,
+      "yes_amt": 230.7,
+      "no_amt": 530.1999999999999,
+      "base_count": 3,
+      "city_count": 34,
+      "optimal_rate": 30.3
     },
     {
       "name": "广西壮族自治区",
-      "total_amt": 670.6,
-      "orders": 557,
-      "optimal_rate": 100.0,
-      "yes_amt": 670.6,
+      "total_amt": 670.6999999999999,
+      "orders": 264,
+      "yes_amt": 670.6999999999999,
       "no_amt": 0.0,
-      "base_count": 1,
-      "city_count": 11
+      "base_count": 3,
+      "city_count": 23,
+      "optimal_rate": 100.0
     },
     {
       "name": "黑龙江省",
-      "total_amt": 482.3,
-      "orders": 84,
-      "optimal_rate": 10.6,
+      "total_amt": 482.2,
+      "orders": 22,
       "yes_amt": 51.0,
-      "no_amt": 431.3,
-      "base_count": 1,
-      "city_count": 7
+      "no_amt": 431.2,
+      "base_count": 3,
+      "city_count": 10,
+      "optimal_rate": 10.6
     },
     {
       "name": "广东省",
       "total_amt": 445.0,
-      "orders": 360,
-      "optimal_rate": 99.9,
-      "yes_amt": 444.8,
+      "orders": 197,
+      "yes_amt": 444.70000000000005,
       "no_amt": 0.3,
-      "base_count": 1,
-      "city_count": 6
+      "base_count": 3,
+      "city_count": 10,
+      "optimal_rate": 99.9
     },
     {
       "name": "江苏省",
-      "total_amt": 417.9,
-      "orders": 256,
-      "optimal_rate": 84.8,
-      "yes_amt": 354.5,
+      "total_amt": 434.1,
+      "orders": 167,
+      "yes_amt": 370.6,
       "no_amt": 63.5,
-      "base_count": 1,
-      "city_count": 21
+      "base_count": 3,
+      "city_count": 36,
+      "optimal_rate": 85.4
     },
     {
       "name": "内蒙古自治区",
-      "total_amt": 417.6,
-      "orders": 257,
-      "optimal_rate": 4.5,
+      "total_amt": 417.5,
+      "orders": 141,
       "yes_amt": 18.6,
       "no_amt": 399.0,
-      "base_count": 1,
-      "city_count": 10
+      "base_count": 3,
+      "city_count": 20,
+      "optimal_rate": 4.5
     },
     {
       "name": "湖北省",
-      "total_amt": 147.5,
-      "orders": 95,
-      "optimal_rate": 14.3,
+      "total_amt": 147.6,
+      "orders": 36,
       "yes_amt": 21.1,
       "no_amt": 126.5,
-      "base_count": 1,
-      "city_count": 8
+      "base_count": 3,
+      "city_count": 11,
+      "optimal_rate": 14.3
     },
     {
       "name": "山西省",
-      "total_amt": 146.7,
-      "orders": 35,
-      "optimal_rate": 93.5,
-      "yes_amt": 137.2,
+      "total_amt": 146.6,
+      "orders": 31,
+      "yes_amt": 137.1,
       "no_amt": 9.5,
-      "base_count": 1,
-      "city_count": 5
+      "base_count": 3,
+      "city_count": 9,
+      "optimal_rate": 93.5
     },
     {
       "name": "河南省",
-      "total_amt": 136.3,
-      "orders": 97,
-      "optimal_rate": 95.6,
-      "yes_amt": 130.3,
-      "no_amt": 6.0,
-      "base_count": 1,
-      "city_count": 25
+      "total_amt": 134.6,
+      "orders": 71,
+      "yes_amt": 130.2,
+      "no_amt": 4.3,
+      "base_count": 3,
+      "city_count": 40,
+      "optimal_rate": 96.7
     },
     {
       "name": "甘肃省",
-      "total_amt": 126.6,
-      "orders": 18,
-      "optimal_rate": 100.0,
-      "yes_amt": 126.6,
+      "total_amt": 126.60000000000001,
+      "orders": 16,
+      "yes_amt": 126.60000000000001,
       "no_amt": 0.0,
-      "base_count": 1,
-      "city_count": 1
+      "base_count": 2,
+      "city_count": 2,
+      "optimal_rate": 100.0
     },
     {
       "name": "江西省",
-      "total_amt": 122.0,
-      "orders": 160,
-      "optimal_rate": 0.0,
+      "total_amt": 122.5,
+      "orders": 57,
       "yes_amt": 0.0,
-      "no_amt": 122.0,
-      "base_count": 1,
-      "city_count": 8
+      "no_amt": 122.5,
+      "base_count": 3,
+      "city_count": 14,
+      "optimal_rate": 0.0
     },
     {
       "name": "吉林省",
-      "total_amt": 103.4,
-      "orders": 47,
-      "optimal_rate": 68.4,
-      "yes_amt": 70.7,
+      "total_amt": 107.30000000000001,
+      "orders": 16,
+      "yes_amt": 74.6,
       "no_amt": 32.7,
-      "base_count": 1,
-      "city_count": 6
+      "base_count": 3,
+      "city_count": 8,
+      "optimal_rate": 69.5
     },
     {
       "name": "云南省",
-      "total_amt": 98.6,
-      "orders": 107,
-      "optimal_rate": 23.5,
-      "yes_amt": 23.1,
+      "total_amt": 98.7,
+      "orders": 40,
+      "yes_amt": 23.2,
       "no_amt": 75.5,
-      "base_count": 1,
-      "city_count": 4
+      "base_count": 3,
+      "city_count": 7,
+      "optimal_rate": 23.5
     },
     {
       "name": "浙江省",
       "total_amt": 82.2,
-      "orders": 27,
-      "optimal_rate": 90.6,
+      "orders": 19,
       "yes_amt": 74.5,
-      "no_amt": 7.7,
-      "base_count": 1,
-      "city_count": 2
+      "no_amt": 7.699999999999999,
+      "base_count": 3,
+      "city_count": 4,
+      "optimal_rate": 90.6
     },
     {
       "name": "海南省",
       "total_amt": 77.1,
-      "orders": 60,
-      "optimal_rate": 100.0,
+      "orders": 26,
       "yes_amt": 77.1,
       "no_amt": 0.0,
-      "base_count": 1,
-      "city_count": 4
+      "base_count": 3,
+      "city_count": 8,
+      "optimal_rate": 100.0
     },
     {
       "name": "贵州省",
       "total_amt": 66.7,
-      "orders": 69,
-      "optimal_rate": 52.2,
+      "orders": 29,
       "yes_amt": 34.8,
       "no_amt": 31.9,
-      "base_count": 1,
-      "city_count": 1
+      "base_count": 3,
+      "city_count": 3,
+      "optimal_rate": 52.2
     },
     {
       "name": "安徽省",
-      "total_amt": 54.6,
-      "orders": 75,
-      "optimal_rate": 23.6,
-      "yes_amt": 12.9,
+      "total_amt": 54.5,
+      "orders": 27,
+      "yes_amt": 12.8,
       "no_amt": 41.7,
-      "base_count": 1,
-      "city_count": 7
+      "base_count": 3,
+      "city_count": 9,
+      "optimal_rate": 23.5
     },
     {
       "name": "华北",
-      "total_amt": 47.2,
-      "orders": 35,
-      "optimal_rate": 28.8,
+      "total_amt": 47.199999999999996,
+      "orders": 16,
       "yes_amt": 13.6,
       "no_amt": 33.6,
-      "base_count": 1,
-      "city_count": 6
+      "base_count": 2,
+      "city_count": 8,
+      "optimal_rate": 28.8
     },
     {
       "name": "山东省",
-      "total_amt": 16.2,
-      "orders": 19,
-      "optimal_rate": 19.3,
+      "total_amt": 16.3,
+      "orders": 10,
       "yes_amt": 3.1,
       "no_amt": 13.1,
-      "base_count": 1,
-      "city_count": 6
+      "base_count": 3,
+      "city_count": 7,
+      "optimal_rate": 19.0
     },
     {
       "name": "福建省",
       "total_amt": 14.9,
-      "orders": 5,
-      "optimal_rate": 0.0,
+      "orders": 1,
       "yes_amt": 0.0,
       "no_amt": 14.9,
       "base_count": 1,
-      "city_count": 1
+      "city_count": 1,
+      "optimal_rate": 0.0
     },
     {
       "name": "湖南省",
       "total_amt": 9.2,
       "orders": 3,
-      "optimal_rate": 0.0,
       "yes_amt": 0.0,
       "no_amt": 9.2,
       "base_count": 1,
-      "city_count": 1
+      "city_count": 1,
+      "optimal_rate": 0.0
     },
     {
       "name": "四川省",
       "total_amt": 4.4,
-      "orders": 7,
-      "optimal_rate": 28.8,
+      "orders": 4,
       "yes_amt": 1.3,
       "no_amt": 3.1,
       "base_count": 1,
-      "city_count": 2
+      "city_count": 2,
+      "optimal_rate": 29.5
     },
     {
       "name": "未知",
       "total_amt": 1.4,
-      "orders": 3,
-      "optimal_rate": 0.0,
+      "orders": 2,
       "yes_amt": 0.0,
       "no_amt": 1.4,
       "base_count": 1,
-      "city_count": 1
+      "city_count": 1,
+      "optimal_rate": 0.0
     },
     {
       "name": "河北省",
       "total_amt": 1.3,
       "orders": 1,
-      "optimal_rate": 0.0,
       "yes_amt": 0.0,
       "no_amt": 1.3,
       "base_count": 1,
-      "city_count": 1
+      "city_count": 1,
+      "optimal_rate": 0.0
     },
     {
       "name": "重庆市",
       "total_amt": 0.6,
-      "orders": 6,
-      "optimal_rate": 0.0,
+      "orders": 2,
       "yes_amt": 0.0,
       "no_amt": 0.6,
       "base_count": 1,
-      "city_count": 1
+      "city_count": 1,
+      "optimal_rate": 0.0
     }
   ],
   "dim3_city": [
     {
       "name": "雷州市",
-      "region": "广东省",
       "total_amt": 407.7,
-      "orders": 308,
-      "optimal_rate": 99.9,
+      "orders": 171,
       "yes_amt": 407.4,
       "no_amt": 0.3,
+      "optimal_rate": 99.9,
+      "region": "广东省",
       "optimal_base": "佛山基地"
     },
     {
       "name": "龙江县",
-      "region": "黑龙江省",
       "total_amt": 378.3,
-      "orders": 32,
-      "optimal_rate": 0.0,
+      "orders": 11,
       "yes_amt": 0.0,
       "no_amt": 378.3,
+      "optimal_rate": 0.0,
+      "region": "黑龙江省",
       "optimal_base": "长春基地"
     },
     {
       "name": "翁牛特旗",
-      "region": "内蒙古自治区",
-      "total_amt": 211.4,
-      "orders": 61,
-      "optimal_rate": 1.0,
+      "total_amt": 211.5,
+      "orders": 39,
       "yes_amt": 2.2,
-      "no_amt": 209.2,
+      "no_amt": 209.29999999999998,
+      "optimal_rate": 1.0,
+      "region": "内蒙古自治区",
       "optimal_base": "天津基地"
     },
     {
       "name": "南宁市",
-      "region": "广西壮族自治区",
-      "total_amt": 203.6,
-      "orders": 242,
-      "optimal_rate": 100.0,
-      "yes_amt": 203.6,
+      "total_amt": 203.60000000000002,
+      "orders": 116,
+      "yes_amt": 203.60000000000002,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
       "optimal_base": "佛山基地"
     },
     {
       "name": "宾阳县",
-      "region": "广西壮族自治区",
-      "total_amt": 191.4,
-      "orders": 75,
-      "optimal_rate": 100.0,
-      "yes_amt": 191.4,
+      "total_amt": 191.39999999999998,
+      "orders": 38,
+      "yes_amt": 191.39999999999998,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
       "optimal_base": "佛山基地"
     },
     {
       "name": "台安县",
-      "region": "辽宁省",
       "total_amt": 160.6,
-      "orders": 67,
-      "optimal_rate": 43.6,
+      "orders": 32,
       "yes_amt": 70.0,
       "no_amt": 90.6,
+      "optimal_rate": 43.6,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
       "name": "建平县",
-      "region": "辽宁省",
       "total_amt": 143.5,
-      "orders": 156,
-      "optimal_rate": 76.6,
+      "orders": 22,
       "yes_amt": 109.9,
       "no_amt": 33.6,
+      "optimal_rate": 76.6,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
       "name": "淮安市",
-      "region": "江苏省",
       "total_amt": 142.9,
-      "orders": 51,
-      "optimal_rate": 94.6,
-      "yes_amt": 135.2,
+      "orders": 33,
+      "yes_amt": 135.20000000000002,
       "no_amt": 7.7,
+      "optimal_rate": 94.6,
+      "region": "江苏省",
       "optimal_base": "镇江基地"
     },
     {
       "name": "武威市",
-      "region": "甘肃省",
-      "total_amt": 126.6,
-      "orders": 18,
-      "optimal_rate": 100.0,
-      "yes_amt": 126.6,
+      "total_amt": 126.60000000000001,
+      "orders": 16,
+      "yes_amt": 126.60000000000001,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "甘肃省",
       "optimal_base": "渭南基地"
     },
     {
+      "name": "南京市",
+      "total_amt": 110.0,
+      "orders": 22,
+      "yes_amt": 98.1,
+      "no_amt": 11.899999999999999,
+      "optimal_rate": 89.2,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
       "name": "敖汉旗",
-      "region": "内蒙古自治区",
       "total_amt": 105.2,
-      "orders": 41,
-      "optimal_rate": 1.9,
+      "orders": 18,
       "yes_amt": 2.0,
-      "no_amt": 103.2,
+      "no_amt": 103.30000000000001,
+      "optimal_rate": 1.9,
+      "region": "内蒙古自治区",
       "optimal_base": "天津基地"
     },
     {
       "name": "黑山县",
-      "region": "辽宁省",
-      "total_amt": 100.3,
-      "orders": 19,
-      "optimal_rate": 21.0,
+      "total_amt": 100.2,
+      "orders": 11,
       "yes_amt": 21.1,
       "no_amt": 79.2,
+      "optimal_rate": 21.1,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
       "name": "义县",
-      "region": "辽宁省",
-      "total_amt": 99.6,
-      "orders": 22,
-      "optimal_rate": 5.0,
+      "total_amt": 99.7,
+      "orders": 15,
       "yes_amt": 5.0,
-      "no_amt": 94.6,
+      "no_amt": 94.7,
+      "optimal_rate": 5.0,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
-      "name": "南京市",
-      "region": "江苏省",
-      "total_amt": 94.7,
-      "orders": 31,
-      "optimal_rate": 87.5,
-      "yes_amt": 82.8,
-      "no_amt": 11.8,
-      "optimal_base": "镇江基地"
-    },
-    {
       "name": "昌图县",
-      "region": "辽宁省",
-      "total_amt": 92.1,
-      "orders": 27,
-      "optimal_rate": 5.8,
+      "total_amt": 92.2,
+      "orders": 19,
       "yes_amt": 5.3,
       "no_amt": 86.8,
+      "optimal_rate": 5.7,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
       "name": "临海市",
-      "region": "浙江省",
       "total_amt": 79.5,
-      "orders": 25,
-      "optimal_rate": 93.7,
+      "orders": 18,
       "yes_amt": 74.5,
       "no_amt": 5.0,
+      "optimal_rate": 93.7,
+      "region": "浙江省",
       "optimal_base": "镇江基地"
     },
     {
       "name": "石林彝族自治县",
-      "region": "云南省",
       "total_amt": 78.9,
-      "orders": 62,
+      "orders": 33,
+      "yes_amt": 15.100000000000001,
+      "no_amt": 63.800000000000004,
       "optimal_rate": 19.1,
-      "yes_amt": 15.1,
-      "no_amt": 63.8,
+      "region": "云南省",
       "optimal_base": "重庆基地"
     },
     {
       "name": "大悟县",
-      "region": "湖北省",
       "total_amt": 78.4,
-      "orders": 54,
-      "optimal_rate": 21.2,
+      "orders": 7,
       "yes_amt": 16.6,
       "no_amt": 61.7,
+      "optimal_rate": 21.2,
+      "region": "湖北省",
       "optimal_base": "黄石基地"
     },
     {
       "name": "铁岭市",
-      "region": "辽宁省",
-      "total_amt": 75.1,
-      "orders": 42,
-      "optimal_rate": 5.0,
+      "total_amt": 75.0,
+      "orders": 20,
       "yes_amt": 3.7,
-      "no_amt": 71.4,
+      "no_amt": 71.3,
+      "optimal_rate": 4.9,
+      "region": "辽宁省",
       "optimal_base": "长春基地"
     },
     {
       "name": "独山县",
-      "region": "贵州省",
       "total_amt": 66.7,
-      "orders": 69,
-      "optimal_rate": 52.2,
+      "orders": 29,
       "yes_amt": 34.8,
       "no_amt": 31.9,
+      "optimal_rate": 52.2,
+      "region": "贵州省",
       "optimal_base": "重庆基地"
     },
     {
       "name": "龙南县",
-      "region": "江西省",
       "total_amt": 62.0,
-      "orders": 41,
-      "optimal_rate": 0.0,
+      "orders": 7,
       "yes_amt": 0.0,
       "no_amt": 62.0,
+      "optimal_rate": 0.0,
+      "region": "江西省",
       "optimal_base": "黄石基地"
     },
     {
       "name": "运城市",
-      "region": "山西省",
       "total_amt": 61.8,
-      "orders": 14,
-      "optimal_rate": 100.0,
+      "orders": 13,
       "yes_amt": 61.8,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "山西省",
       "optimal_base": "渭南基地"
     },
     {
       "name": "柳州市",
-      "region": "广西壮族自治区",
-      "total_amt": 60.8,
-      "orders": 52,
-      "optimal_rate": 100.0,
-      "yes_amt": 60.8,
+      "total_amt": 60.9,
+      "orders": 10,
+      "yes_amt": 60.9,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
       "optimal_base": "佛山基地"
     },
     {
       "name": "扶余市",
-      "region": "吉林省",
-      "total_amt": 51.1,
-      "orders": 30,
-      "optimal_rate": 100.0,
-      "yes_amt": 51.1,
+      "total_amt": 54.9,
+      "orders": 4,
+      "yes_amt": 54.9,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "吉林省",
       "optimal_base": "长春基地"
     },
     {
       "name": "百色市",
-      "region": "广西壮族自治区",
       "total_amt": 50.5,
-      "orders": 41,
-      "optimal_rate": 100.0,
+      "orders": 17,
       "yes_amt": 50.5,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
       "optimal_base": "佛山基地"
     },
     {
       "name": "忻州市",
-      "region": "山西省",
       "total_amt": 49.1,
-      "orders": 10,
-      "optimal_rate": 99.9,
+      "orders": 9,
       "yes_amt": 49.1,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "山西省",
       "optimal_base": "渭南基地"
     },
     {
       "name": "双辽市",
-      "region": "吉林省",
-      "total_amt": 48.9,
-      "orders": 10,
-      "optimal_rate": 40.2,
+      "total_amt": 48.89999999999999,
+      "orders": 7,
       "yes_amt": 19.7,
       "no_amt": 29.2,
+      "optimal_rate": 40.3,
+      "region": "吉林省",
       "optimal_base": "长春基地"
     },
     {
       "name": "横县",
-      "region": "广西壮族自治区",
       "total_amt": 45.8,
-      "orders": 18,
-      "optimal_rate": 100.0,
+      "orders": 10,
       "yes_amt": 45.8,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
       "optimal_base": "佛山基地"
     },
     {
       "name": "宿迁市",
-      "region": "江苏省",
-      "total_amt": 43.0,
-      "orders": 14,
-      "optimal_rate": 100.0,
-      "yes_amt": 43.0,
+      "total_amt": 43.9,
+      "orders": 9,
+      "yes_amt": 43.9,
       "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "江苏省",
       "optimal_base": "镇江基地"
     },
     {
       "name": "奈曼旗",
-      "region": "内蒙古自治区",
       "total_amt": 41.3,
-      "orders": 25,
-      "optimal_rate": 2.1,
+      "orders": 12,
       "yes_amt": 0.9,
-      "no_amt": 40.4,
+      "no_amt": 40.400000000000006,
+      "optimal_rate": 2.2,
+      "region": "内蒙古自治区",
       "optimal_base": "天津基地"
     },
     {
       "name": "齐齐哈尔市",
-      "region": "黑龙江省",
-      "total_amt": 39.8,
-      "orders": 5,
-      "optimal_rate": 10.5,
+      "total_amt": 39.800000000000004,
+      "orders": 4,
       "yes_amt": 4.2,
       "no_amt": 35.6,
+      "optimal_rate": 10.6,
+      "region": "黑龙江省",
       "optimal_base": "长春基地"
+    },
+    {
+      "name": "徐州市",
+      "total_amt": 39.5,
+      "orders": 9,
+      "yes_amt": 32.3,
+      "no_amt": 7.1,
+      "optimal_rate": 81.8,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "阜新蒙古族自治县",
+      "total_amt": 36.599999999999994,
+      "orders": 11,
+      "yes_amt": 0.1,
+      "no_amt": 36.5,
+      "optimal_rate": 0.3,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "开鲁县",
+      "total_amt": 34.9,
+      "orders": 21,
+      "yes_amt": 5.1,
+      "no_amt": 29.9,
+      "optimal_rate": 14.6,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "柳城县",
+      "total_amt": 31.8,
+      "orders": 25,
+      "yes_amt": 31.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "武鸣区",
+      "total_amt": 31.5,
+      "orders": 19,
+      "yes_amt": 31.5,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "宿州市",
+      "total_amt": 31.1,
+      "orders": 5,
+      "yes_amt": 0.0,
+      "no_amt": 31.1,
+      "optimal_rate": 0.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "儋州市",
+      "total_amt": 31.1,
+      "orders": 2,
+      "yes_amt": 31.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "海南省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "宁明县",
+      "total_amt": 30.3,
+      "orders": 12,
+      "yes_amt": 30.3,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "肇东市",
+      "total_amt": 28.6,
+      "orders": 1,
+      "yes_amt": 28.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "黑龙江省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "繁峙县",
+      "total_amt": 24.599999999999998,
+      "orders": 5,
+      "yes_amt": 15.1,
+      "no_amt": 9.5,
+      "optimal_rate": 61.4,
+      "region": "山西省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "射阳县",
+      "total_amt": 24.599999999999998,
+      "orders": 4,
+      "yes_amt": 0.0,
+      "no_amt": 24.599999999999998,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "安福县",
+      "total_amt": 23.900000000000002,
+      "orders": 15,
+      "yes_amt": 0.0,
+      "no_amt": 23.900000000000002,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "翁源县",
+      "total_amt": 23.8,
+      "orders": 15,
+      "yes_amt": 23.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广东省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "沭阳县",
+      "total_amt": 23.6,
+      "orders": 5,
+      "yes_amt": 23.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "海口市",
+      "total_amt": 23.1,
+      "orders": 9,
+      "yes_amt": 23.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "海南省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "临高县",
+      "total_amt": 22.400000000000002,
+      "orders": 9,
+      "yes_amt": 22.400000000000002,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "海南省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "锦州市",
+      "total_amt": 21.3,
+      "orders": 9,
+      "yes_amt": 3.9,
+      "no_amt": 17.400000000000002,
+      "optimal_rate": 18.3,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "黄梅县",
+      "total_amt": 21.2,
+      "orders": 7,
+      "yes_amt": 1.4,
+      "no_amt": 19.799999999999997,
+      "optimal_rate": 6.6,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "唐河县",
+      "total_amt": 18.5,
+      "orders": 5,
+      "yes_amt": 18.5,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "灌南县",
+      "total_amt": 17.5,
+      "orders": 9,
+      "yes_amt": 17.2,
+      "no_amt": 0.3,
+      "optimal_rate": 98.3,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "乐安县",
+      "total_amt": 17.400000000000002,
+      "orders": 14,
+      "yes_amt": 0.0,
+      "no_amt": 17.400000000000002,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "邯郸市",
+      "total_amt": 17.0,
+      "orders": 4,
+      "yes_amt": 13.6,
+      "no_amt": 3.4000000000000004,
+      "optimal_rate": 80.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "黄冈市",
+      "total_amt": 15.4,
+      "orders": 8,
+      "yes_amt": 0.0,
+      "no_amt": 15.4,
+      "optimal_rate": 0.0,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "南平市",
+      "total_amt": 14.9,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 14.9,
+      "optimal_rate": 0.0,
+      "region": "福建省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "钟祥市",
+      "total_amt": 14.2,
+      "orders": 6,
+      "yes_amt": 2.9,
+      "no_amt": 11.3,
+      "optimal_rate": 20.4,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "鹤庆县",
+      "total_amt": 13.5,
+      "orders": 3,
+      "yes_amt": 1.8,
+      "no_amt": 11.6,
+      "optimal_rate": 13.3,
+      "region": "云南省",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "绥化市",
+      "total_amt": 12.8,
+      "orders": 1,
+      "yes_amt": 12.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "黑龙江省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "荆门市",
+      "total_amt": 12.6,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 12.6,
+      "optimal_rate": 0.0,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "内乡县",
+      "total_amt": 12.5,
+      "orders": 5,
+      "yes_amt": 12.5,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "康平县",
+      "total_amt": 12.399999999999999,
+      "orders": 15,
+      "yes_amt": 4.2,
+      "no_amt": 8.2,
+      "optimal_rate": 33.9,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "范县",
+      "total_amt": 10.9,
+      "orders": 3,
+      "yes_amt": 9.3,
+      "no_amt": 1.6,
+      "optimal_rate": 85.3,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "芦溪县",
+      "total_amt": 10.8,
+      "orders": 5,
+      "yes_amt": 0.0,
+      "no_amt": 10.8,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "沽源县",
+      "total_amt": 10.6,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 10.6,
+      "optimal_rate": 0.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "宁陵县",
+      "total_amt": 10.4,
+      "orders": 7,
+      "yes_amt": 10.4,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "巢湖市",
+      "total_amt": 10.4,
+      "orders": 4,
+      "yes_amt": 10.3,
+      "no_amt": 0.1,
+      "optimal_rate": 99.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "商丘市",
+      "total_amt": 9.399999999999999,
+      "orders": 7,
+      "yes_amt": 7.6,
+      "no_amt": 1.8,
+      "optimal_rate": 80.9,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "北海市",
+      "total_amt": 9.2,
+      "orders": 3,
+      "yes_amt": 9.2,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "通辽市",
+      "total_amt": 9.2,
+      "orders": 30,
+      "yes_amt": 6.9,
+      "no_amt": 2.2,
+      "optimal_rate": 75.0,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "麻阳苗族自治县",
+      "total_amt": 9.2,
+      "orders": 3,
+      "yes_amt": 0.0,
+      "no_amt": 9.2,
+      "optimal_rate": 0.0,
+      "region": "湖南省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "富裕县",
+      "total_amt": 9.1,
+      "orders": 3,
+      "yes_amt": 0.7,
+      "no_amt": 8.4,
+      "optimal_rate": 7.7,
+      "region": "黑龙江省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "望奎县",
+      "total_amt": 9.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 9.0,
+      "optimal_rate": 0.0,
+      "region": "黑龙江省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "崇左市",
+      "total_amt": 8.8,
+      "orders": 5,
+      "yes_amt": 8.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "通许县",
+      "total_amt": 8.7,
+      "orders": 3,
+      "yes_amt": 8.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "永济市",
+      "total_amt": 8.6,
+      "orders": 3,
+      "yes_amt": 8.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "山西省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "湛江市",
+      "total_amt": 7.5,
+      "orders": 6,
+      "yes_amt": 7.5,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广东省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "鄱阳县",
+      "total_amt": 7.300000000000001,
+      "orders": 6,
+      "yes_amt": 0.0,
+      "no_amt": 7.300000000000001,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "赤峰市",
+      "total_amt": 7.2,
+      "orders": 12,
+      "yes_amt": 0.7,
+      "no_amt": 6.5,
+      "optimal_rate": 9.7,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "扎鲁特旗",
+      "total_amt": 7.199999999999999,
+      "orders": 4,
+      "yes_amt": 0.1,
+      "no_amt": 7.0,
+      "optimal_rate": 1.4,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "来宾市",
+      "total_amt": 7.0,
+      "orders": 9,
+      "yes_amt": 7.0,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广西壮族自治区",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "南阳市",
+      "total_amt": 6.8,
+      "orders": 4,
+      "yes_amt": 6.3,
+      "no_amt": 0.5,
+      "optimal_rate": 92.6,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "内黄县",
+      "total_amt": 6.7,
+      "orders": 2,
+      "yes_amt": 6.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "淅川县",
+      "total_amt": 6.7,
+      "orders": 3,
+      "yes_amt": 6.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "阜新市",
+      "total_amt": 6.6,
+      "orders": 21,
+      "yes_amt": 1.4,
+      "no_amt": 5.2,
+      "optimal_rate": 21.2,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "新河县",
+      "total_amt": 6.4,
+      "orders": 3,
+      "yes_amt": 0.0,
+      "no_amt": 6.4,
+      "optimal_rate": 0.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "馆陶县",
+      "total_amt": 6.2,
+      "orders": 4,
+      "yes_amt": 0.0,
+      "no_amt": 6.2,
+      "optimal_rate": 0.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "昭通市",
+      "total_amt": 6.2,
+      "orders": 1,
+      "yes_amt": 6.2,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "云南省",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "西华县",
+      "total_amt": 6.1,
+      "orders": 3,
+      "yes_amt": 6.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "东营市",
+      "total_amt": 5.9,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 5.9,
+      "optimal_rate": 0.0,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "扬州市",
+      "total_amt": 5.8999999999999995,
+      "orders": 46,
+      "yes_amt": 1.5,
+      "no_amt": 4.3,
+      "optimal_rate": 25.4,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "衡水市",
+      "total_amt": 5.800000000000001,
+      "orders": 3,
+      "yes_amt": 0.0,
+      "no_amt": 5.800000000000001,
+      "optimal_rate": 0.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "泗县",
+      "total_amt": 5.8,
+      "orders": 4,
+      "yes_amt": 0.0,
+      "no_amt": 5.8,
+      "optimal_rate": 0.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "老河口市",
+      "total_amt": 5.6,
+      "orders": 4,
+      "yes_amt": 0.0,
+      "no_amt": 5.6,
+      "optimal_rate": 0.0,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "方城县",
+      "total_amt": 5.6,
+      "orders": 4,
+      "yes_amt": 5.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "东明县",
+      "total_amt": 5.6,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 5.6,
+      "optimal_rate": 0.0,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "沈阳市",
+      "total_amt": 5.6,
+      "orders": 3,
+      "yes_amt": 5.3,
+      "no_amt": 0.3,
+      "optimal_rate": 94.6,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "涟水县",
+      "total_amt": 5.6,
+      "orders": 2,
+      "yes_amt": 5.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "英德市",
+      "total_amt": 5.3,
+      "orders": 2,
+      "yes_amt": 5.3,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广东省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "连云港灌南县",
+      "total_amt": 5.2,
+      "orders": 1,
+      "yes_amt": 5.2,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "杞县",
+      "total_amt": 5.1,
+      "orders": 2,
+      "yes_amt": 5.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "平舆县",
+      "total_amt": 4.8,
+      "orders": 2,
+      "yes_amt": 4.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "明水县",
+      "total_amt": 4.6,
+      "orders": 1,
+      "yes_amt": 4.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "黑龙江省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "邓州市",
+      "total_amt": 4.2,
+      "orders": 3,
+      "yes_amt": 4.2,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "濉溪县",
+      "total_amt": 4.2,
+      "orders": 4,
+      "yes_amt": 2.5,
+      "no_amt": 1.7,
+      "optimal_rate": 59.5,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "铁岭县",
+      "total_amt": 4.1,
+      "orders": 7,
+      "yes_amt": 0.0,
+      "no_amt": 4.1,
+      "optimal_rate": 0.0,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "新沂市",
+      "total_amt": 4.0,
+      "orders": 4,
+      "yes_amt": 4.0,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "西平县",
+      "total_amt": 3.7,
+      "orders": 2,
+      "yes_amt": 3.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "扶沟县",
+      "total_amt": 3.7,
+      "orders": 2,
+      "yes_amt": 3.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "临沂市",
+      "total_amt": 3.6,
+      "orders": 3,
+      "yes_amt": 3.1,
+      "no_amt": 0.5,
+      "optimal_rate": 86.1,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "成都市",
+      "total_amt": 3.1,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 3.1,
+      "optimal_rate": 0.0,
+      "region": "四川省",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "镇平县",
+      "total_amt": 3.0,
+      "orders": 1,
+      "yes_amt": 3.0,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "连云港市",
+      "total_amt": 2.8,
+      "orders": 7,
+      "yes_amt": 2.2,
+      "no_amt": 0.6000000000000001,
+      "optimal_rate": 78.6,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "台州市",
+      "total_amt": 2.7,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 2.7,
+      "optimal_rate": 0.0,
+      "region": "浙江省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "中牟县",
+      "total_amt": 2.6999999999999997,
+      "orders": 5,
+      "yes_amt": 2.6999999999999997,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "万荣县",
+      "total_amt": 2.5,
+      "orders": 1,
+      "yes_amt": 2.5,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "山西省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "阜阳市",
+      "total_amt": 2.2,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 2.2,
+      "optimal_rate": 0.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "辽阳市",
+      "total_amt": 2.2,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 2.2,
+      "optimal_rate": 0.0,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "长春市",
+      "total_amt": 2.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 2.0,
+      "optimal_rate": 0.0,
+      "region": "吉林省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "泰州市",
+      "total_amt": 2.0,
+      "orders": 5,
+      "yes_amt": 1.8,
+      "no_amt": 0.2,
+      "optimal_rate": 90.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "海安市",
+      "total_amt": 1.9000000000000001,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 1.9000000000000001,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "镇江市",
+      "total_amt": 1.9,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 1.9,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "太康县",
+      "total_amt": 1.6,
+      "orders": 1,
+      "yes_amt": 1.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "商水县",
+      "total_amt": 1.6,
+      "orders": 2,
+      "yes_amt": 1.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "常州市",
+      "total_amt": 1.4,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 1.4,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "未知",
+      "total_amt": 1.4,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 1.4,
+      "optimal_rate": 0.0,
+      "region": "",
+      "optimal_base": ""
+    },
+    {
+      "name": "宁晋县",
+      "total_amt": 1.3,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 1.3,
+      "optimal_rate": 0.0,
+      "region": "华北",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "资阳市",
+      "total_amt": 1.3,
+      "orders": 2,
+      "yes_amt": 1.3,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "四川省",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "邢台市",
+      "total_amt": 1.3,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 1.3,
+      "optimal_rate": 0.0,
+      "region": "河北省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "通榆县",
+      "total_amt": 1.2,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 1.2,
+      "optimal_rate": 0.0,
+      "region": "吉林省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "镇",
+      "total_amt": 1.1,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 1.1,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "东阿县",
+      "total_amt": 1.0,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 1.0,
+      "optimal_rate": 0.0,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "夏邑县",
+      "total_amt": 0.8,
+      "orders": 1,
+      "yes_amt": 0.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "朝阳市",
+      "total_amt": 0.8,
+      "orders": 1,
+      "yes_amt": 0.8,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "南昌市",
+      "total_amt": 0.7,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.7,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "乌拉特前旗",
+      "total_amt": 0.7,
+      "orders": 3,
+      "yes_amt": 0.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "固始县",
+      "total_amt": 0.7,
+      "orders": 1,
+      "yes_amt": 0.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "东源县",
+      "total_amt": 0.7,
+      "orders": 1,
+      "yes_amt": 0.7,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "广东省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "定安县",
+      "total_amt": 0.6,
+      "orders": 6,
+      "yes_amt": 0.6,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "海南省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "黔江区",
+      "total_amt": 0.6,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.6,
+      "optimal_rate": 0.0,
+      "region": "重庆市",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "岳西县",
+      "total_amt": 0.5,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.5,
+      "optimal_rate": 0.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "南昌县",
+      "total_amt": 0.5,
+      "orders": 7,
+      "yes_amt": 0.0,
+      "no_amt": 0.5,
+      "optimal_rate": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "桐柏县",
+      "total_amt": 0.4,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.4,
+      "optimal_rate": 0.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "合肥市",
+      "total_amt": 0.3,
+      "orders": 7,
+      "yes_amt": 0.0,
+      "no_amt": 0.3,
+      "optimal_rate": 0.0,
+      "region": "安徽省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "科尔沁左翼中旗",
+      "total_amt": 0.3,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.3,
+      "optimal_rate": 0.0,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "前郭尔罗斯蒙古族自治县",
+      "total_amt": 0.2,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.2,
+      "optimal_rate": 0.0,
+      "region": "吉林省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "苏州市",
+      "total_amt": 0.2,
+      "orders": 2,
+      "yes_amt": 0.1,
+      "no_amt": 0.1,
+      "optimal_rate": 50.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "平原县",
+      "total_amt": 0.1,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.1,
+      "optimal_rate": 0.0,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "武汉市",
+      "total_amt": 0.1,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.1,
+      "optimal_rate": 0.0,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "鞍山市",
+      "total_amt": 0.1,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.1,
+      "optimal_rate": 0.0,
+      "region": "辽宁省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "昆明市",
+      "total_amt": 0.1,
+      "orders": 3,
+      "yes_amt": 0.0,
+      "no_amt": 0.1,
+      "optimal_rate": 0.0,
+      "region": "云南省",
+      "optimal_base": "重庆基地"
+    },
+    {
+      "name": "阜宁县",
+      "total_amt": 0.1,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.1,
+      "optimal_rate": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "信阳市",
+      "total_amt": 0.1,
+      "orders": 1,
+      "yes_amt": 0.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "沙洋县",
+      "total_amt": 0.1,
+      "orders": 1,
+      "yes_amt": 0.1,
+      "no_amt": 0.0,
+      "optimal_rate": 100.0,
+      "region": "湖北省",
+      "optimal_base": "黄石基地"
+    },
+    {
+      "name": "金湖县",
+      "total_amt": 0.0,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "白城市",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "吉林省",
+      "optimal_base": "长春基地"
+    },
+    {
+      "name": "宝应县",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "江苏省",
+      "optimal_base": "镇江基地"
+    },
+    {
+      "name": "兴安盟扎赉特旗",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "内蒙古自治区",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "滑县",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "河南省",
+      "optimal_base": "渭南基地"
+    },
+    {
+      "name": "荷泽市",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "山东省",
+      "optimal_base": "天津基地"
+    },
+    {
+      "name": "河源市",
+      "total_amt": 0.0,
+      "orders": 2,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "广东省",
+      "optimal_base": "佛山基地"
+    },
+    {
+      "name": "抚州市",
+      "total_amt": 0.0,
+      "orders": 1,
+      "yes_amt": 0.0,
+      "no_amt": 0.0,
+      "region": "江西省",
+      "optimal_base": "黄石基地"
     }
   ],
   "dim4_material": [
     {
       "name": "PE（100）给水管",
-      "total_amt": 3873.1,
-      "orders": 1338,
-      "optimal_rate": 56.0,
-      "yes_amt": 2168.6,
-      "no_amt": 1704.5,
-      "qty": 879160
+      "total_amt": 3891.9,
+      "orders": 740,
+      "yes_amt": 2188.6,
+      "no_amt": 1703.3000000000002,
+      "qty": 880510,
+      "optimal_rate": 56.2
     },
     {
       "name": "工程PVC-U给水",
       "total_amt": 217.5,
-      "orders": 707,
-      "optimal_rate": 43.4,
-      "yes_amt": 94.3,
+      "orders": 387,
+      "yes_amt": 94.30000000000001,
       "no_amt": 123.2,
-      "qty": 516918
+      "qty": 516918,
+      "optimal_rate": 43.4
     },
     {
       "name": "工程PPR",
-      "total_amt": 180.6,
-      "orders": 467,
-      "optimal_rate": 73.5,
-      "yes_amt": 132.8,
+      "total_amt": 181.39999999999998,
+      "orders": 183,
+      "yes_amt": 133.6,
       "no_amt": 47.8,
-      "qty": 409264
+      "qty": 409408,
+      "optimal_rate": 73.6
     },
     {
       "name": "PVC-U排水管",
       "total_amt": 60.9,
-      "orders": 137,
-      "optimal_rate": 55.4,
+      "orders": 72,
       "yes_amt": 33.7,
       "no_amt": 27.2,
-      "qty": 33444
+      "qty": 33444,
+      "optimal_rate": 55.3
     },
     {
       "name": "PVC-U排污管",
-      "total_amt": 45.9,
-      "orders": 19,
-      "optimal_rate": 67.7,
-      "yes_amt": 31.1,
-      "no_amt": 14.8,
-      "qty": 5754
+      "total_amt": 46.0,
+      "orders": 12,
+      "yes_amt": 31.2,
+      "no_amt": 14.9,
+      "qty": 5778,
+      "optimal_rate": 67.8
     },
     {
       "name": "HDPE缠绕结构壁B型克拉管",
-      "total_amt": 38.1,
-      "orders": 21,
-      "optimal_rate": 39.0,
-      "yes_amt": 14.9,
+      "total_amt": 38.2,
+      "orders": 13,
+      "yes_amt": 14.8,
       "no_amt": 23.3,
-      "qty": 2025
+      "qty": 2025,
+      "optimal_rate": 38.7
     },
     {
       "name": "PVC白色线管",
-      "total_amt": 15.5,
-      "orders": 63,
-      "optimal_rate": 33.0,
+      "total_amt": 15.4,
+      "orders": 43,
       "yes_amt": 5.1,
-      "no_amt": 10.4,
-      "qty": 136572
+      "no_amt": 10.3,
+      "qty": 136572,
+      "optimal_rate": 33.1
     },
     {
       "name": "PVC给水（美筑）",
       "total_amt": 14.1,
-      "orders": 12,
-      "optimal_rate": 100.0,
+      "orders": 9,
       "yes_amt": 14.1,
       "no_amt": 0.0,
-      "qty": 2982
+      "qty": 2982,
+      "optimal_rate": 100.0
     },
     {
       "name": "过滤净水系列",
-      "total_amt": 2.5,
+      "total_amt": 2.4,
       "orders": 37,
-      "optimal_rate": 42.0,
-      "yes_amt": 1.0,
-      "no_amt": 1.4,
-      "qty": 35000
+      "yes_amt": 1.1,
+      "no_amt": 1.4000000000000001,
+      "qty": 35000,
+      "optimal_rate": 45.8
     },
     {
       "name": "HDPE双壁波纹管",
       "total_amt": 1.9,
       "orders": 1,
-      "optimal_rate": 0.0,
       "yes_amt": 0.0,
       "no_amt": 1.9,
-      "qty": 414
+      "qty": 414,
+      "optimal_rate": 0.0
     },
     {
       "name": "配件",
       "total_amt": 0.4,
       "orders": 11,
-      "optimal_rate": 15.0,
       "yes_amt": 0.1,
       "no_amt": 0.4,
-      "qty": 5700
+      "qty": 5700,
+      "optimal_rate": 25.0
     },
     {
       "name": "HDPE排水",
       "total_amt": 0.1,
       "orders": 1,
-      "optimal_rate": 0.0,
       "yes_amt": 0.0,
       "no_amt": 0.1,
-      "qty": 40
+      "qty": 40,
+      "optimal_rate": 0.0
     }
   ],
   "drill_ship_condition": [
     {
       "name": "工程",
-      "total_amt": 4158.8,
-      "orders": 2567,
-      "optimal_rate": 54.6
+      "total_amt": 4174.5,
+      "orders": 1299,
+      "optimal_rate": 0.0
     },
     {
       "name": "自提",
-      "total_amt": 279.8,
-      "orders": 209,
-      "optimal_rate": 76.6
+      "total_amt": 283.7,
+      "orders": 64,
+      "optimal_rate": 0.0
     },
     {
       "name": "到付",
       "total_amt": 12.0,
-      "orders": 38,
-      "optimal_rate": 87.4
+      "orders": 23,
+      "optimal_rate": 0.0
     }
   ],
   "drill_demand_status": [
     {
       "name": "已全部出货",
-      "total_amt": 4379.8,
-      "orders": 2782,
-      "undelivered_amt": 0.0
+      "total_amt": 4378.0,
+      "orders": 1364,
+      "optimal_rate": 0.0
     },
     {
       "name": "全部满足",
       "total_amt": 60.3,
-      "orders": 26,
-      "undelivered_amt": 0.0
-    },
-    {
-      "name": "已部分出货，未满足",
-      "total_amt": 10.6,
-      "orders": 2,
-      "undelivered_amt": 1.3
+      "orders": 21,
+      "optimal_rate": 0.0
     },
     {
       "name": "未满足",
-      "total_amt": 0.0,
+      "total_amt": 20.1,
       "orders": 4,
-      "undelivered_amt": 20.1
+      "optimal_rate": 0.0
+    },
+    {
+      "name": "已部分出货，未满足",
+      "total_amt": 11.9,
+      "orders": 2,
+      "optimal_rate": 0.0
     }
   ],
   "drill_factory_changed": [
     {
       "name": "否",
-      "total_amt": 4321.8,
-      "orders": 2718,
-      "optimal_rate": 56.0
-    },
-    {
-      "name": "是",
-      "total_amt": 128.8,
-      "orders": 96,
-      "optimal_rate": 58.2
-    }
-  ],
-  "drill_factory": [
-    {
-      "name": "8040",
-      "total_amt": 1377.9,
-      "orders": 373,
-      "optimal_rate": 28.2
-    },
-    {
-      "name": "8012",
-      "total_amt": 1318.0,
-      "orders": 771,
-      "optimal_rate": 79.7
-    },
-    {
-      "name": "8060",
-      "total_amt": 805.5,
-      "orders": 224,
-      "optimal_rate": 54.6
-    },
-    {
-      "name": "8070",
-      "total_amt": 469.8,
-      "orders": 283,
-      "optimal_rate": 67.4
-    },
-    {
-      "name": "8010",
-      "total_amt": 289.1,
-      "orders": 808,
-      "optimal_rate": 49.0
-    },
-    {
-      "name": "8050",
-      "total_amt": 59.2,
-      "orders": 42,
-      "optimal_rate": 100.0
-    },
-    {
-      "name": "8020",
-      "total_amt": 55.1,
-      "orders": 200,
-      "optimal_rate": 59.3
-    },
-    {
-      "name": "XC70",
-      "total_amt": 26.1,
-      "orders": 17,
-      "optimal_rate": 100.0
-    },
-    {
-      "name": "XC30",
-      "total_amt": 18.1,
-      "orders": 18,
-      "optimal_rate": 92.3
-    },
-    {
-      "name": "FS70",
-      "total_amt": 8.7,
-      "orders": 7,
-      "optimal_rate": 100.0
-    },
-    {
-      "name": "FS40",
-      "total_amt": 7.4,
-      "orders": 10,
-      "optimal_rate": 81.1
-    },
-    {
-      "name": "XC20",
-      "total_amt": 6.2,
-      "orders": 11,
-      "optimal_rate": 32.7
-    },
-    {
-      "name": "8030",
-      "total_amt": 4.5,
-      "orders": 16,
-      "optimal_rate": 94.1
-    },
-    {
-      "name": "XC60",
-      "total_amt": 2.3,
-      "orders": 2,
-      "optimal_rate": 100.0
-    },
-    {
-      "name": "FS20",
-      "total_amt": 1.4,
-      "orders": 23,
-      "optimal_rate": 46.6
-    },
-    {
-      "name": "FS60",
-      "total_amt": 0.5,
-      "orders": 5,
-      "optimal_rate": 9.2
-    },
-    {
-      "name": "XC40",
-      "total_amt": 0.5,
-      "orders": 1,
+      "total_amt": 4341.1,
+      "orders": 1355,
       "optimal_rate": 0.0
     },
     {
-      "name": "FS30",
-      "total_amt": 0.1,
-      "orders": 2,
-      "optimal_rate": 83.3
-    },
-    {
-      "name": "FS50",
-      "total_amt": 0.0,
-      "orders": 1,
+      "name": "是",
+      "total_amt": 129.3,
+      "orders": 47,
       "optimal_rate": 0.0
     }
   ],
   "drill_monthly": [
     {
-      "month": "2023-12",
-      "total_amt": 1.7,
-      "orders": 1,
-      "optimal_rate": 0.0
-    },
-    {
       "month": "2024-01",
       "total_amt": 33.1,
-      "orders": 60,
+      "orders": 26,
       "optimal_rate": 98.0
     },
     {
       "month": "2024-02",
       "total_amt": 13.8,
-      "orders": 15,
+      "orders": 10,
       "optimal_rate": 99.6
     },
     {
       "month": "2024-03",
       "total_amt": 99.3,
-      "orders": 65,
+      "orders": 43,
       "optimal_rate": 89.1
     },
     {
       "month": "2024-04",
       "total_amt": 110.4,
-      "orders": 75,
+      "orders": 41,
       "optimal_rate": 62.2
     },
     {
       "month": "2024-05",
       "total_amt": 122.9,
-      "orders": 85,
+      "orders": 50,
       "optimal_rate": 79.2
     },
     {
       "month": "2024-06",
-      "total_amt": 114.3,
-      "orders": 47,
-      "optimal_rate": 91.3
+      "total_amt": 116.6,
+      "orders": 32,
+      "optimal_rate": 89.5
     },
     {
       "month": "2024-07",
-      "total_amt": 69.9,
-      "orders": 61,
-      "optimal_rate": 67.8
+      "total_amt": 67.5,
+      "orders": 39,
+      "optimal_rate": 70.1
     },
     {
       "month": "2024-08",
       "total_amt": 24.7,
-      "orders": 28,
+      "orders": 20,
       "optimal_rate": 47.7
     },
     {
       "month": "2024-09",
       "total_amt": 41.7,
-      "orders": 29,
+      "orders": 19,
       "optimal_rate": 89.4
     },
     {
       "month": "2024-10",
-      "total_amt": 55.3,
-      "orders": 42,
-      "optimal_rate": 65.4
+      "total_amt": 55.8,
+      "orders": 26,
+      "optimal_rate": 64.8
     },
     {
       "month": "2024-11",
-      "total_amt": 58.5,
-      "orders": 90,
-      "optimal_rate": 68.8
+      "total_amt": 74.9,
+      "orders": 42,
+      "optimal_rate": 71.5
     },
     {
       "month": "2024-12",
-      "total_amt": 182.0,
-      "orders": 111,
-      "optimal_rate": 52.4
+      "total_amt": 395.3,
+      "orders": 57,
+      "optimal_rate": 28.5
     },
     {
       "month": "2025-01",
-      "total_amt": 426.7,
-      "orders": 65,
-      "optimal_rate": 32.1
+      "total_amt": 196.5,
+      "orders": 27,
+      "optimal_rate": 54.1
     },
     {
       "month": "2025-02",
-      "total_amt": 315.3,
-      "orders": 218,
-      "optimal_rate": 30.4
+      "total_amt": 334.7,
+      "orders": 104,
+      "optimal_rate": 34.4
     },
     {
       "month": "2025-03",
-      "total_amt": 354.8,
-      "orders": 198,
-      "optimal_rate": 52.0
+      "total_amt": 335.5,
+      "orders": 113,
+      "optimal_rate": 49.3
     },
     {
       "month": "2025-04",
-      "total_amt": 299.8,
-      "orders": 229,
-      "optimal_rate": 48.5
+      "total_amt": 301.8,
+      "orders": 129,
+      "optimal_rate": 48.8
     },
     {
       "month": "2025-05",
-      "total_amt": 266.3,
-      "orders": 169,
-      "optimal_rate": 50.8
+      "total_amt": 264.2,
+      "orders": 106,
+      "optimal_rate": 50.4
     },
     {
       "month": "2025-06",
-      "total_amt": 161.1,
-      "orders": 86,
-      "optimal_rate": 51.3
+      "total_amt": 172.0,
+      "orders": 58,
+      "optimal_rate": 54.4
     },
     {
       "month": "2025-07",
-      "total_amt": 87.0,
-      "orders": 75,
-      "optimal_rate": 69.2
+      "total_amt": 76.1,
+      "orders": 47,
+      "optimal_rate": 64.8
     },
     {
       "month": "2025-08",
       "total_amt": 73.0,
-      "orders": 48,
+      "orders": 29,
       "optimal_rate": 70.6
     },
     {
       "month": "2025-09",
       "total_amt": 48.7,
-      "orders": 54,
+      "orders": 22,
       "optimal_rate": 59.3
     },
     {
       "month": "2025-10",
-      "total_amt": 46.9,
-      "orders": 35,
-      "optimal_rate": 56.1
+      "total_amt": 57.5,
+      "orders": 20,
+      "optimal_rate": 64.2
     },
     {
       "month": "2025-11",
-      "total_amt": 144.5,
-      "orders": 105,
-      "optimal_rate": 46.5
+      "total_amt": 148.4,
+      "orders": 27,
+      "optimal_rate": 38.2
     },
     {
       "month": "2025-12",
-      "total_amt": 58.9,
-      "orders": 40,
-      "optimal_rate": 73.0
+      "total_amt": 44.5,
+      "orders": 15,
+      "optimal_rate": 96.7
     },
     {
       "month": "2026-01",
-      "total_amt": 130.6,
-      "orders": 52,
-      "optimal_rate": 35.8
+      "total_amt": 138.8,
+      "orders": 22,
+      "optimal_rate": 33.7
     },
     {
       "month": "2026-02",
-      "total_amt": 11.3,
-      "orders": 27,
-      "optimal_rate": 63.8
+      "total_amt": 31.9,
+      "orders": 6,
+      "optimal_rate": 56.4
     },
     {
       "month": "2026-03",
-      "total_amt": 272.7,
-      "orders": 187,
-      "optimal_rate": 37.8
+      "total_amt": 276.4,
+      "orders": 67,
+      "optimal_rate": 39.5
     },
     {
       "month": "2026-04",
-      "total_amt": 474.3,
-      "orders": 250,
-      "optimal_rate": 69.4
+      "total_amt": 463.8,
+      "orders": 88,
+      "optimal_rate": 71.8
     },
     {
       "month": "2026-05",
-      "total_amt": 351.0,
-      "orders": 263,
-      "optimal_rate": 79.3
+      "total_amt": 350.4,
+      "orders": 101,
+      "optimal_rate": 79.4
     }
   ]
 }
