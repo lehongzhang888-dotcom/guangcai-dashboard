@@ -6,6 +6,31 @@
 <title>建筑工程事业部 · 基地发货效率全景分析</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
+/* ===== Voice Start Button ===== */
+#voice-overlay {
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,22,40,0.92);z-index:10000;cursor:pointer;
+  transition:opacity 0.8s;
+}
+#voice-overlay.hidden {opacity:0;pointer-events:none}
+#voice-btn {
+  background:linear-gradient(135deg,#d4a843,#f0d68a);
+  color:#0a1628;border:none;border-radius:16px;
+  padding:20px 48px;font-size:22px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+  box-shadow:0 0 40px rgba(212,168,67,0.4);
+  transition:all 0.3s;letter-spacing:2px;
+}
+#voice-btn:hover {transform:scale(1.05);box-shadow:0 0 60px rgba(212,168,67,0.6)}
+#voice-btn:active {transform:scale(0.97)}
+.voice-hint {color:#8ba4cc;font-size:13px;margin-top:12px;text-align:center}
+.voice-status {
+  position:fixed;bottom:60px;left:50%;transform:translateX(-50%);
+  z-index:9999;font-size:13px;color:#f0d68a;
+  background:rgba(15,29,53,0.85);padding:6px 16px;border-radius:20px;
+  border:1px solid #2a4a7f;opacity:0;transition:opacity 0.5s;
+}
+.voice-status.on {opacity:1}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif;
@@ -359,6 +384,14 @@ body{
 </head>
 <body>
 
+<!-- Voice Overlay -->
+<div id="voice-overlay">
+  <div style="text-align:center">
+    <button id="voice-btn">🔊 点击开启语音解说</button>
+    <div class="voice-hint">使用浏览器内置语音引擎，建议佩戴耳机获得最佳体验</div>
+  </div>
+</div>
+
 <div id="loading">
   <span>加载数据中...</span>
 </div>
@@ -367,6 +400,7 @@ body{
 
 <!-- Progress -->
 <div id="progress-bar"></div>
+<div id="voice-status" class="voice-status"></div>
 <div id="progress-label">0:00</div>
 
 <!-- ===== Act 0: Title ===== -->
@@ -885,6 +919,87 @@ function playAct5() {
 }
 
 // ============================================================
+// VOICE NARRATION
+// ============================================================
+const NARRATIONS = [
+  "建筑工程事业部，基地发货效率全景分析。数据周期从2023年12月到2026年5月，覆盖7大基地、2814笔订单。",
+  "整体来看，总交货金额4451万元。但最优发货率只有56.1%。这意味着有1954万元来自非最优基地发货，存在巨大的改善空间。",
+  "各基地表现参差不齐。佛山基地以98.6%的最优率位居第一，渭南基地96.2%紧随其后。但天津基地仅7.3%，黄石基地9.7%，长春基地20.4%，这三个基地是重点改进对象。",
+  "聚焦三大问题基地。长春基地非最优金额高达992万元，其中辽宁528万、黑龙江431万。天津基地非最优447万元，内蒙古占399万。仅这三省区就占了总非最优金额的79.6%。",
+  "我们的行动建议：第一，优先优化长春基地，调整辽宁和黑龙江的路由规则，预计可减少损失800万以上。第二，重新规划天津到内蒙古的发货路径。第三，将佛山和渭南的标杆经验推广到全部门。",
+  "数据驱动决策，让每一笔发货都精准高效。建筑工程事业部。"
+];
+
+let synth = window.speechSynthesis;
+let voiceEnabled = false;
+let utteranceQueue = [];
+let currentUtterIdx = 0;
+
+function getBestVoice() {
+  if (!synth) return null;
+  const voices = synth.getVoices();
+  // Prefer Chinese female voice
+  let v = voices.find(v => v.lang === 'zh-CN' && v.name.includes('Tingting'));
+  if (!v) v = voices.find(v => v.lang === 'zh-CN');
+  if (!v) v = voices.find(v => v.lang.startsWith('zh'));
+  return v || voices[0];
+}
+
+function speakText(text, onStart, onEnd) {
+  if (!synth || !voiceEnabled) {
+    if (onStart) onStart();
+    if (onEnd) onEnd();
+    return;
+  }
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'zh-CN';
+  utter.rate = 0.9;
+  utter.pitch = 1.0;
+  const voice = getBestVoice();
+  if (voice) utter.voice = voice;
+  if (onStart) utter.onstart = onStart;
+  if (onEnd) utter.onend = onEnd;
+  synth.speak(utter);
+}
+
+function playNarrationSequence() {
+  currentUtterIdx = 0;
+  document.getElementById('voice-status').classList.add('on');
+  document.getElementById('voice-status').textContent = '🔊 语音解说中...';
+
+  // Run animation timeline in parallel
+  runTimeline();
+
+  function speakNext() {
+    if (currentUtterIdx >= NARRATIONS.length) {
+      document.getElementById('voice-status').classList.remove('on');
+      return;
+    }
+    const idx = currentUtterIdx;
+    currentUtterIdx++;
+    speakText(NARRATIONS[idx], null, () => speakNext());
+  }
+  speakNext();
+}
+
+// Voice overlay button
+document.getElementById('voice-overlay').addEventListener('click', () => {
+  voiceEnabled = true;
+  document.getElementById('voice-overlay').classList.add('hidden');
+  // Preload voices
+  if (synth) synth.getVoices();
+  // Small delay to ensure overlay fades out
+  setTimeout(() => {
+    playNarrationSequence();
+  }, 500);
+});
+
+// Also handle replay with voice
+document.getElementById('replay-btn').addEventListener('click', () => {
+  synth.cancel();
+  playNarrationSequence();
+});
+
 // TIMELINE CONTROLLER
 // ============================================================
 function runTimeline() {
@@ -1019,7 +1134,7 @@ async function init() {
     return;
   }
   document.getElementById('loading').classList.add('hidden');
-  setTimeout(runTimeline, 600);
+  // Don't auto-start - wait for voice overlay click
 }
 
 init();
