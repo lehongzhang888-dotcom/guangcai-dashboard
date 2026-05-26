@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>建筑工程事业部 — 管理全景可视化策划方案</title>
+<style>
+  :root {
+    --primary: #0a2a5c;
+    --primary-light: #1a4a8a;
+    --primary-dark: #061a3a;
+    --accent: #2b7be4;
+    --accent-light: #e8f0fe;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-500: #64748b;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 4px 24px rgba(0,0,0,.10);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; font-size: 15px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    line-height: 1.7;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 48px 24px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,.02) 40px, rgba(255,255,255,.02) 80px);
+    pointer-events: none;
+  }
+  .header h1 { font-size: 2rem; font-weight: 700; letter-spacing: 2px; position: relative; z-index: 1; }
+  .header .subtitle { font-size: 1rem; opacity: .8; margin-top: 8px; position: relative; z-index: 1; }
+  .header .meta {
+    margin-top: 16px;
+    display: flex; justify-content: center; gap: 24px;
+    font-size: .85rem; opacity: .7;
+    position: relative; z-index: 1;
+    flex-wrap: wrap;
+  }
+
+  /* ── TOC ── */
+  .toc {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 0 16px;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .toc-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; gap: 4px; padding: 8px 0;
+  }
+  .toc a {
+    display: inline-block;
+    padding: 6px 14px;
+    font-size: .82rem;
+    color: var(--gray-700);
+    text-decoration: none;
+    border-radius: 20px;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .toc a:hover { background: var(--accent-light); color: var(--accent); }
+
+  /* ── Container ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* ── Section ── */
+  .section {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+    margin-bottom: 28px;
+  }
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--accent);
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title .num {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: #fff;
+    font-size: .85rem;
+    flex-shrink: 0;
+  }
+  .sub-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin: 24px 0 12px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent);
+  }
+  .sub-title:first-of-type { margin-top: 0; }
+  .sub-sub-title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin: 16px 0 8px;
+  }
+  p { margin-bottom: 12px; color: var(--gray-700); }
+  ul, ol { margin: 8px 0 16px 20px; }
+  li { margin-bottom: 6px; color: var(--gray-700); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; margin: 16px 0; border-radius: 8px; border: 1px solid var(--gray-200); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .85rem;
+    min-width: 600px;
+  }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  th {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--gray-50); }
+
+  /* ── Cards ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    transition: box-shadow .2s;
+  }
+  .card:hover { box-shadow: var(--shadow); }
+  .card .card-title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: .95rem;
+  }
+  .card ul { margin: 4px 0 0 16px; }
+  .card li { font-size: .85rem; }
+
+  /* ── Tags / Badges ── */
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: .75rem;
+    font-weight: 500;
+  }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-yellow { background: #fef3c7; color: #92400e; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .tag-blue { background: var(--accent-light); color: var(--primary-light); }
+
+  /* ── 红黄绿灯 indicator ── */
+  .traffic-light {
+    display: inline-flex; gap: 6px; align-items: center;
+    margin: 8px 0;
+  }
+  .traffic-light .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+  }
+  .dot-red { background: var(--danger); }
+  .dot-yellow { background: var(--warning); }
+  .dot-green { background: var(--success); }
+  .dot-gray { background: var(--gray-300); }
+
+  /* ── 指标联动关系图 ── */
+  .relation-diagram {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 16px;
+    margin: 16px 0;
+    background: var(--gray-50);
+    border-radius: 12px;
+    border: 1px dashed var(--gray-300);
+  }
+  .relation-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: .82rem;
+    font-weight: 500;
+    color: var(--primary);
+    position: relative;
+  }
+  .relation-node .icon { font-size: 1.1rem; }
+  .relation-arrow {
+    font-size: 1.2rem;
+    color: var(--gray-500);
+    flex-shrink: 0;
+  }
+
+  /* ── Data flow ── */
+  .flow-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 4px;
+    padding: 20px 0;
+  }
+  .flow-step {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  .flow-step.secondary { background: var(--accent); }
+  .flow-step.tertiary { background: var(--gray-500); }
+  .flow-step.light { background: var(--accent-light); color: var(--primary); border: 1px solid var(--accent); }
+  .flow-connector {
+    font-size: 1.2rem;
+    color: var(--gray-500);
+  }
+
+  /* ── Timeline / Phases ── */
+  .phase-list { list-style: none; margin: 16px 0; }
+  .phase-item {
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    background: var(--gray-50);
+    border-radius: 0 8px 8px 0;
+  }
+  .phase-item h4 { color: var(--primary); font-size: 1rem; margin-bottom: 6px; }
+  .phase-item .phase-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: .75rem;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+  .phase-tag.p1 { background: var(--primary); color: #fff; }
+  .phase-tag.p2 { background: var(--accent); color: #fff; }
+  .phase-tag.p3 { background: #7c3aed; color: #fff; }
+  .phase-tag.p4 { background: #0891b2; color: #fff; }
+
+  /* ── Risk grid ── */
+  .risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .risk-card {
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 18px;
+    border-left: 4px solid var(--warning);
+  }
+  .risk-card.high { border-left-color: var(--danger); }
+  .risk-card.low { border-left-color: var(--success); }
+  .risk-card .risk-title { font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+  .risk-card .risk-desc { font-size: .82rem; color: var(--gray-500); }
+  .risk-card .risk-level {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 8px;
+    font-size: .7rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .risk-level.high { background: #fee2e2; color: #991b1b; }
+  .risk-level.mid { background: #fef3c7; color: #92400e; }
+  .risk-level.low { background: #dcfce7; color: #166534; }
+
+  /* ── Layout mockups ── */
+  .mockup {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .mockup-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: .85rem;
+    flex-wrap: wrap;
+  }
+  .mockup-bar .pill {
+    background: rgba(255,255,255,.15);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: .75rem;
+  }
+  .mockup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+  .mockup-card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+  .mockup-card .val {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .mockup-card .label {
+    font-size: .72rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+  .mockup-card .light-row {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .mockup-bottom {
+    display: flex;
+    gap: 16px;
+    padding: 10px 14px;
+    background: var(--gray-100);
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: .78rem;
+    color: var(--gray-500);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── 技术架构图 ── */
+  .arch-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+  }
+  .arch-box {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: .78rem;
+    font-weight: 500;
+    text-align: center;
+  }
+  .arch-box.f1 { background: var(--primary); color: #fff; }
+  .arch-box.f2 { background: var(--accent); color: #fff; }
+  .arch-box.f3 { background: var(--accent-light); color: var(--primary); border: 1px solid var(--accent); }
+
+  /* ── 用户画像 ── */
+  .persona-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .persona-card {
+    text-align: center;
+    padding: 18px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .persona-card .avatar {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+  .persona-card .pname { font-weight: 600; font-size: .9rem; }
+  .persona-card .prole { font-size: .75rem; color: var(--gray-500); }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--gray-500);
+    font-size: .8rem;
+  }
+
+  /* ── Print ── */
+  @media print {
+    .toc { display: none; }
+    .section { break-inside: avoid; box-shadow: none; border: 1px solid var(--gray-200); }
+    .header { padding: 24px; }
+    body { background: #fff; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .header h1 { font-size: 1.4rem; }
+    .header .meta { flex-direction: column; gap: 4px; }
+    .section { padding: 24px 16px; }
+    .container { padding: 16px 12px; }
+    .relation-diagram { flex-direction: column; }
+    .relation-arrow { transform: rotate(90deg); }
+    .flow-row { flex-direction: column; }
+    .flow-connector { transform: rotate(90deg); }
+    .card-grid { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: 1fr; }
+    .persona-grid { grid-template-columns: repeat(2, 1fr); }
+    .mockup-grid { grid-template-columns: repeat(2, 1fr); }
+    .arch-row { flex-direction: column; }
+    .toc { white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="header">
+  <h1>建筑工程事业部 · 管理全景可视化策划方案</h1>
+  <p class="subtitle">数据驱动管理 · 全景赋能决策</p>
+  <div class="meta">
+    <span>文档版本：V1.0</span>
+    <span>编制日期：2026年5月</span>
+    <span>文档状态：策划稿</span>
+  </div>
+</header>
+
+<!-- ═══════════ TOC ═══════════ -->
+<nav class="toc">
+  <div class="toc-inner">
+    <a href="#sec1">一、项目概述</a>
+    <a href="#sec2">二、业务指标体系</a>
+    <a href="#sec3">三、数据架构方案</a>
+    <a href="#sec4">四、可视化设计方案</a>
+    <a href="#sec5">五、技术方案</a>
+    <a href="#sec6">六、分期实施规划</a>
+    <a href="#sec7">七、风险与应对</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- ═══════════ 一、项目概述 ═══════════ -->
+<section id="sec1" class="section">
+  <h2 class="section-title"><span class="num">一</span>项目概述</h2>
+
+  <h3 class="sub-title">1.1 项目背景</h3>
+  <p>
+    建筑工程事业部现有总经理 1 人、直营主管（管 17 名大客户经理）、渠道主管（管 29 名工程专员）、
+    运营主管（管 9 名商务专员），合计 57 人。事业部当前面临的核心问题是：业务数据分散在公司
+    CRM 系统（与看板系统不兼容）、企业微信群和线下台账中，管理层无法实时掌握团队的整体业绩
+    进度、客户开发情况以及各层级人员的执行状态，亟需一个统一的管理全景可视化看板。
+  </p>
+
+  <h3 class="sub-title">1.2 项目目标</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">🎯 目标一：数据同频</div>
+      <p style="font-size:.85rem">将散落在 CRM、企业微信、台账中的数据统一汇集，实现事业部全员查看一致的经营数据。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 目标二：识别优劣</div>
+      <p style="font-size:.85rem">通过红黄绿灯预警和进度追踪，快速定位优秀团队与落后团队，为管理干预提供依据。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 目标三：辅助决策</div>
+      <p style="font-size:.85rem">通过指标联动分析和趋势对比，帮助管理层推断业务走势、提前预警风险、制定改善策略。</p>
+    </div>
+  </div>
+
+  <h3 class="sub-title">1.3 覆盖范围与用户画像</h3>
+  <div class="persona-grid">
+    <div class="persona-card">
+      <div class="avatar" style="background:#dcfce7;color:#166534">👤</div>
+      <div class="pname">总经理</div>
+      <div class="prole">全局掌控 · 战略决策</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#e8f0fe;color:#1a4a8a">👤</div>
+      <div class="pname">直营主管</div>
+      <div class="prole">大客户团队管理</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#fef3c7;color:#92400e">👤</div>
+      <div class="pname">渠道主管</div>
+      <div class="prole">工程专员团队管理</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#f3e8ff;color:#6b21a8">👤</div>
+      <div class="pname">运营主管</div>
+      <div class="prole">商务专员团队管理</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#e0f2fe;color:#075985">👤</div>
+      <div class="pname">大客户经理</div>
+      <div class="prole">直营业务执行</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#fce7f3;color:#9d174d">👤</div>
+      <div class="pname">工程专员</div>
+      <div class="prole">渠道业务执行</div>
+    </div>
+    <div class="persona-card">
+      <div class="avatar" style="background:#ecfdf5;color:#065f46">👤</div>
+      <div class="pname">商务专员</div>
+      <div class="prole">运营支撑执行</div>
+    </div>
+  </div>
+  <p><span class="tag tag-blue">当前阶段</span> 全员看一致内容（数据同频） <span class="tag tag-blue">后续规划</span> 权限分级（区域经理仅看自己区域）</p>
+</section>
+
+<!-- ═══════════ 二、业务指标体系设计 ═══════════ -->
+<section id="sec2" class="section">
+  <h2 class="section-title"><span class="num">二</span>业务指标体系设计</h2>
+
+  <p>六大核心指标涵盖销量业绩、客户开发、品牌入围、代理培育、培训赋<br>能、客户拜访，全面反映事业部经营健康度。</p>
+
+  <!-- 指标1 -->
+  <h3 class="sub-title">2.1 销量业绩完成情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>直营销售额</td><td>6,000 万</td><td>1,500 万</td><td>500 万</td><td>年度完成 ≥ 85%</td></tr>
+        <tr><td>渠道销售额</td><td>4,000 万</td><td>1,000 万</td><td>333 万</td><td>年度完成 ≥ 80%</td></tr>
+        <tr><td>总销售额</td><td>10,000 万</td><td>2,500 万</td><td>833 万</td><td>年度完成 ≥ 83%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sub-sub-title">红黄绿灯阈值</div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 90%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">75% ~ 89%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 75%</span>
+  </div>
+
+  <!-- 指标2 -->
+  <h3 class="sub-title">2.2 工程客户开发完成情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>新开发客户数</td><td>300 家</td><td>75 家</td><td>25 家</td><td>年度完成 ≥ 80%</td></tr>
+        <tr><td>重点客户签约</td><td>50 家</td><td>13 家</td><td>4 家</td><td>年度完成 ≥ 85%</td></tr>
+        <tr><td>客户转化率</td><td>≥ 30%</td><td>—</td><td>—</td><td>季度滚动考核</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 90%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">70% ~ 89%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 70%</span>
+  </div>
+
+  <!-- 指标3 -->
+  <h3 class="sub-title">2.3 战略及品牌入围完成情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>战略品牌入围数</td><td>20 个</td><td>5 个</td><td>2 个</td><td>年度完成 ≥ 90%</td></tr>
+        <tr><td>品牌合作协议签署</td><td>15 份</td><td>4 份</td><td>1~2 份</td><td>年度完成 ≥ 85%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 95%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">80% ~ 94%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 80%</span>
+  </div>
+
+  <!-- 指标4 -->
+  <h3 class="sub-title">2.4 50 万级以上代理商培育情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>50 万级以上代理商</td><td>30 家</td><td>8 家</td><td>3 家</td><td>年度完成 ≥ 80%</td></tr>
+        <tr><td>百万级代理商</td><td>10 家</td><td>3 家</td><td>1 家</td><td>年度完成 ≥ 85%</td></tr>
+        <tr><td>代理商活跃率</td><td>≥ 70%</td><td>—</td><td>—</td><td>季度滚动考核</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 85%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">65% ~ 84%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 65%</span>
+  </div>
+
+  <!-- 指标5 -->
+  <h3 class="sub-title">2.5 培训赋能完成情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>培训场次</td><td>48 场</td><td>12 场</td><td>4 场</td><td>完成 ≥ 90%</td></tr>
+        <tr><td>参训人数</td><td>600 人次</td><td>150 人次</td><td>50 人次</td><td>达成 ≥ 85%</td></tr>
+        <tr><td>培训满意度</td><td>≥ 4.5 分</td><td>—</td><td>—</td><td>季度滚动考核</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 90%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">75% ~ 89%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 75%</span>
+  </div>
+
+  <!-- 指标6 -->
+  <h3 class="sub-title">2.6 客户拜访完成情况</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>维度</th><th>年度目标</th><th>季度目标</th><th>月度目标</th><th>考核线</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>大客户经理拜访</td><td>1,020 次</td><td>255 次</td><td>85 次</td><td>完成 ≥ 80%</td></tr>
+        <tr><td>工程专员拜访</td><td>1,740 次</td><td>435 次</td><td>145 次</td><td>完成 ≥ 80%</td></tr>
+        <tr><td>拜访转化率</td><td>≥ 25%</td><td>—</td><td>—</td><td>季度滚动考核</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="traffic-light">
+    <span class="dot dot-green"></span><span style="font-size:.82rem;margin-right:12px">≥ 90%</span>
+    <span class="dot dot-yellow"></span><span style="font-size:.82rem;margin-right:12px">70% ~ 89%</span>
+    <span class="dot dot-red"></span><span style="font-size:.82rem">&lt; 70%</span>
+  </div>
+
+  <!-- 指标联动关系 -->
+  <h3 class="sub-title">2.7 指标联动关系图</h3>
+  <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:8px">六大指标相互影响，形成管理闭环（虚线箭头表示间接影响，实线箭头表示直接影响）：</p>
+  <div class="relation-diagram">
+    <span class="relation-node"><span class="icon">📈</span> 销量业绩</span>
+    <span class="relation-arrow">⟶</span>
+    <span class="relation-node"><span class="icon">🤝</span> 客户拜访</span>
+    <span class="relation-arrow">↔</span>
+    <span class="relation-node"><span class="icon">👥</span> 客户开发</span>
+    <span class="relation-arrow">⟶</span>
+    <span class="relation-node"><span class="icon">🏆</span> 品牌入围</span>
+    <span class="relation-arrow" style="opacity:.4">- - →</span>
+    <span class="relation-node" style="border-color:var(--warning)"><span class="icon">🌱</span> 代理培育</span>
+    <span class="relation-arrow">⟶</span>
+    <span class="relation-node"><span class="icon">📚</span> 培训赋能</span>
+    <span class="relation-arrow" style="opacity:.4">- - →</span>
+    <span class="relation-node" style="border-color:var(--warning)"><span class="icon">📈</span> 销量业绩</span>
+  </div>
+  <div style="margin-top:12px;font-size:.82rem;color:var(--gray-500)">
+    <p><strong>解读：</strong></p>
+    <ul>
+      <li><strong>销量业绩</strong> 是结果指标，受 <strong>客户开发 + 客户拜访</strong> 直接驱动</li>
+      <li><strong>客户拜访</strong> 频率和质量影响 <strong>客户开发</strong> 和 <strong>品牌入围</strong> 的推进速度</li>
+      <li><strong>品牌入围</strong> 为 <strong>代理培育</strong> 提供品牌背书，间接促进销量提升</li>
+      <li><strong>培训赋能</strong> 提升团队能力，间接影响拜访质量、客户开发和代理培育效果</li>
+      <li><strong>代理培育</strong> 是中期产能，对销量业绩产生滞后正向影响</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══════════ 三、数据架构方案 ═══════════ -->
+<section id="sec3" class="section">
+  <h2 class="section-title"><span class="num">三</span>数据架构方案</h2>
+
+  <h3 class="sub-title">3.1 数据现状</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">🔴 现状问题</div>
+      <ul>
+        <li>业务数据存储于公司 CRM 系统</li>
+        <li>CRM 与看板系统 <strong>不兼容</strong>，无法直接 API 对接</li>
+        <li>部分数据散落于企业微信群和线下 Excel 台账</li>
+        <li>缺少统一的数据汇集与展示平台</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🟢 解决思路</div>
+      <ul>
+        <li>以企业微信 + 台账文件作为数据桥接层</li>
+        <li>建立标准化台账模板（Excel/CSV）</li>
+        <li>通过企业微信机器人实现文件上传→自动解析</li>
+        <li>解析后数据自动更新前端 JSON 数据文件</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">3.2 数据流转方案</h3>
+  <div class="flow-row">
+    <span class="flow-step">CRM 系统</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step secondary">手动导出</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step secondary">企业微信<br>发送台账</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step light">自动解析<br>(脚本)</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step light">更新 JSON<br>数据文件</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step tertiary">GitHub Actions<br>自动部署</span>
+    <span class="flow-connector">→</span>
+    <span class="flow-step">看板展示</span>
+  </div>
+
+  <h3 class="sub-title">3.3 实时化实现路径（分三阶段）</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:16px 0">
+    <div style="border:1px solid var(--gray-200);border-radius:10px;padding:18px;border-top:4px solid var(--accent)">
+      <div style="font-weight:700;color:var(--primary);margin-bottom:6px">📋 第一期 · 手动 / 半自动</div>
+      <ul style="font-size:.82rem;margin:0 0 0 14px">
+        <li>专人定时从 CRM 导出数据</li>
+        <li>按模板整理为 Excel 台账</li>
+        <li>企业微信群提交文件</li>
+        <li>手动触发更新</li>
+        <li>更新频率：日报 / 月报</li>
+      </ul>
+    </div>
+    <div style="border:1px solid var(--gray-200);border-radius:10px;padding:18px;border-top:4px solid #7c3aed">
+      <div style="font-weight:700;color:var(--primary);margin-bottom:6px">⚙️ 第二期 · API 对接</div>
+      <ul style="font-size:.82rem;margin:0 0 0 14px">
+        <li>推动 CRM 开放数据接口</li>
+        <li>或搭建中间数据仓库</li>
+        <li>减少人工导出环节</li>
+        <li>增加数据校验自动化</li>
+        <li>更新频率：日报自动</li>
+      </ul>
+    </div>
+    <div style="border:1px solid var(--gray-200);border-radius:10px;padding:18px;border-top:4px solid #0891b2">
+      <div style="font-weight:700;color:var(--primary);margin-bottom:6px">🚀 第三期 · 实时同步</div>
+      <ul style="font-size:.82rem;margin:0 0 0 14px">
+        <li>实时 / 准实时数据同步</li>
+        <li>看板自动刷新（30秒轮询）</li>
+        <li>异常数据自动告警</li>
+        <li>数据血缘追踪</li>
+        <li>更新频率：准实时</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">3.4 推荐方案：企业微信机器人 + 台账模板</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>环节</th><th>方案说明</th><th>负责人</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>台账模板</td><td>统一 Excel/CSV 模板，含必填字段、数据校验、下拉选择</td><td>运营主管</td></tr>
+        <tr><td>企业微信群</td><td>设立「数据看板更新群」，机器人在群内接收文件</td><td>全员</td></tr>
+        <tr><td>自动解析脚本</td><td>Node.js / Python 脚本，解析台账 → 生成 JSON</td><td>技术团队</td></tr>
+        <tr><td>GitHub Actions</td><td>检测 JSON 变更 → 自动构建部署 → 更新 GitHub Pages</td><td>技术团队</td></tr>
+        <tr><td>更新通知</td><td>更新成功后企业微信机器人推送通知到群</td><td>技术团队</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════ 四、可视化设计方案 ═══════════ -->
+<section id="sec4" class="section">
+  <h2 class="section-title"><span class="num">四</span>可视化设计方案</h2>
+
+  <h3 class="sub-title">4.1 页面整体布局</h3>
+  <div class="mockup">
+    <div class="mockup-bar">
+      <span style="font-weight:700">🏗️ 建筑工程事业部 · 管理全景看板</span>
+      <span class="pill">数据更新：2026-05-26 18:00</span>
+      <span class="pill" style="margin-left:auto">总经理 · 管理员</span>
+    </div>
+    <div class="mockup-grid">
+      <div class="mockup-card">
+        <div class="val">78%</div>
+        <div class="label">📈 销量业绩</div>
+        <div class="light-row"><span class="dot dot-yellow"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+      <div class="mockup-card">
+        <div class="val">92%</div>
+        <div class="label">🤝 客户开发</div>
+        <div class="light-row"><span class="dot dot-green"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+      <div class="mockup-card">
+        <div class="val">65%</div>
+        <div class="label">🏆 品牌入围</div>
+        <div class="light-row"><span class="dot dot-red"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+      <div class="mockup-card">
+        <div class="val">83%</div>
+        <div class="label">🌱 代理培育</div>
+        <div class="light-row"><span class="dot dot-yellow"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+      <div class="mockup-card">
+        <div class="val">95%</div>
+        <div class="label">📚 培训赋能</div>
+        <div class="light-row"><span class="dot dot-green"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+      <div class="mockup-card">
+        <div class="val">71%</div>
+        <div class="label">📋 客户拜访</div>
+        <div class="light-row"><span class="dot dot-yellow"></span><span class="dot dot-gray"></span><span class="dot dot-gray"></span></div>
+      </div>
+    </div>
+    <div class="mockup-bottom">
+      <span>📊 查看详情</span>
+      <span>📅 月度 / 季度 / 年度</span>
+      <span>📥 导出数据</span>
+      <span>👥 全员视图</span>
+    </div>
+  </div>
+
+  <h3 class="sub-title">4.2 卡片设计规范</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">📐 卡片结构（每个板块）</div>
+      <ul>
+        <li><strong>顶部：</strong>指标名称 + 红黄绿灯状态标识</li>
+        <li><strong>中间主区域：</strong>环形进度图 / 柱状图，展示完成率</li>
+        <li><strong>下方：</strong>实际值 / 目标值 / 考核线 三组数据</li>
+        <li><strong>角标：</strong>同比 / 环比变化指示</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">🎨 色彩规范</div>
+      <ul>
+        <li><span class="tag tag-green">绿灯</span> 完成 ≥ 阈值上线，正常推进</li>
+        <li><span class="tag tag-yellow">黄灯</span> 完成在阈值区间，需关注</li>
+        <li><span class="tag tag-red">红灯</span> 完成低于阈值下线，需立即干预</li>
+        <li>主色：深蓝 #0a2a5c / 白色 #fff</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 图表类型</div>
+      <ul>
+        <li><strong>完成率：</strong>环形进度图（doughnut）</li>
+        <li><strong>趋势：</strong>折线图（月度 / 季度走势）</li>
+        <li><strong>对比：</strong>柱状图（团队间横向对比）</li>
+        <li>使用 <strong>Chart.js</strong> 轻量渲染</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">4.3 红黄绿灯预警展示方式</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>状态</th><th>条件</th><th>看板展示</th><th>管理动作</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag tag-green">绿灯</span></td>
+          <td>完成率 ≥ 阈值上线</td>
+          <td>绿色圆点 + 正常色进度条</td>
+          <td>维持现状，分享优秀经验</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-yellow">黄灯</span></td>
+          <td>阈值下线 ≤ 完成率 &lt; 阈值上线</td>
+          <td>黄色圆点 + 黄色进度条 + 警示图标</td>
+          <td>主管跟进，分析原因，制定改善计划</td>
+        </tr>
+        <tr>
+          <td><span class="tag tag-red">红灯</span></td>
+          <td>完成率 &lt; 阈值下线</td>
+          <td>红色圆点 + 红色进度条 + 闪烁动画 + 弹窗提醒</td>
+          <td>总经理介入，专项会议，资源倾斜</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-title">4.4 移动端与 PC 端适配方案</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">📱 移动端（手机）</div>
+      <ul>
+        <li>单列布局，卡片纵向排列</li>
+        <li>顶部固定导航 + 底部操作栏</li>
+        <li>卡片可滑动切换</li>
+        <li>红黄绿灯状态清晰可见</li>
+        <li>支持横屏查看图表详情</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">💻 PC 端（桌面）</div>
+      <ul>
+        <li>2×3 或 3×2 网格布局</li>
+        <li>左侧固定组织架构树（后续）</li>
+        <li>右侧详情面板（点击展开）</li>
+        <li>多维度筛选（时间 / 团队 / 指标）</li>
+        <li>支持大屏投屏展示</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">📟 适配策略</div>
+      <ul>
+        <li>CSS Grid / Flexbox 自适应</li>
+        <li>使用 rem / vw 相对单位</li>
+        <li>媒体查询断点：768px / 1024px</li>
+        <li>触控与鼠标事件双重支持</li>
+        <li>字体大小随屏幕自动调整</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="sub-title">4.5 交互设计</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">🔽 下钻功能</div>
+      <p style="font-size:.82rem">点击任意指标板块 → 进入详情页，展示该指标的完整数据（团队成员排名、历史趋势、明细列表）。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📅 时间筛选</div>
+      <p style="font-size:.82rem">顶部提供「月度 / 季度 / 年度」切换按钮，所有卡片同步更新对应时间维度的数据。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📥 数据导出</div>
+      <p style="font-size:.82rem">看板数据支持导出为 Excel / CSV / 截图，一键下载，方便周报和会议汇报使用。</p>
+    </div>
+    <div class="card">
+      <div class="card-title">🔔 预警推送</div>
+      <p style="font-size:.82rem">当指标进入黄灯/红灯区间时，看板自动推送企业微信提醒，并高亮显示风险项。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 五、技术方案 ═══════════ -->
+<section id="sec5" class="section">
+  <h2 class="section-title"><span class="num">五</span>技术方案</h2>
+
+  <h3 class="sub-title">5.1 技术架构</h3>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 16px;margin:16px 0;background:var(--gray-50);border-radius:12px">
+    <!-- Layer 1: 前端 -->
+    <div class="arch-row" style="gap:12px">
+      <span class="arch-box f1">纯 HTML / CSS / JS</span>
+      <span style="color:var(--gray-500);font-size:.78rem">+</span>
+      <span class="arch-box f1">Chart.js</span>
+      <span style="color:var(--gray-500);font-size:.78rem">+</span>
+      <span class="arch-box f1">单文件架构</span>
+    </div>
+    <span style="color:var(--gray-500);font-size:.7rem">▼</span>
+    <!-- Layer 2: 数据层 -->
+    <div class="arch-row" style="gap:12px">
+      <span class="arch-box f2">JSON 数据文件</span>
+      <span style="color:var(--gray-500);font-size:.78rem">+</span>
+      <span class="arch-box f2">fetch 动态加载</span>
+    </div>
+    <span style="color:var(--gray-500);font-size:.7rem">▼</span>
+    <!-- Layer 3: 部署 -->
+    <div class="arch-row" style="gap:12px">
+      <span class="arch-box f3">GitHub Pages</span>
+      <span style="color:var(--gray-500);font-size:.78rem">+</span>
+      <span class="arch-box f3">GitHub Actions</span>
+      <span style="color:var(--gray-500);font-size:.78rem">+</span>
+      <span class="arch-box f3">企业微信机器人</span>
+    </div>
+  </div>
+
+  <h3 class="sub-title">5.2 核心组件</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>组件</th><th>技术选型</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>前端框架</td><td>原生 HTML / CSS / JS</td><td>零依赖，单文件部署，加载快</td></tr>
+        <tr><td>图表库</td><td>Chart.js 4.x</td><td>轻量（~70KB gzip），支持环形图/折线图/柱状图</td></tr>
+        <tr><td>数据格式</td><td>JSON</td><td>结构化存储，易于脚本解析和版本管理</td></tr>
+        <tr><td>数据加载</td><td>fetch API</td><td>动态加载 JSON 文件，支持缓存控制</td></tr>
+        <tr><td>部署平台</td><td>GitHub Pages</td><td>公网可访问，支持 HTTPS，免服务器运维</td></tr>
+        <tr><td>CI/CD</td><td>GitHub Actions</td><td>数据更新后自动构建部署</td></tr>
+        <tr><td>数据桥接</td><td>企业微信机器人</td><td>接收台账文件，触发解析脚本</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="sub-title">5.3 更新机制</h3>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">🔄 数据更新流程</div>
+      <ol style="font-size:.85rem;margin:4px 0 0 16px">
+        <li>运营人员整理台账 → 发送至企业微信群</li>
+        <li>企业微信机器人接收文件 → 触发解析脚本</li>
+        <li>脚本解析 Excel/CSV → 生成 JSON 数据文件</li>
+        <li>脚本自动 commit & push 到 GitHub 仓库</li>
+        <li>GitHub Actions 检测到推送 → 自动部署到 Pages</li>
+        <li>看板自动刷新展示最新数据</li>
+      </ol>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 更新频率</div>
+      <div class="table-wrap" style="margin:4px 0 0;border:none">
+        <table style="min-width:auto;font-size:.82rem">
+          <thead><tr><th>数据类型</th><th>更新频率</th><th>方式</th></tr></thead>
+          <tbody>
+            <tr><td>销售业绩</td><td>每日</td><td>日报台账</td></tr>
+            <tr><td>客户开发</td><td>每日</td><td>日报台账</td></tr>
+            <tr><td>客户拜访</td><td>每日</td><td>日报台账</td></tr>
+            <tr><td>品牌入围</td><td>每月</td><td>月报台账</td></tr>
+            <tr><td>代理培育</td><td>每月</td><td>月报台账</td></tr>
+            <tr><td>培训赋能</td><td>每月</td><td>月报台账</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 六、分期实施规划 ═══════════ -->
+<section id="sec6" class="section">
+  <h2 class="section-title"><span class="num">六</span>分期实施规划</h2>
+
+  <p style="margin-bottom:16px">整体按照「先看得到 → 再动起来 → 再深化 → 再管理」的节奏推进，共分四期：</p>
+
+  <ul class="phase-list">
+    <li class="phase-item">
+      <h4><span class="phase-tag p1">第一期</span> MVP 静态看板 · 1 ~ 2 周</h4>
+      <p style="font-size:.85rem;margin-bottom:6px"><strong>目标：</strong>快速上线可查看的静态看板，验证布局和展示效果。</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:.82rem">
+        <div><span class="tag tag-blue">交付物</span> 单页 HTML 看板</div>
+        <div><span class="tag tag-blue">交付物</span> 6 板块静态展示</div>
+        <div><span class="tag tag-blue">交付物</span> 模拟数据填充</div>
+        <div><span class="tag tag-blue">交付物</span> 红黄绿灯预警</div>
+        <div><span class="tag tag-blue">交付物</span> 移动端 + PC 端适配</div>
+      </div>
+    </li>
+    <li class="phase-item">
+      <h4><span class="phase-tag p2">第二期</span> 数据动态化 · 2 ~ 4 周</h4>
+      <p style="font-size:.85rem;margin-bottom:6px"><strong>目标：</strong>打通数据链路，实现从台账到看板的自动化更新。</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:.82rem">
+        <div><span class="tag tag-blue">交付物</span> JSON 数据层分离</div>
+        <div><span class="tag tag-blue">交付物</span> 台账模板标准化</div>
+        <div><span class="tag tag-blue">交付物</span> 解析脚本开发</div>
+        <div><span class="tag tag-blue">交付物</span> 企业微信机器人对接</div>
+        <div><span class="tag tag-blue">交付物</span> GitHub Actions 自动部署</div>
+      </div>
+    </li>
+    <li class="phase-item">
+      <h4><span class="phase-tag p3">第三期</span> 交互增强 · 4 ~ 6 周</h4>
+      <p style="font-size:.85rem;margin-bottom:6px"><strong>目标：</strong>提升看板的交互能力和用户体验。</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:.82rem">
+        <div><span class="tag tag-blue">交付物</span> 指标下钻详情页</div>
+        <div><span class="tag tag-blue">交付物</span> 时间维度切换</div>
+        <div><span class="tag tag-blue">交付物</span> Chart.js 图表渲染</div>
+        <div><span class="tag tag-blue">交付物</span> 数据导出功能</div>
+        <div><span class="tag tag-blue">交付物</span> 预警推送通知</div>
+      </div>
+    </li>
+    <li class="phase-item">
+      <h4><span class="phase-tag p4">第四期</span> 权限与管理 · 6 ~ 8 周</h4>
+      <p style="font-size:.85rem;margin-bottom:6px"><strong>目标：</strong>实现角色分级、权限管控和后台管理能力。</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;font-size:.82rem">
+        <div><span class="tag tag-blue">交付物</span> 用户角色权限分级</div>
+        <div><span class="tag tag-blue">交付物</span> 登录认证系统</div>
+        <div><span class="tag tag-blue">交付物</span> 管理后台（数据源管理）</div>
+        <div><span class="tag tag-blue">交付物</span> 区域数据隔离</div>
+        <div><span class="tag tag-blue">交付物</span> 操作日志审计</div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="sub-sub-title">各期里程碑甘特示意</div>
+  <div style="margin:12px 0;padding:16px;background:var(--gray-50);border-radius:10px;font-size:.82rem">
+    <div style="display:flex;align-items:center;margin-bottom:10px">
+      <span style="width:100px;flex-shrink:0;font-weight:600">第 1 ~ 2 周</span>
+      <div style="flex:1;height:24px;background:var(--primary);border-radius:4px;color:#fff;display:flex;align-items:center;padding-left:10px">MVP 静态看板</div>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:10px">
+      <span style="width:100px;flex-shrink:0;font-weight:600">第 3 ~ 4 周</span>
+      <div style="flex:1;height:24px;background:var(--accent);border-radius:4px;color:#fff;display:flex;align-items:center;padding-left:10px">数据动态化</div>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:10px">
+      <span style="width:100px;flex-shrink:0;font-weight:600">第 5 ~ 6 周</span>
+      <div style="flex:1;height:24px;background:#7c3aed;border-radius:4px;color:#fff;display:flex;align-items:center;padding-left:10px">交互增强</div>
+    </div>
+    <div style="display:flex;align-items:center">
+      <span style="width:100px;flex-shrink:0;font-weight:600">第 7 ~ 8 周</span>
+      <div style="flex:1;height:24px;background:#0891b2;border-radius:4px;color:#fff;display:flex;align-items:center;padding-left:10px">权限与管理</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 七、风险与应对 ═══════════ -->
+<section id="sec7" class="section">
+  <h2 class="section-title"><span class="num">七</span>风险与应对</h2>
+
+  <p>项目实施过程中可能面临以下风险，提前识别并制定应对策略：</p>
+
+  <div class="risk-grid">
+    <div class="risk-card high">
+      <span class="risk-level high">高风险</span>
+      <div class="risk-title">📌 CRM 数据无法导出</div>
+      <div class="risk-desc">公司 CRM 系统存在数据导出限制，或导出格式不满足台账模板要求。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>提前协调 IT 部门确认导出权限；若受限则采用人工录入方式作为兜底方案。</div>
+    </div>
+    <div class="risk-card high">
+      <span class="risk-level high">高风险</span>
+      <div class="risk-title">📌 数据更新不及时</div>
+      <div class="risk-desc">运营人员未按时上传台账，导致看板数据滞后，失去参考价值。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>设置企业微信定时提醒；建立数据更新 SOP 并纳入绩效考核；设置超时未更新自动告警。</div>
+    </div>
+    <div class="risk-card">
+      <span class="risk-level mid">中风险</span>
+      <div class="risk-title">📌 数据准确性问题</div>
+      <div class="risk-desc">台账数据填写错误或格式不一致，导致看板展示数据失真。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>台账模板增加数据校验规则；解析脚本增加异常检测（数值范围、完整性检查）；运营主管复核机制。</div>
+    </div>
+    <div class="risk-card">
+      <span class="risk-level mid">中风险</span>
+      <div class="risk-title">📌 用户接受度不足</div>
+      <div class="risk-desc">团队成员习惯原有方式，不主动使用看板，项目价值无法体现。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>组织看板使用培训；管理层带头使用；看板内容与周会/月会挂钩；收集反馈持续优化。</div>
+    </div>
+    <div class="risk-card">
+      <span class="risk-level low">低风险</span>
+      <div class="risk-title">📌 网络与安全风险</div>
+      <div class="risk-desc">GitHub Pages 在国内访问稳定性，以及业务数据在外网传输的安全性。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>考虑 GitHub Pages + 国内 CDN 加速；敏感数据脱敏后再上传；后续可迁移至企业内网服务器。</div>
+    </div>
+    <div class="risk-card low">
+      <span class="risk-level low">低风险</span>
+      <div class="risk-title">📌 人员变动影响</div>
+      <div class="risk-desc">负责台账维护或脚本开发的人员变动，导致流程中断。</div>
+      <div style="margin-top:8px;font-size:.82rem;color:var(--primary)"><strong>应对：</strong>关键文档与脚本进行版本管理（Git）；至少 2 人掌握核心流程；定期复盘流程执行情况。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ Footer ═══════════ -->
+<footer class="footer">
+  <p>建筑工程事业部 · 管理全景可视化策划方案 V1.0</p>
+  <p style="margin-top:4px">本文件为公司内部资料，未经授权不得外传</p>
+</footer>
+
+</div><!-- /container -->
+
+</body>
+</html>
