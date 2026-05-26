@@ -3,701 +3,864 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>建筑工程事业部 — 基地发货效率看板</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<title>建筑工程事业部 — 基地发货效率全景看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
-    background: #0a1628;
-    color: #e0e6f0;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #0f1d35; }
-  ::-webkit-scrollbar-thumb { background: #2a4a7f; border-radius: 3px; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  .dashboard {
-    max-width: 1600px;
-    margin: 0 auto;
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #0a1628;
+  color: #e0e6f0;
+  min-height: 100vh;
+}
 
-  /* ===== Header ===== */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 30px;
-    background: linear-gradient(135deg, #0f1d35 0%, #1a2f55 100%);
-    border: 1px solid #2a4a7f;
-    border-radius: 12px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-icon {
-    width: 44px; height: 44px;
-    background: linear-gradient(135deg, #d4a843, #f0d68a);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-  }
-  .header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    background: linear-gradient(90deg, #f0d68a, #d4a843);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-  }
-  .header-subtitle {
-    font-size: 12px;
-    color: #8ba4cc;
-    margin-top: 2px;
-  }
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .header-date {
-    font-size: 13px;
-    color: #8ba4cc;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #0f1d35;
-    padding: 6px 14px;
-    border-radius: 6px;
-    border: 1px solid #1f3a5f;
-  }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f1d35; }
+::-webkit-scrollbar-thumb { background: #2a4066; border-radius: 3px; }
 
-  /* ===== KPI Cards ===== */
-  .kpi-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .kpi-card {
-    background: linear-gradient(135deg, #0f1d35, #152344);
-    border: 1px solid #1f3a5f;
-    border-radius: 12px;
-    padding: 20px 24px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.5); }
-  .kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 12px 12px 0 0;
-  }
-  .kpi-card.type-1::before { background: linear-gradient(90deg, #d4a843, #f0d68a); }
-  .kpi-card.type-2::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
-  .kpi-card.type-3::before { background: linear-gradient(90deg, #ef4444, #f87171); }
-  .kpi-card.type-4::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #0d1f3c 0%, #142a50 50%, #1a3a6a 100%);
+  padding: 28px 32px 20px;
+  border-bottom: 2px solid #d4a843;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 30% 50%, rgba(212,168,67,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-content {
+  max-width: 1400px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  position: relative; z-index: 1;
+}
+.header h1 {
+  font-size: 22px; font-weight: 700;
+  background: linear-gradient(90deg, #f6c94a, #d4a843);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+}
+.header-sub {
+  color: #8892b0; font-size: 13px; margin-top: 4px;
+}
+.header-badge {
+  background: rgba(212,168,67,0.15);
+  border: 1px solid rgba(212,168,67,0.3);
+  border-radius: 20px; padding: 6px 18px;
+  font-size: 13px; color: #d4a843;
+}
 
-  .kpi-label {
-    font-size: 13px;
-    color: #8ba4cc;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .kpi-value {
-    font-size: 32px;
-    font-weight: 700;
-    color: #f0d68a;
-    line-height: 1.2;
-  }
-  .kpi-value.green { color: #4ade80; }
-  .kpi-value.red { color: #f87171; }
-  .kpi-value.blue { color: #60a5fa; }
-  .kpi-sub {
-    font-size: 12px;
-    color: #7a94b8;
-    margin-top: 6px;
-    line-height: 1.5;
-  }
-  .kpi-sub strong { color: #c9dbf5; }
+/* ===== CONTAINER ===== */
+.container { max-width: 1440px; margin: 0 auto; padding: 24px 20px; }
 
-  /* ===== Chart Area ===== */
-  .chart-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .chart-card {
-    background: linear-gradient(135deg, #0f1d35, #152344);
-    border: 1px solid #1f3a5f;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  }
-  .chart-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #f0d68a;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #1f3a5f;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .chart-title .icon { font-size: 16px; }
-  .chart-container { position: relative; width: 100%; }
-  .chart-container.h250 { height: 250px; }
-  .chart-container.h280 { height: 280px; }
+/* ===== KPI CARDS ===== */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: linear-gradient(135deg, #112240, #0f1d35);
+  border: 1px solid #1a3055;
+  border-radius: 12px;
+  padding: 20px 24px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  border-radius: 4px 0 0 4px;
+}
+.kpi-card:nth-child(1)::after { background: #4fc3f7; }
+.kpi-card:nth-child(2)::after { background: #d4a843; }
+.kpi-card:nth-child(3)::after { background: #81c784; }
+.kpi-card:nth-child(4)::after { background: #ef5350; }
 
-  /* ===== Table ===== */
-  .table-card {
-    background: linear-gradient(135deg, #0f1d35, #152344);
-    border: 1px solid #1f3a5f;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-    margin-bottom: 24px;
-    overflow-x: auto;
-  }
-  .table-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: #f0d68a;
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #1f3a5f;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  thead th {
-    background: #0f1d35;
-    color: #8ba4cc;
-    font-weight: 600;
-    padding: 10px 12px;
-    text-align: center;
-    border-bottom: 2px solid #1f3a5f;
-    white-space: nowrap;
-  }
-  tbody td {
-    padding: 10px 12px;
-    text-align: center;
-    border-bottom: 1px solid #1a2f4a;
-    color: #c9dbf5;
-  }
-  tbody tr:hover td { background: rgba(212,168,67,0.06); }
-  tbody tr:last-child td { border-bottom: none; }
+.kpi-label { font-size: 13px; color: #8892b0; margin-bottom: 8px; letter-spacing: 1px; }
+.kpi-value { font-size: 28px; font-weight: 700; color: #e6edf5; }
+.kpi-value .unit { font-size: 14px; color: #8892b0; font-weight: 400; margin-left: 4px; }
+.kpi-sub { font-size: 12px; color: #8892b0; margin-top: 6px; }
+.kpi-sub .highlight { color: #d4a843; font-weight: 600; }
+.kpi-sub .green { color: #81c784; }
+.kpi-sub .red { color: #ef5350; }
 
-  .rank-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .rank-1 { background: #d4a843; color: #0a1628; }
-  .rank-2 { background: #a0a0a0; color: #0a1628; }
-  .rank-3 { background: #cd7f32; color: #fff; }
-  .rank-other { background: #1f3a5f; color: #8ba4cc; }
+/* ===== CHARTS ===== */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.chart-panel {
+  background: linear-gradient(135deg, #112240, #0f1d35);
+  border: 1px solid #1a3055;
+  border-radius: 12px;
+  padding: 20px;
+}
+.chart-title {
+  font-size: 15px; color: #d4a843;
+  margin-bottom: 16px; font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(212,168,67,0.15);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chart-title .chart-sub {
+  font-size: 12px; color: #8892b0; font-weight: 400;
+}
+.chart-wrap { position: relative; width: 100%; }
 
-  .tag {
-    display: inline-block;
-    padding: 3px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-  .tag-excellent { background: rgba(34,197,94,0.2); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
-  .tag-good { background: rgba(234,179,8,0.2); color: #eab308; border: 1px solid rgba(234,179,8,0.3); }
-  .tag-improve { background: rgba(249,115,22,0.2); color: #fb923c; border: 1px solid rgba(249,115,22,0.3); }
-  .tag-warn { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+/* ===== BASE CARDS ===== */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.base-card {
+  background: linear-gradient(135deg, #112240, #0f1d35);
+  border: 1px solid #1a3055;
+  border-radius: 12px;
+  padding: 18px 20px;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+}
+.base-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.base-card.expanded {
+  border-color: rgba(212,168,67,0.4);
+}
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.card-name {
+  font-size: 16px; font-weight: 600; color: #e6edf5;
+}
+.card-status {
+  font-size: 11px; padding: 3px 12px;
+  border-radius: 20px; font-weight: 600;
+  letter-spacing: 1px;
+}
+.card-status.excellent { background: rgba(76,175,80,0.15); color: #81c784; border: 1px solid rgba(76,175,80,0.3); }
+.card-status.good { background: rgba(255,152,0,0.15); color: #ffb74d; border: 1px solid rgba(255,152,0,0.3); }
+.card-status.pending { background: rgba(255,235,59,0.1); color: #ffd54f; border: 1px solid rgba(255,235,59,0.2); }
+.card-status.critical { background: rgba(244,67,54,0.15); color: #ef9a9a; border: 1px solid rgba(244,67,54,0.3); }
 
-  /* ===== Footer ===== */
-  .footer {
-    text-align: center;
-    padding: 16px;
-    color: #5a7a9a;
-    font-size: 12px;
-    line-height: 1.8;
-  }
-  .footer strong { color: #8ba4cc; }
+.card-stats {
+  display: flex; gap: 16px; margin-bottom: 10px;
+  font-size: 12px; color: #8892b0;
+}
+.card-stats span { display: flex; align-items: center; gap: 4px; }
+.card-stats .stat-val { color: #e6edf5; font-weight: 600; }
 
-  /* ===== Responsive ===== */
-  @media (max-width: 1024px) {
-    .chart-row { grid-template-columns: 1fr; }
-    .chart-container.h250, .chart-container.h280 { height: 260px; }
-  }
-  @media (max-width: 768px) {
-    body { padding: 12px; }
-    .header { flex-direction: column; gap: 12px; text-align: center; padding: 16px; }
-    .header h1 { font-size: 18px; }
-    .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .kpi-value { font-size: 26px; }
-    .kpi-card { padding: 16px; }
-    table { font-size: 12px; }
-    thead th, tbody td { padding: 8px; }
-  }
-  @media (max-width: 480px) {
-    .kpi-row { grid-template-columns: 1fr; }
-  }
+/* Mini bar */
+.mini-bar-wrap { margin-bottom: 4px; }
+.mini-bar-label { font-size: 11px; color: #8892b0; margin-bottom: 4px; display: flex; justify-content: space-between; }
+.mini-bar {
+  height: 10px; border-radius: 5px; overflow: hidden;
+  display: flex; background: rgba(255,255,255,0.05);
+}
+.mini-bar .seg { height: 100%; transition: width 0.5s; }
+.mini-bar .seg.opt { background: linear-gradient(90deg, #1a8bc4, #4fc3f7); }
+.mini-bar .seg.nonopt { background: linear-gradient(90deg, #d84315, #ff8a65); }
+
+.card-expand-btn {
+  font-size: 12px; color: #d4a843;
+  cursor: pointer; user-select: none;
+  padding: 4px 0; transition: color 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.card-expand-btn:hover { color: #f6c94a; }
+.card-expand-btn .arrow {
+  display: inline-block; transition: transform 0.3s;
+  font-size: 10px;
+}
+.expanded .card-expand-btn .arrow { transform: rotate(180deg); }
+
+/* Province table */
+.province-table-wrap {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+.expanded .province-table-wrap { max-height: 500px; }
+.province-table {
+  width: 100%; border-collapse: collapse;
+  margin-top: 12px; font-size: 12px;
+}
+.province-table th {
+  text-align: left; padding: 6px 8px;
+  border-bottom: 1px solid rgba(212,168,67,0.15);
+  color: #8892b0; font-weight: 500; font-size: 11px;
+  white-space: nowrap;
+}
+.province-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #c8d0dc;
+}
+.province-table tr:last-child td { border-bottom: none; }
+.province-table tbody tr:hover td { background: rgba(212,168,67,0.06); }
+.province-table .amt { font-variant-numeric: tabular-nums; text-align: right; }
+.province-table .pct-cell { color: #d4a843; text-align: right; white-space: nowrap; }
+.province-table .prov-name { font-weight: 500; }
+.province-table .opt-amt { color: #4fc3f7; }
+.province-table .nonopt-amt { color: #ff8a65; }
+.impact-bar {
+  display: inline-block; width: 0; height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, #d4a843, rgba(212,168,67,0.15));
+  vertical-align: middle; margin-right: 4px;
+}
+
+/* ===== INSIGHTS ===== */
+.insights-panel {
+  background: linear-gradient(135deg, #112240, #0f1d35);
+  border: 1px solid #1a3055;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.insights-title {
+  font-size: 16px; color: #d4a843;
+  margin-bottom: 18px; font-weight: 600;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(212,168,67,0.15);
+}
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.insight-item {
+  padding: 14px 16px;
+  border-radius: 8px;
+  border-left: 3px solid;
+  font-size: 13px; line-height: 1.7;
+}
+.insight-item.urgent { background: rgba(244,67,54,0.06); border-color: #ef5350; }
+.insight-item.urgent .insight-tag { color: #ef5350; }
+.insight-item.best { background: rgba(76,175,80,0.06); border-color: #81c784; }
+.insight-item.best .insight-tag { color: #81c784; }
+.insight-tag { font-weight: 700; display: block; margin-bottom: 4px; }
+.insight-detail { color: #a0aab8; }
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center; padding: 20px;
+  border-top: 1px solid #1a3055;
+  font-size: 12px; color: #5a6a8a;
+}
+.footer .sep { margin: 0 12px; color: #2a4066; }
+.legend-wrap {
+  display: flex; gap: 20px; justify-content: center;
+  margin-top: 16px; flex-wrap: wrap;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: #8892b0;
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.legend-dot.opt { background: #4fc3f7; }
+.legend-dot.nonopt { background: #ff8a65; }
+.legend-dot.rate { background: #d4a843; }
+.legend-line { width: 20px; border-top: 2px dashed #81c784; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .charts-row { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 22px; }
+  .insights-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 17px; }
+  .header-content { flex-direction: column; gap: 10px; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .kpi-row { grid-template-columns: 1fr; }
+  .container { padding: 16px 12px; }
+  .header { padding: 18px 16px; }
+}
 </style>
 </head>
 <body>
-<div class="dashboard">
 
-  <!-- ===== Header ===== -->
-  <div class="header">
-    <div class="header-left">
-      <div class="header-icon">&#x1F69A;</div>
-      <div>
-        <h1>建筑工程事业部 &mdash; 基地发货效率看板</h1>
-        <div class="header-subtitle">最优基地发货率监控 &middot; 交货单金额口径</div>
-      </div>
+<div class="header">
+  <div class="header-content">
+    <div>
+      <h1>建筑工程事业部 — 基地发货效率全景看板</h1>
+      <div class="header-sub">Delivery Efficiency Panoramic Dashboard · 数据驱动决策 · 持续优化供应链</div>
     </div>
-    <div class="header-right">
-      <div class="header-date">
-        <span>&#x1F4C5;</span>
-        <span id="updateTime"></span>
+    <div class="header-badge">实时看板</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI Cards -->
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-panel">
+      <div class="chart-title">
+        <span>各基地最优发货率 + 金额对比</span>
+        <span class="chart-sub">柱: 金额(万) · 折线: 最优率(%) · 虚线: 阈值线</span>
       </div>
+      <div class="chart-wrap"><canvas id="leftChart"></canvas></div>
+    </div>
+    <div class="chart-panel">
+      <div class="chart-title">
+        <span>省区非最优金额 TOP 排行</span>
+        <span class="chart-sub">跨基地汇总 · 万元</span>
+      </div>
+      <div class="chart-wrap"><canvas id="rightChart"></canvas></div>
     </div>
   </div>
 
-  <!-- ===== KPI Cards ===== -->
-  <div class="kpi-row">
-    <div class="kpi-card type-1">
-      <div class="kpi-label">&#x1F3C6; 整体最优发货率</div>
-      <div class="kpi-value">54.70%</div>
-      <div class="kpi-sub">按交货单金额计算</div>
-    </div>
-    <div class="kpi-card type-2">
-      <div class="kpi-label">&#x2705; 最优基地（>90%）</div>
-      <div class="kpi-value green">2 个</div>
-      <div class="kpi-sub">
-        佛山 <strong>98.62%</strong> &middot; 渭南 <strong>96.16%</strong>
-      </div>
-    </div>
-    <div class="kpi-card type-3">
-      <div class="kpi-label">&#x26A0;&#xFE0F; 重点改进基地（&lt;30%）</div>
-      <div class="kpi-value red">3 个</div>
-      <div class="kpi-sub">
-        黄石 <strong>9.72%</strong> &middot; 天津 <strong>7.32%</strong> &middot; 长春 <strong>20.44%</strong>
-      </div>
-    </div>
-    <div class="kpi-card type-4">
-      <div class="kpi-label">&#x1F4CA; 覆盖基地总数</div>
-      <div class="kpi-value blue">7 个</div>
-      <div class="kpi-sub">佛山 &middot; 黄石 &middot; 天津 &middot; 渭南 &middot; 长春 &middot; 镇江 &middot; 重庆</div>
-    </div>
-  </div>
+  <!-- Base Cards -->
+  <div class="cards-grid" id="cardsGrid"></div>
 
-  <!-- ===== Charts ===== -->
-  <div class="chart-row">
-    <!-- Left: 最优发货率排行 -->
-    <div class="chart-card">
-      <div class="chart-title"><span class="icon">&#x1F3C6;</span> 最优发货率排行（交货单金额）</div>
-      <div class="chart-container h280">
-        <canvas id="chartLeft"></canvas>
-      </div>
-    </div>
-    <!-- Middle: 堆叠柱状图 -->
-    <div class="chart-card">
-      <div class="chart-title"><span class="icon">&#x1F4CA;</span> 各基地最优 vs 非最优发货</div>
-      <div class="chart-container h280">
-        <canvas id="chartMiddle"></canvas>
-      </div>
-    </div>
-    <!-- Right: 非最优发货占比排行 -->
-    <div class="chart-card">
-      <div class="chart-title"><span class="icon">&#x26A0;&#xFE0F;</span> 非最优发货占比排行（警示）</div>
-      <div class="chart-container h280">
-        <canvas id="chartRight"></canvas>
-      </div>
-    </div>
-  </div>
+  <!-- Insights -->
+  <div class="insights-panel" id="insightsPanel"></div>
 
-  <!-- ===== Table ===== -->
-  <div class="table-card">
-    <div class="table-title">&#x1F4CB; 各基地发货效率详情</div>
-    <table>
-      <thead>
-        <tr>
-          <th>排名</th>
-          <th>基地</th>
-          <th>最优发货率</th>
-          <th>非最优率</th>
-          <th>供货省份（否/是）</th>
-          <th>供货城市（否/是）</th>
-          <th>SKU（否/是）</th>
-          <th>状态</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="rank-num rank-1">1</span></td>
-          <td><strong>佛山</strong></td>
-          <td style="color:#4ade80;font-weight:600;">98.62%</td>
-          <td style="color:#f87171;">1.38%</td>
-          <td>2 / 3</td>
-          <td>2 / 19</td>
-          <td>5 / 286</td>
-          <td><span class="tag tag-excellent">优秀</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-2">2</span></td>
-          <td><strong>渭南</strong></td>
-          <td style="color:#4ade80;font-weight:600;">96.16%</td>
-          <td style="color:#f87171;">3.84%</td>
-          <td>2 / 3</td>
-          <td>8 / 29</td>
-          <td>10 / 71</td>
-          <td><span class="tag tag-excellent">优秀</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-3">3</span></td>
-          <td><strong>镇江</strong></td>
-          <td style="color:#eab308;font-weight:600;">79.51%</td>
-          <td style="color:#f87171;">20.49%</td>
-          <td>3 / 3</td>
-          <td>26 / 17</td>
-          <td>140 / 84</td>
-          <td><span class="tag tag-good">良好</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-other">4</span></td>
-          <td><strong>重庆</strong></td>
-          <td style="color:#fb923c;font-weight:600;">34.23%</td>
-          <td style="color:#f87171;">65.77%</td>
-          <td>4 / 3</td>
-          <td>6 / 5</td>
-          <td>73 / 22</td>
-          <td><span class="tag tag-improve">待改进</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-other">5</span></td>
-          <td><strong>长春</strong></td>
-          <td style="color:#f87171;font-weight:600;">20.44%</td>
-          <td style="color:#f87171;">79.56%</td>
-          <td>3 / 3</td>
-          <td>22 / 16</td>
-          <td>172 / 83</td>
-          <td><span class="tag tag-warn">重点关注</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-other">6</span></td>
-          <td><strong>黄石</strong></td>
-          <td style="color:#f87171;font-weight:600;">9.72%</td>
-          <td style="color:#f87171;">90.28%</td>
-          <td>3 / 1</td>
-          <td>15 / 5</td>
-          <td>116 / 29</td>
-          <td><span class="tag tag-warn">重点关注</span></td>
-        </tr>
-        <tr>
-          <td><span class="rank-num rank-other">7</span></td>
-          <td><strong>天津</strong></td>
-          <td style="color:#f87171;font-weight:600;">7.32%</td>
-          <td style="color:#f87171;">92.68%</td>
-          <td>4 / 3</td>
-          <td>20 / 12</td>
-          <td>109 / 77</td>
-          <td><span class="tag tag-warn">重点关注</span></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ===== Footer ===== -->
+  <!-- Footer -->
   <div class="footer">
-    <div>数据更新时间：<strong id="footerTime"></strong></div>
-    <div>指标说明：<strong>否</strong> = 应在就近最优基地发货但实际未在最优基地发货 &nbsp;|&nbsp; <strong>是</strong> = 在最优基地发货（比例越高越好）</div>
-    <div>数据来源：企业 Excel 台账 &nbsp;|&nbsp; 口径：交货单金额</div>
+    <span>数据更新时间: 2026年5月</span>
+    <span class="sep">|</span>
+    <span>建筑工程事业部 运营管理部</span>
+    <span class="sep">|</span>
+    <span>注: 最优发货率 = 最优路线发货金额 / 总发货金额</span>
+    <div class="legend-wrap">
+      <div class="legend-item"><div class="legend-dot opt"></div>最优金额</div>
+      <div class="legend-item"><div class="legend-dot nonopt"></div>非最优金额</div>
+      <div class="legend-item"><div class="legend-dot rate"></div>最优率</div>
+      <div class="legend-item"><div class="legend-line"></div>90%标杆线 / 70%警戒线</div>
+    </div>
   </div>
 
 </div>
 
 <script>
-// ===== Data =====
-const bases = ['佛山', '渭南', '镇江', '重庆', '长春', '黄石', '天津'];
-const optimalPct = [98.62, 96.16, 79.51, 34.23, 20.44, 9.72, 7.32];
-const nonOptimalPct = [1.38, 3.84, 20.49, 65.77, 79.56, 90.28, 92.68];
-
-// Color thresholds for optimal rate
-function getBarColor(val) {
-  if (val >= 90) return '#22c55e';
-  if (val >= 70) return '#eab308';
-  if (val >= 30) return '#f97316';
-  return '#ef4444';
-}
-const barColors = optimalPct.map(getBarColor);
-
-// ===== Chart defaults =====
-Chart.defaults.color = '#8ba4cc';
-Chart.defaults.font.family = "'PingFang SC','Microsoft YaHei','Helvetica Neue',Arial,sans-serif";
-
-// ===== Left Chart: 最优发货率排行 (Horizontal Bar) =====
-new Chart(document.getElementById('chartLeft'), {
-  type: 'bar',
-  data: {
-    labels: bases.slice(),
-    datasets: [{
-      data: optimalPct.slice(),
-      backgroundColor: barColors.slice(),
-      borderRadius: 3,
-      borderSkipped: false,
-    }]
+// ===================================================================
+// DATA
+// ===================================================================
+const bases = [
+  {
+    name: '佛山基地', total: 1102, optimal: 1086, nonOptimal: 15, rate: 98.6,
+    provinces: [
+      { name: '福建', nonOpt: 14.9, opt: 0 },
+      { name: '广东', nonOpt: 0.3, opt: 441.3 }
+    ],
+    allOptimal: [
+      { name: '广东', amt: 441.3 },
+      { name: '广西', amt: 599.3 },
+      { name: '海南', amt: 46.0 }
+    ]
   },
-  options: {
-    indexAxis: 'y',
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(ctx) { return ctx.parsed.x + '%'; }
-        }
-      }
-    },
-    scales: {
-      x: {
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        min: 0,
-        max: 100,
-        ticks: { callback: function(v) { return v + '%'; } }
-      },
-      y: {
-        grid: { display: false },
-        ticks: { font: { size: 12, weight: 'bold' } }
-      }
-    }
+  {
+    name: '黄石基地', total: 217, optimal: 21, nonOptimal: 196, rate: 9.7,
+    provinces: [
+      { name: '湖北', nonOpt: 126.5, opt: 21.1 },
+      { name: '湖南', nonOpt: 9.2, opt: 0 },
+      { name: '江西', nonOpt: 60.5, opt: 0 }
+    ]
+  },
+  {
+    name: '天津基地', total: 482, optimal: 35, nonOptimal: 447, rate: 7.3,
+    provinces: [
+      { name: '河北', nonOpt: 1.3, opt: 0 },
+      { name: '华北', nonOpt: 33.6, opt: 13.6 },
+      { name: '内蒙', nonOpt: 399.0, opt: 18.6 },
+      { name: '山东', nonOpt: 13.1, opt: 3.1 }
+    ]
+  },
+  {
+    name: '渭南基地', total: 403, optimal: 388, nonOptimal: 15, rate: 96.2,
+    provinces: [
+      { name: '河南', nonOpt: 6.0, opt: 124.0 },
+      { name: '山西', nonOpt: 9.5, opt: 137.2 }
+    ],
+    allOptimal: [
+      { name: '甘肃', amt: 126.6 },
+      { name: '河南', amt: 124.0 },
+      { name: '山西', amt: 137.2 }
+    ]
+  },
+  {
+    name: '长春基地', total: 1248, optimal: 256, nonOptimal: 992, rate: 20.5,
+    provinces: [
+      { name: '黑龙江', nonOpt: 431.3, opt: 9.5 },
+      { name: '吉林', nonOpt: 32.7, opt: 19.7 },
+      { name: '辽宁', nonOpt: 528.0, opt: 226.4 }
+    ]
+  },
+  {
+    name: '镇江基地', total: 567, optimal: 454, nonOptimal: 113, rate: 80.1,
+    provinces: [
+      { name: '安徽', nonOpt: 41.7, opt: 12.9 },
+      { name: '江苏', nonOpt: 63.5, opt: 366.9 },
+      { name: '浙江', nonOpt: 7.7, opt: 74.5 }
+    ]
+  },
+  {
+    name: '重庆基地', total: 169, optimal: 58, nonOptimal: 111, rate: 34.2,
+    provinces: [
+      { name: '贵州', nonOpt: 31.9, opt: 33.4 },
+      { name: '四川', nonOpt: 3.1, opt: 1.3 },
+      { name: '云南', nonOpt: 75.5, opt: 23.1 },
+      { name: '重庆', nonOpt: 0.6, opt: 0 }
+    ]
   }
+];
+
+const provinceRanking = [
+  { name: '辽宁', amount: 528.0, base: '长春' },
+  { name: '黑龙江', amount: 431.3, base: '长春' },
+  { name: '内蒙', amount: 399.0, base: '天津' },
+  { name: '湖北', amount: 126.5, base: '黄石' },
+  { name: '云南', amount: 75.5, base: '重庆' },
+  { name: '江苏', amount: 63.5, base: '镇江' },
+  { name: '江西', amount: 60.5, base: '黄石' }
+];
+
+// ===================================================================
+// COMPUTED
+// ===================================================================
+const excellentCount = bases.filter(b => b.rate >= 90).length;
+const criticalCount = bases.filter(b => b.rate < 30).length;
+const totalAmount = 4188;
+const lossAmount = bases.reduce((s, b) => s + b.nonOptimal, 0);
+
+// ===================================================================
+// HELPERS
+// ===================================================================
+function getStatus(rate) {
+  if (rate >= 90) return 'excellent';
+  if (rate >= 70) return 'good';
+  if (rate >= 30) return 'pending';
+  return 'critical';
+}
+function getStatusLabel(rate) {
+  if (rate >= 90) return '标杆';
+  if (rate >= 70) return '良好';
+  if (rate >= 30) return '待改进';
+  return '重点关注';
+}
+
+// ===================================================================
+// RENDER KPI
+// ===================================================================
+const kpiRow = document.getElementById('kpiRow');
+kpiRow.innerHTML = `
+  <div class="kpi-card">
+    <div class="kpi-label">总交货单金额</div>
+    <div class="kpi-value">4,188<span class="unit">万元</span></div>
+    <div class="kpi-sub">7 个生产基地合计</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">整体最优发货率</div>
+    <div class="kpi-value">54.7<span class="unit">%</span></div>
+    <div class="kpi-sub">较优水平 <span class="highlight">尚有提升空间</span></div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">基地效能分布</div>
+    <div class="kpi-value" style="font-size:22px;line-height:1.4;">
+      🟢 <span class="green">${excellentCount}个</span>
+      <span style="color:#5a6a8a;font-size:18px;">·</span>
+      🔴 <span class="red">${criticalCount}个</span>
+    </div>
+    <div class="kpi-sub">标杆(>90%) · 重点关注(<30%)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">非最优损失金额</div>
+    <div class="kpi-value">${lossAmount.toLocaleString()}<span class="unit">万元</span></div>
+    <div class="kpi-sub">占总金额 <span class="highlight">${(lossAmount / totalAmount * 100).toFixed(1)}%</span> · 改善空间巨大</div>
+  </div>
+`;
+
+// ===================================================================
+// RENDER CARDS
+// ===================================================================
+const cardsGrid = document.getElementById('cardsGrid');
+bases.forEach((b) => {
+  const status = getStatus(b.rate);
+  const label = getStatusLabel(b.rate);
+  const optPct = b.total > 0 ? (b.optimal / b.total * 100).toFixed(1) : 0;
+  const nonOptPct = b.total > 0 ? (b.nonOptimal / b.total * 100).toFixed(1) : 0;
+
+  // Province rows: non-optimal first, then pure-optimal
+  const sumProv = b.provinces.reduce((s, x) => s + x.nonOpt, 0);
+  const provRows = b.provinces.map(p => {
+    const impact = sumProv > 0 ? (p.nonOpt / sumProv * 100) : 0;
+    return `<tr>
+      <td class="prov-name">${p.name}</td>
+      <td class="amt nonopt-amt">${p.nonOpt.toFixed(1)}</td>
+      <td class="amt opt-amt">${p.opt.toFixed(1)}</td>
+      <td class="pct-cell"><span class="impact-bar" style="width:${Math.min(impact * 0.6, 60)}px"></span>${impact.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Additional rows for provinces with only optimal (no nonOpt)
+  const extraRows = b.allOptimal ? b.allOptimal
+    .filter(p => !b.provinces.some(x => x.name === p.name))
+    .map(p => `<tr>
+      <td class="prov-name">${p.name}</td>
+      <td class="amt nonopt-amt">0.0</td>
+      <td class="amt opt-amt">${p.amt.toFixed(1)}</td>
+      <td class="pct-cell">-</td>
+    </tr>`).join('') : '';
+
+  const card = document.createElement('div');
+  card.className = 'base-card';
+  card.innerHTML = `
+    <div class="card-header">
+      <div class="card-name">${b.name}</div>
+      <div class="card-status ${status}">${label}</div>
+    </div>
+    <div class="card-stats">
+      <span>总交货 <span class="stat-val">${b.total}万</span></span>
+      <span>最优率 <span class="stat-val">${b.rate}%</span></span>
+      <span>非最优 <span class="stat-val" style="color:#ff8a65">${b.nonOptimal}万</span></span>
+    </div>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label">
+        <span style="color:#4fc3f7">最优 ${b.optimal}万 (${optPct}%)</span>
+        <span style="color:#ff8a65">非最优 ${b.nonOptimal}万 (${nonOptPct}%)</span>
+      </div>
+      <div class="mini-bar">
+        <div class="seg opt" style="width:${optPct}%"></div>
+        <div class="seg nonopt" style="width:${nonOptPct}%"></div>
+      </div>
+    </div>
+    <div class="card-expand-btn">
+      <span class="arrow">▼</span> 查看省份详情
+    </div>
+    <div class="province-table-wrap">
+      <table class="province-table">
+        <thead>
+          <tr>
+            <th>省份</th>
+            <th style="text-align:right">非最优(万)</th>
+            <th style="text-align:right">最优(万)</th>
+            <th style="text-align:right">影响占比</th>
+          </tr>
+        </thead>
+        <tbody>${provRows}${extraRows}</tbody>
+      </table>
+    </div>
+  `;
+  card.querySelector('.card-expand-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    card.classList.toggle('expanded');
+  });
+  cardsGrid.appendChild(card);
 });
 
-// ===== Middle Chart: Stacked Bar =====
-const midCtx = document.getElementById('chartMiddle');
-const midChart = new Chart(midCtx, {
+// ===================================================================
+// RENDER INSIGHTS
+// ===================================================================
+document.getElementById('insightsPanel').innerHTML = `
+  <div class="insights-title">管理洞察 · 数据驱动决策</div>
+  <div class="insights-grid">
+    <div class="insight-item urgent">
+      <span class="insight-tag">重点改进 — 长春基地</span>
+      <div class="insight-detail">
+        非最优金额 <strong style="color:#ef5350">992万</strong>（占总量 ${(992/totalAmount*100).toFixed(1)}%），
+        其中辽宁 528万、黑龙江 431万
+        → 建议优先优化长春→辽宁、长春→黑龙江发货路由，仅这两省即贡献非最优损失的 <strong style="color:#d4a843">${((528+431.3)/lossAmount*100).toFixed(1)}%</strong>
+      </div>
+    </div>
+    <div class="insight-item urgent">
+      <span class="insight-tag">重点改进 — 天津基地</span>
+      <div class="insight-detail">
+        非最优金额 <strong style="color:#ef5350">447万</strong>（占总量 ${(447/totalAmount*100).toFixed(1)}%），
+        其中内蒙 399万（占该基地非最优 89.2%）
+        → 天津→内蒙发货路由严重偏离最优，需专项分析运输成本与时效平衡策略
+      </div>
+    </div>
+    <div class="insight-item urgent">
+      <span class="insight-tag">重点改进 — 黄石基地</span>
+      <div class="insight-detail">
+        非最优金额 <strong style="color:#ef5350">196万</strong>，最优率仅 9.7%，
+        其中湖北 126.5万、江西 60.5万
+        → 黄石作为华中区域基地，省内及江西发货均非最优，建议重新评估运输方案
+      </div>
+    </div>
+    <div class="insight-item best">
+      <span class="insight-tag">标杆经验</span>
+      <div class="insight-detail">
+        佛山基地（最优率 98.6%）和 渭南基地（96.2%）可作为最优发货标杆。
+        佛山通过广东(441万)、广西(599万)全部实现最优发货；
+        渭南在甘肃、河南、山西三省均实现 >90% 最优发货。
+        → 建议抽取两基地最优管理实践，向全国基地推广
+      </div>
+    </div>
+  </div>
+`;
+
+// ===================================================================
+// CHARTS — LEFT: Dual-Axis Bar + Line
+// ===================================================================
+const labelColor = '#8892b0';
+const gridColor = 'rgba(255,255,255,0.06)';
+const fontFamily = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif";
+
+Chart.defaults.color = labelColor;
+Chart.defaults.font.family = fontFamily;
+
+const baseNames = bases.map(b => b.name.replace('基地', ''));
+const optAmounts = bases.map(b => b.optimal);
+const nonOptAmounts = bases.map(b => b.nonOptimal);
+const rates = bases.map(b => b.rate);
+
+new Chart(document.getElementById('leftChart'), {
   type: 'bar',
   data: {
-    labels: bases,
+    labels: baseNames,
     datasets: [
       {
-        label: '最优发货（是）',
-        data: optimalPct,
-        backgroundColor: 'rgba(34,197,94,0.8)',
-        borderColor: '#22c55e',
+        label: '最优金额(万元)',
+        data: optAmounts,
+        backgroundColor: 'rgba(79, 195, 247, 0.7)',
+        borderColor: '#4fc3f7',
         borderWidth: 1,
-        borderRadius: 2,
+        borderRadius: 3,
+        order: 2
       },
       {
-        label: '非最优发货（否）',
-        data: nonOptimalPct,
-        backgroundColor: 'rgba(239,68,68,0.8)',
-        borderColor: '#ef4444',
+        label: '非最优金额(万元)',
+        data: nonOptAmounts,
+        backgroundColor: 'rgba(255, 138, 101, 0.7)',
+        borderColor: '#ff8a65',
         borderWidth: 1,
-        borderRadius: 2,
+        borderRadius: 3,
+        order: 2
+      },
+      {
+        type: 'line',
+        label: '最优率(%)',
+        data: rates,
+        borderColor: '#d4a843',
+        backgroundColor: '#d4a843',
+        pointBackgroundColor: '#f6c94a',
+        pointBorderColor: '#b8860b',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 9,
+        borderWidth: 2.5,
+        tension: 0.2,
+        yAxisID: 'y-pct',
+        order: 1,
+        spanGaps: true,
+        fill: false
       }
     ]
   },
   options: {
     responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: { boxWidth: 12, padding: 12, font: { size: 11 } }
-      },
-      tooltip: {
-        callbacks: {
-          label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y + '%'; }
-        }
-      },
-      annotation: undefined // not using plugin, draw line manually via plugin or not at all
+    maintainAspectRatio: true,
+    aspectRatio: 1.4,
+    interaction: {
+      mode: 'index',
+      intersect: false
     },
-    scales: {
-      x: {
-        stacked: true,
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        ticks: { font: { size: 10 } }
-      },
-      y: {
-        stacked: true,
-        min: 0,
-        max: 100,
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        ticks: { callback: function(v) { return v + '%'; } }
-      }
-    }
-  }
-});
-
-// Draw total baseline (54.70%) — after chart renders, draw via plugin or custom overlay
-// Use afterDraw plugin
-const totalLinePlugin = {
-  id: 'totalLine',
-  afterDraw: function(chart) {
-    const yScale = chart.scales.y;
-    const xScale = chart.scales.x;
-    if (!yScale || !xScale) return;
-    const y = yScale.getPixelForValue(54.70);
-    if (y === undefined || y === null) return;
-    const ctx = chart.ctx;
-    ctx.save();
-    ctx.beginPath();
-    ctx.setLineDash([5, 3]);
-    ctx.strokeStyle = '#f0d68a';
-    ctx.lineWidth = 1.5;
-    ctx.moveTo(xScale.left, y);
-    ctx.lineTo(xScale.right, y);
-    ctx.stroke();
-    // label
-    ctx.fillStyle = '#f0d68a';
-    ctx.font = '11px "PingFang SC","Microsoft YaHei",sans-serif';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'bottom';
-    ctx.fillText('总计基准 54.70%', xScale.right - 4, y - 3);
-    ctx.restore();
-  }
-};
-midChart.id = 'midChart'; // for identification
-Chart.register(totalLinePlugin);
-// Re-register might already be there; we just add it
-// Actually we need to register before creating or update. Since chart is already created,
-// we need to re-register and update.
-// Let's just destroy and recreate
-midChart.destroy();
-new Chart(document.getElementById('chartMiddle'), {
-  type: 'bar',
-  data: {
-    labels: bases,
-    datasets: [
-      {
-        label: '最优发货（是）',
-        data: optimalPct,
-        backgroundColor: 'rgba(34,197,94,0.8)',
-        borderColor: '#22c55e',
-        borderWidth: 1,
-        borderRadius: 2,
-      },
-      {
-        label: '非最优发货（否）',
-        data: nonOptimalPct,
-        backgroundColor: 'rgba(239,68,68,0.8)',
-        borderColor: '#ef4444',
-        borderWidth: 1,
-        borderRadius: 2,
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
-        labels: { boxWidth: 12, padding: 12, font: { size: 11 } }
+        position: 'bottom',
+        labels: {
+          usePointStyle: true,
+          padding: 16,
+          font: { size: 12 },
+          color: labelColor
+        }
       },
       tooltip: {
-        callbacks: {
-          label: function(ctx) { return ctx.dataset.label + ': ' + ctx.parsed.y + '%'; }
-        }
+        backgroundColor: 'rgba(10,22,40,0.92)',
+        titleColor: '#d4a843',
+        borderColor: '#1a3055',
+        borderWidth: 1,
+        padding: 10,
+        bodyFont: { size: 13 }
       }
     },
     scales: {
       x: {
-        stacked: true,
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        ticks: { font: { size: 10 } }
+        grid: { color: gridColor },
+        ticks: { color: labelColor, font: { size: 12 } }
       },
       y: {
-        stacked: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: '金额（万元）',
+          color: '#8892b0',
+          font: { size: 12 }
+        },
+        grid: { color: gridColor },
+        ticks: { color: labelColor, font: { size: 11 } },
+        beginAtZero: true
+      },
+      'y-pct': {
+        position: 'right',
         min: 0,
-        max: 100,
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        ticks: { callback: function(v) { return v + '%'; } }
+        max: 110,
+        title: {
+          display: true,
+          text: '最优率（%）',
+          color: '#d4a843',
+          font: { size: 12 }
+        },
+        grid: { drawOnChartArea: false },
+        ticks: {
+          color: '#d4a843',
+          font: { size: 11 },
+          callback: v => v + '%'
+        }
       }
     }
   },
-  plugins: [totalLinePlugin]
+  plugins: [{
+    id: 'thresholdLines',
+    afterDraw(chart) {
+      const { ctx, chartArea } = chart;
+      const yPctScale = chart.scales['y-pct'];
+      if (!yPctScale) return;
+
+      const thresholds = [
+        { value: 90, color: 'rgba(76, 175, 80, 0.65)', label: '90% 标杆线', bg: 'rgba(76, 175, 80, 0.5)' },
+        { value: 70, color: 'rgba(255, 193, 7, 0.65)', label: '70% 警戒线', bg: 'rgba(255, 193, 7, 0.5)' }
+      ];
+
+      thresholds.forEach(t => {
+        const y = yPctScale.getPixelForValue(t.value);
+        if (y < chartArea.top || y > chartArea.bottom) return;
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = t.color;
+        ctx.lineWidth = 1.5;
+        ctx.moveTo(chartArea.left, y);
+        ctx.lineTo(chartArea.right, y);
+        ctx.stroke();
+
+        ctx.font = '11px ' + fontFamily;
+        const textW = ctx.measureText(t.label).width;
+        const pad = 6;
+        ctx.fillStyle = t.bg;
+        ctx.fillRect(chartArea.right - textW - pad * 2 - 4, y - 8 - pad, textW + pad * 2 + 4, 16 + pad * 2);
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(t.label, chartArea.right - 4, y);
+        ctx.restore();
+      });
+    }
+  }]
 });
 
-// ===== Right Chart: 非最优发货占比排行 (Horizontal Bar, descending) =====
-// Sorted descending: 天津 > 黄石 > 长春 > 重庆 > 镇江 > 渭南 > 佛山
-const nonOptBases = ['天津', '黄石', '长春', '重庆', '镇江', '渭南', '佛山'];
-const nonOptVals = [92.68, 90.28, 79.56, 65.77, 20.49, 3.84, 1.38];
+// ===================================================================
+// CHARTS — RIGHT: Province Ranking (Horizontal)
+// ===================================================================
+const provNames = provinceRanking.map(p => p.name);
+const provAmounts = provinceRanking.map(p => p.amount);
+const provBases = provinceRanking.map(p => p.base);
+const barColors = provAmounts.map(v =>
+  v > 400 ? '#ef5350' : v > 200 ? '#ff8a65' : v > 100 ? '#ffb74d' : '#4fc3f7'
+);
 
-function getNonOptColor(val) {
-  if (val >= 70) return '#dc2626';
-  if (val >= 50) return '#ea580c';
-  if (val >= 20) return '#d97706';
-  return '#ca8a04';
-}
-const nonOptColors = nonOptVals.map(getNonOptColor);
-
-new Chart(document.getElementById('chartRight'), {
+new Chart(document.getElementById('rightChart'), {
   type: 'bar',
   data: {
-    labels: nonOptBases,
+    labels: provNames,
     datasets: [{
-      data: nonOptVals,
-      backgroundColor: nonOptColors,
-      borderRadius: 3,
-      borderSkipped: false,
+      label: '非最优金额(万元)',
+      data: provAmounts,
+      backgroundColor: barColors.map(c => c + 'cc'),
+      borderColor: barColors,
+      borderWidth: 1,
+      borderRadius: 3
     }]
   },
   options: {
     indexAxis: 'y',
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
+    aspectRatio: 1.4,
     plugins: {
       legend: { display: false },
       tooltip: {
+        backgroundColor: 'rgba(10,22,40,0.92)',
+        titleColor: '#d4a843',
+        borderColor: '#1a3055',
+        borderWidth: 1,
+        padding: 10,
         callbacks: {
-          label: function(ctx) { return ctx.parsed.x + '%'; }
+          afterLabel: function(context) {
+            return '所属基地: ' + provBases[context.dataIndex];
+          }
         }
       }
     },
     scales: {
       x: {
-        grid: { color: 'rgba(42,74,127,0.3)' },
-        min: 0,
-        max: 100,
-        ticks: { callback: function(v) { return v + '%'; } }
+        beginAtZero: true,
+        grid: { color: gridColor },
+        ticks: { color: labelColor, font: { size: 11 } },
+        title: {
+          display: true,
+          text: '金额（万元）',
+          color: '#8892b0',
+          font: { size: 11 }
+        }
       },
       y: {
         grid: { display: false },
-        ticks: { font: { size: 12, weight: 'bold' } }
+        ticks: {
+          color: labelColor,
+          font: { size: 13, weight: '500' }
+        }
       }
     }
-  }
+  },
+  plugins: [{
+    id: 'valueLabels',
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      ctx.save();
+      ctx.font = '13px ' + fontFamily;
+      ctx.textBaseline = 'middle';
+      meta.data.forEach((bar, i) => {
+        if (bar.hidden) return;
+        const val = provAmounts[i];
+        ctx.fillStyle = barColors[i];
+        ctx.textAlign = 'left';
+        ctx.fillText(val.toFixed(0) + '万', bar.x + 8, bar.y);
+      });
+      ctx.restore();
+    }
+  }]
 });
-
-// ===== Footer time =====
-(function() {
-  const now = new Date();
-  const pad = function(n) { return n < 10 ? '0' + n : '' + n; };
-  const str = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate())
-    + ' ' + pad(now.getHours()) + ':' + pad(now.getMinutes());
-  document.getElementById('updateTime').textContent = str;
-  document.getElementById('footerTime').textContent = str;
-})();
 </script>
 </body>
 </html>
