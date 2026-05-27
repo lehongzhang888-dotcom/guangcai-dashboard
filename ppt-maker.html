@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word → PPT 生成器 v4 · 豆包级 AI 设计</title>
+<style>
+/* ════════════════ GLOBAL ════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC',sans-serif;background:#0a0d14;color:#d0d4dc;height:100vh;overflow:hidden}
+
+/* ════════════════ LAYOUT ════════════════ */
+#app{display:flex;height:100vh}
+.panel{overflow-y:auto;padding:18px}
+.panel::-webkit-scrollbar{width:5px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:3px}
+
+/* ════════════════ LEFT PANEL ════════════════ */
+#leftPanel{width:360px;min-width:360px;background:#11141d;border-right:1px solid rgba(255,255,255,.06)}
+
+.logo{font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.logo .badge{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.subtitle{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:16px;letter-spacing:.5px}
+
+/* ── Usage Guide ── */
+.guide-box{background:linear-gradient(135deg,rgba(124,58,237,.08),rgba(168,85,247,.05));border:1px solid rgba(124,58,237,.15);border-radius:10px;padding:14px;margin-bottom:14px}
+.guide-box h3{font-size:13px;color:#a78bfa;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.guide-steps{display:flex;flex-direction:column;gap:8px}
+.guide-step{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:rgba(255,255,255,.6);line-height:1.5}
+.guide-step .step-num{min-width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,.15);color:#a78bfa;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.guide-step .step-text strong{color:#c4b5fd}
+
+/* ── Cards ── */
+.card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:14px;margin-bottom:12px}
+.card h3{font-size:11px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+
+/* ── Upload zones ── */
+.upload-zone{border:2px dashed rgba(255,255,255,.1);border-radius:8px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:8px}
+.upload-zone:hover{border-color:#4da6ff;background:rgba(77,166,255,.04)}
+.upload-zone .icon{font-size:28px;margin-bottom:4px;opacity:.6}
+.upload-zone .label{font-size:12px;color:rgba(255,255,255,.4)}
+.upload-zone .file-info{display:none;font-size:11px;color:#10b981;margin-top:4px;word-break:break-all}
+.upload-zone.loaded{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.03)}
+.upload-zone.loaded .file-info{display:block}
+.upload-zone.loaded .label{color:#10b981}
+.upload-zone.error{border-color:rgba(239,68,68,.3)}
+
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.style-chip{padding:9px 6px;border-radius:8px;text-align:center;cursor:pointer;border:2px solid rgba(255,255,255,.06);transition:all .15s;font-size:11px;user-select:none}
+.style-chip:hover{border-color:rgba(255,255,255,.15)}
+.style-chip.selected{border-color:#4da6ff;background:rgba(77,166,255,.1);color:#fff}
+
+.ai-toggles{display:flex;flex-direction:column;gap:4px;margin:10px 0 6px}
+.ai-toggles label{font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;cursor:pointer;padding:3px 0}
+.ai-toggles label input{accent-color:#7c3aed;width:14px;height:14px}
+.ai-toggles label span.desc{font-size:10px;color:rgba(255,255,255,.2)}
+
+/* ── Buttons ── */
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;letter-spacing:.5px}
+.btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.btn-primary{background:linear-gradient(135deg,#1a56db,#4da6ff);color:#fff}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 20px rgba(59,130,246,.3)}
+.btn-danger{background:rgba(239,68,68,.1);color:#ef4444;border:1px solid rgba(239,68,68,.2);margin-top:6px;font-size:12px}
+
+.template-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.45);margin-top:10px}
+.template-toggle input[type=checkbox]{accent-color:#4da6ff;width:15px;height:15px}
+
+input[type=file]{display:none}
+
+/* ════════════════ CENTER PANEL ════════════════ */
+#centerPanel{flex:1;background:#161a24;display:flex;flex-direction:column;min-width:0;position:relative}
+#centerPanel .topbar{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;gap:12px}
+#centerPanel .topbar .doc-title{font-size:15px;font-weight:700;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#centerPanel .topbar .meta{font-size:11px;color:rgba(255,255,255,.25);white-space:nowrap}
+
+#contentView{flex:1;overflow-y:auto;padding:16px 18px}
+.empty-state{text-align:center;padding:80px 20px;color:rgba(255,255,255,.12)}
+.empty-state .big-icon{font-size:64px;margin-bottom:12px}
+.empty-state p{font-size:14px;line-height:2}
+
+/* ── Content sections ── */
+.section-block{margin-bottom:14px;border:1px solid rgba(255,255,255,.04);border-radius:8px;overflow:hidden}
+.section-block .sec-bar{padding:8px 12px;background:rgba(255,255,255,.015);display:flex;align-items:center;gap:8px;cursor:pointer}
+.section-block .sec-bar .num{min-width:22px;height:22px;border-radius:50%;background:rgba(77,166,255,.1);color:#4da6ff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.section-block .sec-bar .heading-input{flex:1;background:transparent;border:none;color:#fff;font-size:13px;font-weight:600;outline:none}
+.section-block .sec-bar .actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.section-block .sec-bar:hover .actions{opacity:1}
+.section-block .sec-bar .actions button{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.35);cursor:pointer;font-size:11px;padding:3px 7px;border-radius:4px}
+.section-block .sec-bar .actions button:hover{background:rgba(77,166,255,.12);color:#4da6ff}
+.section-block .sec-body{padding:6px 12px 10px 42px}
+.section-block .sec-body .item-row{display:flex;gap:6px;align-items:flex-start;padding:2px 0}
+.section-block .sec-body .item-row .dot{color:#4da6ff;margin-top:6px;flex-shrink:0;font-size:10px}
+.section-block .sec-body .item-row .text-input{flex:1;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);color:#b8bcc6;padding:4px 7px;border-radius:4px;font-size:12px;outline:none;font-family:inherit}
+.section-block .sec-body .item-row .text-input:focus{border-color:#4da6ff;color:#fff}
+.section-block .sec-body .item-row .delete-btn{background:none;border:none;color:rgba(255,255,255,.1);cursor:pointer;font-size:12px;padding:1px 3px;opacity:0}
+.section-block .sec-body .item-row:hover .delete-btn{opacity:1}
+.section-block .sec-body .item-row .delete-btn:hover{color:#ef4444}
+
+/* ════════════════ PROGRESS OVERLAY ════════════════ */
+#progressOverlay{display:none;position:absolute;inset:0;background:rgba(10,13,20,.92);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#progressOverlay.active{display:flex}
+#progressOverlay .phase{font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;gap:10px}
+#progressOverlay .phase .emoji{font-size:32px}
+#progressOverlay .bar-track{width:380px;height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+#progressOverlay .bar-fill{height:100%;background:linear-gradient(90deg,#1a56db,#7c3aed,#a855f7);border-radius:4px;transition:width .5s ease;width:0%}
+#progressOverlay .phase-desc{font-size:13px;color:rgba(255,255,255,.35);text-align:center}
+#progressOverlay .phase-steps{display:flex;gap:30px;margin-top:8px}
+#progressOverlay .phase-steps span{font-size:11px;color:rgba(255,255,255,.2);display:flex;align-items:center;gap:5px;transition:color .3s}
+#progressOverlay .phase-steps span.done{color:#10b981}
+#progressOverlay .phase-steps span.active{color:#4da6ff;font-weight:600}
+#progressOverlay .phase-steps span .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+/* ════════════════ DOWNLOAD BAR ════════════════ */
+#resultsBar{display:none;padding:20px 24px;background:linear-gradient(180deg,rgba(16,185,129,.06),rgba(16,185,129,.02));border-top:2px solid rgba(16,185,129,.25);flex-wrap:wrap;gap:12px}
+#resultsBar.show{display:flex;align-items:center}
+#resultsBar .dl-header{width:100%;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+#resultsBar .dl-header .dl-icon{font-size:28px}
+#resultsBar .dl-header .dl-title{font-size:16px;font-weight:800;color:#10b981}
+#resultsBar .dl-header .dl-sub{font-size:11px;color:rgba(16,185,129,.5)}
+
+#resultsBar .file-card{background:rgba(16,185,129,.08);border:2px solid rgba(16,185,129,.2);border-radius:10px;padding:14px 18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:4px;min-width:160px;position:relative;overflow:hidden}
+#resultsBar .file-card:hover{background:rgba(16,185,129,.15);border-color:#10b981;transform:translateY(-2px);box-shadow:0 6px 20px rgba(16,185,129,.15)}
+#resultsBar .file-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#10b981,#34d399)}
+#resultsBar .file-card .fc-emoji{font-size:22px}
+#resultsBar .file-card .fc-name{font-size:13px;font-weight:700;color:#10b981}
+#resultsBar .file-card .fc-info{font-size:10px;color:rgba(16,185,129,.5)}
+#resultsBar .file-card .fc-dl{font-size:11px;color:#fff;background:rgba(16,185,129,.3);padding:3px 10px;border-radius:4px;align-self:flex-start;margin-top:4px}
+@keyframes pulse-green{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.3)}50%{box-shadow:0 0 0 12px rgba(16,185,129,0)}}
+#resultsBar .file-card:first-child{animation:pulse-green 2s infinite}
+
+/* ════════════════ RIGHT PANEL — AI ════════════════ */
+#rightPanel{width:370px;min-width:370px;background:#11141d;border-left:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column}
+.ai-header{margin-bottom:12px}
+.ai-header .ai-title{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.ai-header .ai-desc{font-size:11px;color:rgba(255,255,255,.25);margin-top:4px;line-height:1.5}
+.ai-header .ai-tip{font-size:10px;color:rgba(255,255,255,.15);margin-top:6px;padding:8px 10px;background:rgba(124,58,237,.06);border-radius:6px;line-height:1.5}
+.ai-header .ai-tip strong{color:#a78bfa}
+
+.quick-section{margin-bottom:10px}
+.quick-section .qs-label{font-size:10px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.quick-actions{display:flex;flex-wrap:wrap;gap:5px}
+.quick-actions button{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.4);padding:6px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .15s;text-align:left;line-height:1.4}
+.quick-actions button:hover{background:rgba(124,58,237,.12);color:#a78bfa;border-color:rgba(124,58,237,.2)}
+.quick-actions button .q-desc{display:block;font-size:9px;color:rgba(255,255,255,.2);margin-top:1px}
+
+#chatMessages{flex:1;overflow-y:auto;padding:0 2px}
+.chat-msg{margin-bottom:8px;padding:9px 12px;border-radius:8px;font-size:12px;line-height:1.5;word-break:break-word}
+.chat-msg.user{background:rgba(77,166,255,.06);border:1px solid rgba(77,166,255,.12);color:#c8ccd6}
+.chat-msg.ai{background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.12);color:#c8ccd6}
+.chat-msg.system{color:rgba(255,255,255,.3);font-size:10px;text-align:center;border:none;background:transparent;padding:6px}
+.chat-msg .ts{font-size:9px;color:rgba(255,255,255,.15);margin-top:3px}
+.chat-msg.loading{animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+#chatInputArea{display:flex;gap:6px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
+#chatInputArea input{flex:1;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);color:#fff;padding:8px 10px;border-radius:8px;font-size:12px;outline:none}
+#chatInputArea input:focus{border-color:#7c3aed}
+#chatInputArea input::placeholder{color:rgba(255,255,255,.2);font-size:11px}
+#chatInputArea button{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
+#chatInputArea button:hover{transform:translateY(-1px)}
+
+/* ════════════════ TOAST ════════════════ */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e2030;border:1px solid rgba(255,255,255,.1);color:#fff;padding:12px 24px;border-radius:10px;font-size:13px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.6);animation:toastIn .25s ease;max-width:90%;text-align:center}
+.toast.error{border-color:rgba(239,68,68,.3);color:#fca5a5}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px)}}
+
+/* ════════════════ RESPONSIVE ════════════════ */
+@media(max-width:1100px){#leftPanel{width:280px;min-width:280px}#rightPanel{width:300px;min-width:300px}}
+@media(max-width:900px){#app{flex-direction:column}#leftPanel,#rightPanel{width:100%;min-width:100%;max-height:35vh}}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- ═══ LEFT ═══ -->
+  <div class="panel" id="leftPanel">
+    <div class="logo">📄 Word → PPT <span class="badge">v4</span></div>
+    <div class="subtitle">豆包级 AI 设计 · 10种幻灯片布局</div>
+
+    <!-- ═══ 使用指南 ═══ -->
+    <div class="guide-box">
+      <h3>📖 三步生成专业 PPT</h3>
+      <div class="guide-steps">
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>上传 Word</strong><br>拖拽 .docx 文件到下方区域</div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div class="step-text"><strong>选风格 + AI 增强</strong><br>勾选「AI 智能规划」自动设计结构</div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div class="step-text"><strong>点击生成</strong><br>在下方显眼的绿色卡片中下载 PPT</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>📤 1. 上传 Word 文档</h3>
+      <div class="upload-zone" id="zoneWord" onclick="triggerFile('wordFile')">
+        <div class="icon">📄</div>
+        <div class="label">拖拽或点击上传 .docx 文件</div>
+        <div class="file-info" id="wordInfo"></div>
+        <input type="file" id="wordFile" accept=".docx" onchange="onWordFile(this.files[0])">
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🎨 2. 上传 PPT 底板（可选）</h3>
+      <div class="upload-zone" id="zoneTemplate" onclick="triggerFile('templateFile')">
+        <div class="icon">🎨</div>
+        <div class="label">拖拽或点击上传 .pptx 底板</div>
+        <div class="file-info" id="templateInfo"></div>
+        <input type="file" id="templateFile" accept=".pptx" onchange="onTemplateFile(this.files[0])">
+      </div>
+      <div class="template-toggle">
+        <input type="checkbox" id="useTemplateToggle" onchange="checkGenBtn()">
+        <span>应用模板底板</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>🎨 3. 选择风格（多选）</h3>
+      <div class="style-grid" id="styleGrid"></div>
+    </div>
+
+    <div class="ai-toggles">
+      <label><input type="checkbox" id="aiPlanToggle" checked onchange="updateAIMode()">🤖 AI 智能规划幻灯片结构 <span class="desc">推荐开启</span></label>
+      <label><input type="checkbox" id="aiPolishToggle" onchange="updateAIMode()">✨ AI 润色每条内容 <span class="desc">让文字更适合演示</span></label>
+    </div>
+
+    <button class="btn btn-primary" id="genBtn" disabled onclick="generatePPT()">
+      ✨ 生成 PPT
+    </button>
+    <div id="genStatus" style="text-align:center;font-size:11px;color:rgba(255,255,255,.25);margin-top:6px;min-height:16px"></div>
+  </div>
+
+  <!-- ═══ CENTER ═══ -->
+  <div class="panel" id="centerPanel">
+    <!-- Progress overlay -->
+    <div id="progressOverlay">
+      <div class="phase" id="phaseEmoji">🤖</div>
+      <div class="phase" id="phaseText">AI 分析文档结构...</div>
+      <div class="bar-track"><div class="bar-fill" id="barFill"></div></div>
+      <div class="phase-desc" id="phaseDesc">正在理解文档内容，规划幻灯片布局</div>
+      <div class="phase-steps" id="phaseSteps">
+        <span id="step1">● 分析文档</span>
+        <span id="step2">● 润色内容</span>
+        <span id="step3">● 构建幻灯片</span>
+        <span id="step4">● 打包完成</span>
+      </div>
+    </div>
+
+    <div class="topbar">
+      <span class="doc-title" id="docTitle">📂 文档内容预览</span>
+      <span class="meta" id="docMeta"></span>
+    </div>
+    <div id="contentView">
+      <div class="empty-state">
+        <div class="big-icon">📂</div>
+        <p>上传 Word 文档后，这里会显示内容预览</p>
+        <p style="font-size:11px;opacity:.5">支持直接编辑 · AI 迭代优化 · 实时预览</p>
+      </div>
+    </div>
+
+    <!-- ═══ DOWNLOAD BAR ═══ -->
+    <div id="resultsBar">
+      <div class="dl-header">
+        <span class="dl-icon">📥</span>
+        <span class="dl-title">PPT 已生成！点击下方卡片下载</span>
+        <span class="dl-sub">（文件保存到下载文件夹）</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RIGHT — AI ═══ -->
+  <div class="panel" id="rightPanel">
+    <div class="ai-header">
+      <div class="ai-title">🤖 AI 内容助手</div>
+      <div class="ai-desc">用自然语言让 AI 帮你优化 PPT 内容。上传文档后即可使用。</div>
+      <div class="ai-tip">
+        💡 <strong>怎么用好 AI？</strong><br>
+        · 指令越具体效果越好（如「把第1章的要点改成对仗句式」）<br>
+        · 可以多轮对话迭代（先精简→再加数据→再改风格）<br>
+        · 每次 AI 修改后会实时更新左侧预览
+      </div>
+    </div>
+
+    <div class="quick-section">
+      <div class="qs-label">🎯 一键指令</div>
+      <div class="quick-actions">
+        <button onclick="quickAI('把标题改得更有冲击力和记忆点')">
+          强化标题<span class="q-desc">让标题更吸引人</span>
+        </button>
+        <button onclick="quickAI('让所有内容更简洁，每条不超过20字')">
+          精简内容<span class="q-desc">去掉冗余表述</span>
+        </button>
+        <button onclick="quickAI('为每个要点补充具体数据或真实案例')">
+          加数据案例<span class="q-desc">增强说服力</span>
+        </button>
+        <button onclick="quickAI('把内容改成专业商务演讲风格')">
+          商务风格<span class="q-desc">正式专业</span>
+        </button>
+        <button onclick="quickAI('让所有要点采用对仗的句式结构')">
+          对仗句式<span class="q-desc">朗朗上口</span>
+        </button>
+        <button onclick="quickAI('为每个章节添加一句引导语或提问')">
+          加引导语<span class="q-desc">设置悬念</span>
+        </button>
+        <button onclick="suggestStyles()">
+          推荐风格<span class="q-desc">AI 智能匹配</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="chatMessages">
+      <div class="chat-msg system">👋 上传文档后，可输入指令让 AI 优化内容。<br>上面按钮可一键发送常用指令。</div>
+    </div>
+
+    <div id="chatInputArea">
+      <input type="text" id="aiInput" placeholder="试试输入：把这段内容改得更专业..." onkeydown="if(event.key==='Enter')sendAI()">
+      <button id="aiSendBtn" onclick="sendAI()">发送</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════ STATE ════════════════
+const STYLE_MAP = {dark:{name:'暗黑风格',emoji:'🌑'},light:{name:'明亮风格',emoji:'☀️'},japanese:{name:'日系风格',emoji:'🎋'},business:{name:'商务风格',emoji:'💼'},tech:{name:'科技风格',emoji:'🚀'},minimal:{name:'极简风格',emoji:'🤍'}};
+let selectedStyles = new Set(['dark','business']);
+let parsedContent = null, hasDocx = false, hasTemplate = false, isGenerating = false;
+
+// ════════════════ INIT ════════════════
+function initStyles(){document.getElementById('styleGrid').innerHTML=Object.entries(STYLE_MAP).map(([k,v])=>`<div class="style-chip${selectedStyles.has(k)?' selected':''}" onclick="toggleStyle('${k}')">${v.emoji} ${v.name}</div>`).join('');}
+initStyles();
+function toggleStyle(k){if(selectedStyles.has(k)){if(selectedStyles.size>1)selectedStyles.delete(k);}else selectedStyles.add(k);initStyles();checkGenBtn();}
+function triggerFile(id){document.getElementById(id).click();}
+
+// Drag & drop
+['zoneWord','zoneTemplate'].forEach(zid=>{
+  const el=document.getElementById(zid);
+  el.addEventListener('dragover',e=>{e.preventDefault();el.style.borderColor='#4da6ff';});
+  el.addEventListener('dragleave',()=>el.style.borderColor='');
+  el.addEventListener('drop',e=>{e.preventDefault();el.style.borderColor='';
+    const f=e.dataTransfer.files[0];if(f)zid==='zoneWord'?onWordFile(f):onTemplateFile(f);});
+});
+
+// ════════════════ UPLOAD ════════════════
+async function onWordFile(file){
+  if(!file)return;if(!file.name.toLowerCase().endsWith('.docx')){document.getElementById('zoneWord').classList.add('error');toast('⚠️ 请上传 .docx 文件','error');return;}
+  const zone=document.getElementById('zoneWord');zone.classList.remove('error');
+  document.getElementById('wordInfo').textContent='⏳ 解析中...';zone.classList.add('loaded');
+  const fd=new FormData();fd.append('file',file);
+  try{const r=await fetch('/api/parse',{method:'POST',body:fd});const d=await r.json();
+    if(d.success){parsedContent=d.content;hasDocx=true;
+      document.getElementById('wordInfo').textContent=`✅ ${file.name} · ${d.stats.sections||0}章节`;
+      renderContent(parsedContent);addChat('系统',`✅ 已解析「${d.stats.title||file.name}」— ${d.stats.sections||0} 个章节`);
+      toast('✅ 文档解析成功！请选择风格并点击生成');}
+    else{document.getElementById('wordInfo').textContent='❌ '+(d.error||'失败');zone.classList.add('error');zone.classList.remove('loaded');toast('❌ '+(d.error||'解析失败'),'error');}
+  }catch(e){document.getElementById('wordInfo').textContent='❌ 连接失败';zone.classList.add('error');zone.classList.remove('loaded');toast('❌ 无法连接服务器','error');}
+  checkGenBtn();
+}
+
+async function onTemplateFile(file){
+  if(!file)return;if(!file.name.toLowerCase().endsWith('.pptx')){document.getElementById('zoneTemplate').classList.add('error');toast('⚠️ 请上传 .pptx','error');return;}
+  const zone=document.getElementById('zoneTemplate');zone.classList.remove('error');
+  document.getElementById('templateInfo').textContent='⏳ 加载...';zone.classList.add('loaded');
+  const fd=new FormData();fd.append('file',file);
+  try{const r=await fetch('/api/upload-template',{method:'POST',body:fd});const d=await r.json();
+    if(d.success){hasTemplate=true;document.getElementById('templateInfo').textContent=`✅ ${file.name} · ${d.template.layouts}布局`;document.getElementById('useTemplateToggle').checked=true;addChat('系统',`✅ 模板「${file.name}」加载成功`);toast('✅ 模板加载成功！');}
+    else{document.getElementById('templateInfo').textContent='❌ '+(d.error||'失败');zone.classList.add('error');zone.classList.remove('loaded');toast('❌ '+(d.error||'加载失败'),'error');}
+  }catch(e){document.getElementById('templateInfo').textContent='❌ 请求失败';zone.classList.add('error');zone.classList.remove('loaded');}
+  checkGenBtn();
+}
+
+// ════════════════ RENDER CONTENT ════════════════
+function renderContent(content){
+  if(!content)return;
+  document.getElementById('docTitle').textContent=content.title||'文档内容';
+  const sections=content.sections||[];
+  document.getElementById('docMeta').textContent=`${sections.length} 章节 · ${sections.reduce((s,sc)=>s+(sc.content||[]).length,0)} 要点`;
+  const view=document.getElementById('contentView');
+  if(!sections.length){view.innerHTML='<div class="empty-state"><p>未检测到结构化内容</p></div>';return;}
+  view.innerHTML=`
+    <div style="margin-bottom:12px"><input value="${esc(content.title||'')}" style="font-size:18px;font-weight:700;background:transparent;border:none;color:#fff;width:100%;padding:5px 0;border-bottom:2px solid rgba(255,255,255,.06);outline:none" onchange="parsedContent.title=this.value" placeholder="文档标题"></div>
+    ${sections.map((s,i)=>`
+      <div class="section-block">
+        <div class="sec-bar">
+          <div class="num">${i+1}</div>
+          <input class="heading-input" value="${esc(s.heading||'')}" placeholder="章节标题" onchange="parsedContent.sections[${i}].heading=this.value">
+          <div class="actions"><button onclick="expandSection(${i})">🤖 展开</button></div>
+        </div>
+        <div class="sec-body">
+          ${(s.content||[]).map((c,j)=>`
+            <div class="item-row">
+              <span class="dot">${c.is_list?'▸':'·'}</span>
+              <input class="text-input" value="${esc(c.text||'')}" placeholder="内容" onchange="parsedContent.sections[${i}].content[${j}].text=this.value">
+              <button class="delete-btn" onclick="deleteItem(${i},${j})">✕</button>
+            </div>`).join('')}
+          ${!s.content||!s.content.length?'<div style="color:rgba(255,255,255,.1);font-size:11px;padding:3px 0">空章节</div>':''}
+          <button onclick="addItem(${i})" style="background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);color:rgba(255,255,255,.25);cursor:pointer;padding:3px 8px;border-radius:4px;font-size:11px;margin-top:4px">+ 添加要点</button>
+        </div>
+      </div>`).join('')}`;
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function deleteItem(si,ii){if(!parsedContent)return;parsedContent.sections[si].content.splice(ii,1);renderContent(parsedContent);}
+function addItem(si){if(!parsedContent)return;parsedContent.sections[si].content.push({text:'新要点',is_list:true});renderContent(parsedContent);}
+
+// ════════════════ PROGRESS ════════════════
+function showProgress(){document.getElementById('progressOverlay').classList.add('active');}
+function hideProgress(){document.getElementById('progressOverlay').classList.remove('active');}
+function setProgress(pct, phaseEmoji, phaseText, phaseDesc){
+  document.getElementById('barFill').style.width=pct+'%';
+  document.getElementById('phaseEmoji').textContent=phaseEmoji;
+  document.getElementById('phaseText').textContent=phaseText;
+  document.getElementById('phaseDesc').textContent=phaseDesc;
+  // Update step indicators
+  const steps={'step1':0,'step2':25,'step3':50,'step4':75};
+  for(const[id,threshold]of Object.entries(steps)){
+    const el=document.getElementById(id);
+    el.className=pct>=threshold+20?'done':pct>=threshold?'active':'';
+  }
+}
+
+// ════════════════ GENERATE ════════════════
+async function generatePPT(){
+  if(!parsedContent||selectedStyles.size===0||isGenerating)return;
+  isGenerating=true;
+  const btn=document.getElementById('genBtn'),status=document.getElementById('genStatus');
+  btn.disabled=true;btn.textContent='⏳ 生成中...';status.textContent='';
+  const useTemplate=document.getElementById('useTemplateToggle').checked&&hasTemplate;
+  const aiPlan=document.getElementById('aiPlanToggle').checked;
+  const aiPolish=document.getElementById('aiPolishToggle').checked;
+  const styleKeys=[...selectedStyles];
+
+  showProgress();
+
+  // Simulated progress
+  let progress=0;
+  const phases=aiPlan?
+    [{p:20,e:'🤖',t:'AI 分析文档结构...',d:'正在理解内容层次，规划幻灯片布局方案'},{p:45,e:'✨',t:aiPolish?'AI 润色内容中...':'构建幻灯片中...',d:aiPolish?'逐条改写内容，适配演示场景':'使用默认布局构建幻灯片'},{p:75,e:'🎨',t:'构建幻灯片...',d:'生成封面、目录、卡片、列表等专业布局'},{p:95,e:'📦',t:'打包完成',d:'PPT 文件已就绪'}]:
+    [{p:40,e:'🎨',t:'构建幻灯片中...',d:'使用默认布局生成幻灯片'},{p:80,e:'📦',t:'打包完成',d:'PPT 文件已就绪'}];
+
+  let phaseIdx=0;
+  const progressInterval=setInterval(()=>{
+    if(phaseIdx<phases.length-1&&progress>=phases[phaseIdx].p){
+      phaseIdx++;setProgress(phases[phaseIdx].p,phases[phaseIdx].e,phases[phaseIdx].t,phases[phaseIdx].d);
+    }
+    if(progress<90)progress+=2+Math.random()*3;
+    setProgress(Math.min(progress,90),phases[Math.min(phaseIdx,phases.length-1)].e,phases[Math.min(phaseIdx,phases.length-1)].t,phases[Math.min(phaseIdx,phases.length-1)].d);
+  },300);
+
+  try{
+    const resp=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:parsedContent,styles:styleKeys,use_template:useTemplate,ai_plan:aiPlan,ai_polish:aiPolish})});
+    const data=await resp.json();
+    clearInterval(progressInterval);
+
+    if(data.success){
+      setProgress(100,'✅','生成完成！','请查看下方的下载卡片');
+      setTimeout(()=>{hideProgress();showResults(data.files,data);},800);
+      status.textContent=`✅ 成功生成 ${data.files.length} 个 PPT${data.plan?' · AI规划'+data.plan.slides+'张':''}`;
+      toast(`✅ 成功生成 ${data.files.length} 个 PPT！请在下方绿色卡片中下载`);
+      addChat('系统',`✅ PPT 生成完成！${data.plan?'AI 规划了 '+data.plan.slides+' 张幻灯片。':''}在下方下载区获取文件。`);
+    }else{
+      hideProgress();
+      status.textContent='❌ 生成失败';
+      toast('❌ '+(data.error||'生成失败，请重试'),'error');
+      addChat('系统','❌ 生成失败: '+(data.error||'未知错误'));
+    }
+  }catch(e){
+    clearInterval(progressInterval);hideProgress();
+    status.textContent='❌ 请求失败';
+    toast('❌ 无法连接服务器','error');
+  }
+
+  btn.disabled=false;btn.textContent='✨ 重新生成';isGenerating=false;
+}
+
+// ════════════════ DOWNLOAD ════════════════
+function showResults(files,data){
+  const bar=document.getElementById('resultsBar');
+  bar.className='show';
+  bar.innerHTML=`
+    <div class="dl-header">
+      <span class="dl-icon">📥</span>
+      <span class="dl-title">PPT 已生成！点击下方卡片下载</span>
+      <span class="dl-sub">${data&&data.plan?'AI 规划 '+data.plan.slides+' 张幻灯片 · ':''}文件将保存到下载文件夹</span>
+    </div>
+    ${files.map(f=>`
+      <div class="file-card" onclick="downloadPPT('${escAttr(f.filename)}')">
+        <span class="fc-emoji">${f.emoji}</span>
+        <span class="fc-name">${f.name} PPT</span>
+        <span class="fc-info">${f.slides}页 · ${(f.size/1024).toFixed(0)}KB</span>
+        <span class="fc-dl">⬇ 点击下载</span>
+      </div>`).join('')}
+  `;
+  // Scroll to the download bar
+  setTimeout(()=>bar.scrollIntoView({behavior:'smooth',block:'end'}),100);
+}
+
+async function downloadPPT(filename){
+  try{
+    const resp=await fetch('/download/'+encodeURIComponent(filename));
+    if(!resp.ok){const err=await resp.json().catch(()=>({}));toast('❌ 下载失败: '+(err.error||'文件不存在'),'error');return;}
+    const blob=await resp.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;
+    document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+    toast('✅ 开始下载: '+filename);
+  }catch(e){toast('❌ 下载失败','error');}
+}
+
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function updateAIMode(){const plan=document.getElementById('aiPlanToggle'),polish=document.getElementById('aiPolishToggle');if(polish.checked&&!plan.checked)plan.checked=true;if(!plan.checked)polish.checked=false;}
+
+// ════════════════ AI CHAT ════════════════
+function quickAI(msg){document.getElementById('aiInput').value=msg;sendAI();}
+async function sendAI(){
+  const input=document.getElementById('aiInput'),msg=input.value.trim();
+  if(!msg)return;if(!parsedContent){toast('⚠️ 请先上传 Word 文档','error');return;}
+  input.value='';document.getElementById('aiSendBtn').disabled=true;
+  addChat('用户',msg);addChat('AI','⏳ 优化中...',true);
+  try{const r=await fetch('/api/ai/refine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:parsedContent,instruction:msg})});const d=await r.json();removeLastLoading();
+    if(d.success){parsedContent=d.content;renderContent(parsedContent);addChat('AI','✅ 内容已优化，预览已更新。可继续调整后生成 PPT。');toast('✅ AI 优化完成');}
+    else{addChat('系统','❌ '+(d.error||'优化失败'));toast('❌ '+(d.error||'失败'),'error');}
+  }catch(e){removeLastLoading();addChat('系统','❌ AI 请求失败，请确认 Claude Code 已安装');toast('❌ AI 请求失败','error');}
+  document.getElementById('aiSendBtn').disabled=false;
+}
+async function expandSection(idx){
+  if(!parsedContent)return;addChat('AI','⏳ 展开第'+(idx+1)+'章...',true);
+  try{const r=await fetch('/api/ai/expand',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:parsedContent,section_index:idx,detail:'详细'})});const d=await r.json();removeLastLoading();
+    if(d.success){if(d.content){parsedContent.sections[idx].content=d.content;renderContent(parsedContent);}addChat('AI','✅ 第'+(idx+1)+'章节已展开');toast('✅ 章节展开完成');}
+    else{addChat('系统','❌ '+(d.error||'展开失败'));toast('❌ '+(d.error||'失败'),'error');}
+  }catch(e){removeLastLoading();addChat('系统','❌ 请求失败');}
+}
+async function suggestStyles(){
+  if(!parsedContent){toast('⚠️ 请先上传文档','error');return;}
+  addChat('AI','⏳ 分析中...',true);
+  try{const r=await fetch('/api/ai/suggest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:parsedContent})});const d=await r.json();removeLastLoading();
+    if(d.success){addChat('AI','🎨 风格建议：\n'+d.suggestions);toast('✅ 风格建议已生成');}
+    else{addChat('系统','❌ '+(d.error||'分析失败'));}
+  }catch(e){removeLastLoading();}
+}
+
+// ════════════════ HELPERS ════════════════
+function addChat(role,text,loading){const c=document.getElementById('chatMessages'),d=document.createElement('div');d.className='chat-msg '+(role==='用户'?'user':role==='系统'?'system':'ai')+(loading?' loading':'');d.innerHTML=text.replace(/\n/g,'<br>')+'<div class="ts">'+new Date().toLocaleTimeString()+'</div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function removeLastLoading(){const m=document.querySelectorAll('#chatMessages .chat-msg.loading');if(m.length)m[m.length-1].remove();}
+function checkGenBtn(){document.getElementById('genBtn').disabled=!(hasDocx&&selectedStyles.size>0)||isGenerating;}
+function toast(msg,type){const t=document.createElement('div');t.className='toast'+(type==='error'?' error':'');t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .25s';setTimeout(()=>t.remove(),250);},3000);}
+</script>
+</body>
+</html>
