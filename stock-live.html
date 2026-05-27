@@ -112,13 +112,9 @@ async function fetchWithProxy(rawUrl) {
 }
 const FIELDS = 'f2,f3,f4,f8,f10,f12,f14,f20,f62,f100,f184';
 const MARKETS = [
-  {name:'沪市主板', fs:'m:1+t:2'},
-  {name:'深市主板', fs:'m:0+t:6'},
-  {name:'创业板',   fs:'m:0+t:80'},
-  {name:'科创板',   fs:'m:1+t:23'},
-  {name:'北交所',   fs:'m:0+t:81+s:2048'},
+  {name:'沪深A股', fs:'m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23'},
 ];
-const LIMIT = 120; // 每个市场获取120只
+const LIMIT = 200; // 获取200只热门股
 
 // ─── 状态 ───
 let allStocks = [];
@@ -126,7 +122,7 @@ let priceSnaps = {};      // {code: [p1,p2,...]}
 let zsMap = {};           // {code: zhangsu}
 let sortField = 'zhangsu';
 let sortOrder = 'desc';
-let cd = 3;
+let cd = 5;
 let cdTimer = null;
 
 // ─── API ───
@@ -281,7 +277,7 @@ function updateIndustries() {
 }
 
 // ─── 倒计时 ───
-function resetCd() { cd=3; updateCd(); clearInterval(cdTimer); cdTimer=setInterval(()=>{cd--;updateCd();if(cd<=0)refresh();},1000); }
+function resetCd() { cd=5; updateCd(); clearInterval(cdTimer); cdTimer=setInterval(()=>{cd--;updateCd();if(cd<=0)refresh();},1000); }
 function updateCd() { document.getElementById('cd').textContent = cd+'s'; }
 
 // ─── 格式化 ───
