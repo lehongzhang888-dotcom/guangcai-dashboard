@@ -83,9 +83,33 @@
 </div>
 <script>
 // ─── 配置 ───
-// 东方财富API（通过CORS代理访问，解决HTTPS→HTTP混合内容问题）
+// 东方财富API（通过多个CORS代理访问，自动切换）
 const API_RAW = 'http://push2.eastmoney.com/api/qt/clist/get';
-const CORS_PROXY = 'https://corsproxy.io/?';  // 免费CORS代理
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.allorigins.win/raw?url=',
+  'https://cors-anywhere.herokuapp.com/',
+];
+let activeProxy = 0;
+
+async function fetchWithProxy(rawUrl) {
+  // 先尝试直连（如果用户用HTTP访问页面则可以直连）
+  try {
+    const r = await fetch(rawUrl);
+    if (r.ok) return r;
+  } catch(e) {}
+
+  // 逐个尝试CORS代理
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const idx = (activeProxy + i) % CORS_PROXIES.length;
+    try {
+      const url = CORS_PROXIES[idx] + encodeURIComponent(rawUrl);
+      const r = await fetch(url);
+      if (r.ok) { activeProxy = idx; return r; }
+    } catch(e) {}
+  }
+  throw new Error('所有代理不可用');
+}
 const FIELDS = 'f2,f3,f4,f8,f10,f12,f14,f20,f62,f100,f184';
 const MARKETS = [
   {name:'沪市主板', fs:'m:1+t:2'},
@@ -108,9 +132,8 @@ let cdTimer = null;
 // ─── API ───
 async function fetchMarket(fs) {
   const rawUrl = `${API_RAW}?fid=f3&po=1&pz=${LIMIT}&pn=1&np=1&fltt=2&invt=2&fs=${encodeURIComponent(fs)}&fields=${FIELDS}`;
-  const url = CORS_PROXY + encodeURIComponent(rawUrl);
   try {
-    const r = await fetch(url);
+    const r = await fetchWithProxy(rawUrl);
     const d = await r.json();
     return (d?.data?.diff || []).map(item => ({
       code:   item.f12||'',
