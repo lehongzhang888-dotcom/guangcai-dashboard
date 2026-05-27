@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTC/ETH 实时AI交易分析</title>
+<style>
+:root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--text:#cbd5e1;--gold:#e2b04a;--green:#22c55e;--red:#ef4444;--blue:#3b82f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;min-height:100vh}
+.header{background:linear-gradient(135deg,#0f172a,#1a1a3e);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.header h1{font-size:18px;font-weight:700;color:var(--gold)}
+.price-bar{display:flex;align-items:center;gap:20px;font-size:14px}
+.price-bar .coin{font-size:20px;font-weight:700}
+.price-bar .change{font-size:13px;padding:3px 8px;border-radius:4px}
+.change.up{background:rgba(239,68,68,.15);color:var(--red)}
+.change.down{background:rgba(34,197,94,.15);color:var(--green)}
+.status{font-size:11px;color:#64748b}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle}
+.dot.live{background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.controls{padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--card);border-bottom:1px solid var(--border)}
+.coin-btn,.tf-btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:12px;font-weight:500;transition:all .2s;font-family:inherit}
+.coin-btn:hover,.tf-btn:hover{border-color:var(--gold);color:var(--gold)}
+.coin-btn.active,.tf-btn.active{background:linear-gradient(135deg,#8b6914,#a67c00);border-color:var(--gold);color:#fff;font-weight:600}
+.coin-btn.btc.active{background:linear-gradient(135deg,#f7931a,#e88208);border-color:#f7931a}
+.coin-btn.eth.active{background:linear-gradient(135deg,#627eea,#4b6cf7);border-color:#627eea}
+
+.main-grid{display:grid;grid-template-columns:1fr 420px;gap:12px;padding:12px 20px;min-height:calc(100vh - 120px)}
+@media(max-width:1100px){.main-grid{grid-template-columns:1fr}}
+
+.chart-panel{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.chart-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.chart-header h3{font-size:14px;color:var(--text)}
+.chart-header .indicators{display:flex;gap:8px;font-size:11px}
+.chart-header .indicators span{padding:3px 8px;border-radius:4px;background:rgba(59,130,246,.1);color:#93c5fd}
+canvas{width:100%;height:500px;display:block}
+
+.side-panel{display:flex;flex-direction:column;gap:10px;overflow-y:auto;max-height:calc(100vh - 140px)}
+
+.signal-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.signal-card h3{font-size:14px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.signal-main{border:2px solid var(--border)}
+.signal-main.strong-long{border-color:var(--green);background:rgba(34,197,94,.05)}
+.signal-main.strong-short{border-color:var(--red);background:rgba(239,68,68,.05)}
+.signal-main.neutral{border-color:var(--gold)}
+
+.signal-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.signal-badge.long{background:rgba(34,197,94,.15);color:var(--green)}
+.signal-badge.short{background:rgba(239,68,68,.15);color:var(--red)}
+.signal-badge.wait{background:rgba(226,176,74,.15);color:var(--gold)}
+
+.signal-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font-size:12px}
+.signal-detail .item{background:rgba(255,255,255,.03);padding:8px;border-radius:6px}
+.signal-detail .item .label{color:#64748b;font-size:10px}
+.signal-detail .item .val{font-weight:600;margin-top:2px}
+
+.indicator-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ind-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px}
+.ind-card .title{font-size:11px;color:#64748b;margin-bottom:4px}
+.ind-card .value{font-size:16px;font-weight:700}
+.ind-card .sub{font-size:10px;margin-top:2px}
+
+.progress-bar{height:4px;border-radius:2px;background:var(--border);margin-top:4px;overflow:hidden}
+.progress-bar .fill{height:100%;border-radius:2px;transition:width .3s}
+
+.tf-signals{display:flex;gap:6px}
+.tf-signal{flex:1;text-align:center;padding:8px 4px;border-radius:6px;font-size:11px;border:1px solid var(--border)}
+.tf-signal .tf-name{color:#64748b;font-size:10px}
+.tf-signal .tf-dir{font-size:14px;margin:3px 0}
+.tf-signal .tf-score{font-size:10px}
+
+.strategy-box{margin-top:10px;padding:10px;border-radius:8px;font-size:12px;line-height:1.6}
+.strategy-box.long-bg{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2)}
+.strategy-box.short-bg{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+
+.loading{text-align:center;padding:40px;color:#64748b}
+.spinner{width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📊 BTC/ETH 实时AI交易分析</h1>
+  <div class="price-bar" id="priceBar">
+    <span class="spinner"></span> 连接中...
+  </div>
+  <div class="status"><span class="dot live"></span><span id="updateTime">--</span></div>
+</div>
+
+<div class="controls">
+  <button class="coin-btn btc active" onclick="setSymbol('BTCUSDT',this)">₿ BTC/USDT</button>
+  <button class="coin-btn eth" onclick="setSymbol('ETHUSDT',this)">Ξ ETH/USDT</button>
+  <span style="color:#334155;margin:0 8px">│</span>
+  <button class="tf-btn active" onclick="setInterval('15m',this)">15分钟</button>
+  <button class="tf-btn" onclick="setInterval('30m',this)">30分钟</button>
+  <button class="tf-btn" onclick="setInterval('1h',this)">1小时</button>
+  <span style="margin-left:auto;font-size:11px;color:#64748b">数据: Binance · 币安</span>
+</div>
+
+<div class="main-grid">
+  <!-- K线图 -->
+  <div class="chart-panel">
+    <div class="chart-header">
+      <h3 id="chartTitle">BTC/USDT · 15m</h3>
+      <div class="indicators">
+        <span>MA7</span><span>MA25</span><span>MA99</span>
+        <span style="color:#f59e0b">MACD</span>
+        <span style="color:#8b5cf6">BOLL</span>
+      </div>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
+
+  <!-- 右侧面板 -->
+  <div class="side-panel" id="sidePanel">
+    <div class="loading"><span class="spinner"></span>加载行情数据...</div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// 配置
+// ═══════════════════════════════════════════
+const BINANCE_REST = 'https://api.binance.com/api/v3/klines';
+const BINANCE_WS = 'wss://stream.binance.com:9443/ws';
+let symbol = 'BTCUSDT', interval = '15m';
+let klines = [], ws = null;
+let currentPrice = 0, priceChange = 0;
+
+// ═══════════════════════════════════════════
+// 数据获取
+// ═══════════════════════════════════════════
+async function fetchKlines() {
+  const url = `${BINANCE_REST}?symbol=${symbol}&interval=${interval}&limit=120`;
+  try {
+    const r = await fetch(url);
+    const raw = await r.json();
+    klines = raw.map(k => ({
+      time: k[0], open: +k[1], high: +k[2], low: +k[3],
+      close: +k[4], volume: +k[5], closeTime: k[6]
+    }));
+    currentPrice = klines[klines.length-1].close;
+    const prev = klines[klines.length-2]?.close || currentPrice;
+    priceChange = ((currentPrice - prev) / prev * 100);
+    return true;
+  } catch(e) { console.error('K线加载失败:', e); return false; }
+}
+
+function connectWS() {
+  if (ws) { ws.close(); ws = null; }
+  const stream = `${symbol.toLowerCase()}@kline_${interval}`;
+  ws = new WebSocket(`${BINANCE_WS}/${stream}`);
+  ws.onmessage = (e) => {
+    const msg = JSON.parse(e.data);
+    if (msg.k) {
+      const k = msg.k;
+      const isClosed = k.x; // K线是否已闭合
+      const last = klines[klines.length-1];
+      if (last && last.time === k.t) {
+        last.open = +k.o; last.high = +k.h; last.low = +k.l;
+        last.close = +k.c; last.volume = +k.v;
+        if (isClosed) last.closed = true;
+      } else if (isClosed) {
+        klines.push({
+          time: k.t, open: +k.o, high: +k.h, low: +k.l,
+          close: +k.c, volume: +k.v, closed: true
+        });
+        if (klines.length > 150) klines.shift();
+      }
+      currentPrice = +k.c;
+      updateAll();
+    }
+  };
+  ws.onerror = () => setTimeout(connectWS, 3000);
+  ws.onclose = () => setTimeout(connectWS, 3000);
+}
+
+// ═══════════════════════════════════════════
+// 技术指标计算
+// ═══════════════════════════════════════════
+function EMA(data, period) {
+  const k = 2/(period+1);
+  let ema = data[0];
+  const result = [ema];
+  for (let i=1; i<data.length; i++) {
+    ema = data[i]*k + ema*(1-k);
+    result.push(ema);
+  }
+  return result;
+}
+
+function MACD(closes, fast=12, slow=26, signal=9) {
+  const emaFast = EMA(closes, fast);
+  const emaSlow = EMA(closes, slow);
+  const macdLine = emaFast.map((_,i) => emaFast[i] - emaSlow[i]);
+  const signalLine = EMA(macdLine, signal);
+  const histogram = macdLine.map((_,i) => macdLine[i] - signalLine[i]);
+  return { macdLine, signalLine, histogram };
+}
+
+function RSI(closes, period=14) {
+  const rsi = [];
+  let gains = 0, losses = 0;
+  for (let i=1; i<=period; i++) {
+    const diff = closes[i] - closes[i-1];
+    if (diff>0) gains+=diff; else losses-=diff;
+  }
+  let avgGain = gains/period, avgLoss = losses/period;
+  rsi.push(...Array(period).fill(null));
+  rsi.push(avgLoss===0?100:100-(100/(1+avgGain/avgLoss)));
+  for (let i=period+1; i<closes.length; i++) {
+    const diff = closes[i]-closes[i-1];
+    avgGain = (avgGain*13 + (diff>0?diff:0))/14;
+    avgLoss = (avgLoss*13 + (diff<0?-diff:0))/14;
+    rsi.push(avgLoss===0?100:100-(100/(1+avgGain/avgLoss)));
+  }
+  return rsi;
+}
+
+function Bollinger(closes, period=20, mult=2) {
+  const sma = [], upper=[], lower=[];
+  for (let i=0; i<closes.length; i++) {
+    if (i<period-1) { sma.push(null); upper.push(null); lower.push(null); continue; }
+    const slice = closes.slice(i-period+1, i+1);
+    const mean = slice.reduce((a,b)=>a+b,0)/period;
+    const variance = slice.reduce((a,b)=>a+(b-mean)**2,0)/period;
+    const std = Math.sqrt(variance);
+    sma.push(mean); upper.push(mean+mult*std); lower.push(mean-mult*std);
+  }
+  return { sma, upper, lower };
+}
+
+function calcAllIndicators() {
+  const closes = klines.map(k=>k.close);
+  const highs = klines.map(k=>k.high);
+  const lows = klines.map(k=>k.low);
+  const volumes = klines.map(k=>k.volume);
+  const len = closes.length;
+
+  const macd = MACD(closes);
+  const rsi = RSI(closes);
+  const boll = Bollinger(closes);
+  const ema7 = EMA(closes, 7);
+  const ema25 = EMA(closes, 25);
+  const ema99 = EMA(closes, 99);
+  const volSMA = EMA(volumes, 20);
+
+  const last = len-1;
+  return {
+    price: closes[last],
+    change: ((closes[last]-closes[last-1])/closes[last-1]*100),
+    macd: { line: macd.macdLine[last], signal: macd.signalLine[last], hist: macd.histogram[last] },
+    macdPrev: { line: macd.macdLine[last-1], signal: macd.signalLine[last-1] },
+    rsi: rsi[last], rsiPrev: rsi[last-1],
+    boll: { upper: boll.upper[last], mid: boll.sma[last], lower: boll.lower[last] },
+    ema7: ema7[last], ema25: ema25[last], ema99: ema99[last],
+    volRatio: volumes[last] / (volSMA[last]||1),
+    macdData: macd, rsiData: rsi, bollData: boll,
+    ema7Data: ema7, ema25Data: ema25, ema99Data: ema99,
+    closes, highs, lows, volumes, volSMA,
+  };
+}
+
+// ═══════════════════════════════════════════
+// 交易信号分析
+// ═══════════════════════════════════════════
+function analyzeSignals(ind) {
+  const signals = [];
+  let longScore = 0, shortScore = 0;
+
+  // MACD 金叉/死叉
+  const macdCrossUp = ind.macdPrev.line <= ind.macdPrev.signal && ind.macd.line > ind.macd.signal;
+  const macdCrossDown = ind.macdPrev.line >= ind.macdPrev.signal && ind.macd.line < ind.macd.signal;
+  if (macdCrossUp) { signals.push({type:'long',strength:3,msg:'MACD金叉'}); longScore+=3; }
+  if (macdCrossDown) { signals.push({type:'short',strength:3,msg:'MACD死叉'}); shortScore+=3; }
+
+  // MACD 柱状图方向
+  if (ind.macd.hist > 0 && ind.macd.hist > (ind.macdData.histogram[ind.macdData.histogram.length-2]||0))
+    { signals.push({type:'long',strength:1,msg:'MACD动能增强'}); longScore+=1; }
+  if (ind.macd.hist < 0 && ind.macd.hist < (ind.macdData.histogram[ind.macdData.histogram.length-2]||0))
+    { signals.push({type:'short',strength:1,msg:'MACD动能减弱'}); shortScore+=1; }
+
+  // RSI
+  if (ind.rsi < 30) { signals.push({type:'long',strength:2,msg:`RSI超卖(${ind.rsi.toFixed(1)})`}); longScore+=2; }
+  if (ind.rsi > 70) { signals.push({type:'short',strength:2,msg:`RSI超买(${ind.rsi.toFixed(1)})`}); shortScore+=2; }
+  if (ind.rsi > 50 && ind.rsiPrev < 50) { signals.push({type:'long',strength:1,msg:'RSI上穿50'}); longScore+=1; }
+  if (ind.rsi < 50 && ind.rsiPrev > 50) { signals.push({type:'short',strength:1,msg:'RSI下穿50'}); shortScore+=1; }
+
+  // 布林带
+  if (ind.price <= ind.boll.lower) { signals.push({type:'long',strength:2,msg:'触及布林下轨'}); longScore+=2; }
+  if (ind.price >= ind.boll.upper) { signals.push({type:'short',strength:2,msg:'触及布林上轨'}); shortScore+=2; }
+
+  // EMA
+  if (ind.ema7 > ind.ema25) { signals.push({type:'long',strength:1,msg:'MA7>MA25 多头排列'}); longScore+=1; }
+  if (ind.ema7 < ind.ema25) { signals.push({type:'short',strength:1,msg:'MA7<MA25 空头排列'}); shortScore+=1; }
+
+  // 量价配合
+  if (ind.volRatio > 1.5 && ind.change > 0) { signals.push({type:'long',strength:2,msg:'放量上涨'}); longScore+=2; }
+  if (ind.volRatio > 1.5 && ind.change < 0) { signals.push({type:'short',strength:2,msg:'放量下跌'}); shortScore+=2; }
+  if (ind.volRatio < 0.5) { signals.push({type:'neutral',strength:1,msg:'缩量盘整'}); }
+
+  // 综合判断
+  let direction = 'neutral', strength = '';
+  const net = longScore - shortScore;
+  if (net >= 4) { direction = 'long'; strength = longScore>=6?'strong':'normal'; }
+  else if (net <= -4) { direction = 'short'; strength = shortScore>=6?'strong':'normal'; }
+
+  return { signals, direction, strength, longScore, shortScore };
+}
+
+// ═══════════════════════════════════════════
+// Canvas K线图绘制
+// ═══════════════════════════════════════════
+function drawChart() {
+  const canvas = document.getElementById('chart');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 500 * dpr;
+  canvas.style.width = rect.width+'px';
+  canvas.style.height = '500px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 500;
+
+  ctx.fillStyle = '#111827';
+  ctx.fillRect(0,0,W,H);
+
+  if (klines.length < 10) {
+    ctx.fillStyle='#64748b'; ctx.font='14px sans-serif';
+    ctx.fillText('数据加载中...', W/2-50, H/2);
+    return;
+  }
+
+  const ind = calcAllIndicators();
+  const pad = { top: 30, bottom: 120, left: 60, right: 20 };
+  const pw = W - pad.left - pad.right;
+  const ph = H - pad.top - pad.bottom;
+  const len = klines.length;
+  const barW = Math.max(2, (pw/len)*0.7);
+  const gap = (pw/len) - barW;
+
+  const allPrices = klines.flatMap(k=>[k.high,k.low]);
+  let minP = Math.min(...allPrices)*0.998;
+  let maxP = Math.max(...allPrices)*1.002;
+  const px = v => pad.top + ph - ((v-minP)/(maxP-minP))*ph;
+  const xi = i => pad.left + i*(pw/len);
+
+  // 网格
+  ctx.strokeStyle='rgba(255,255,255,.04)';
+  for (let i=0; i<6; i++) {
+    const y = pad.top + ph*i/5;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+  }
+
+  // EMA线
+  [{data:ind.ema7Data,color:'#f59e0b',w:1},{data:ind.ema25Data,color:'#ec4899',w:1},{data:ind.ema99Data,color:'#8b5cf6',w:1.5}].forEach(l=>{
+    ctx.strokeStyle=l.color; ctx.lineWidth=l.w;
+    ctx.beginPath();
+    for (let i=0; i<len; i++) {
+      if (!l.data[i]) continue;
+      const x=xi(i)+pw/len/2, y=px(l.data[i]);
+      i===0||!l.data[i-1]?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  });
+
+  // 布林带
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle='rgba(139,92,246,.5)'; ctx.lineWidth=1;
+  [{data:ind.bollData.upper},{data:ind.bollData.lower}].forEach(l=>{
+    ctx.beginPath();
+    for (let i=20; i<len; i++) {
+      if (!l.data[i]) continue;
+      const x=xi(i)+pw/len/2, y=px(l.data[i]);
+      i===20?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  });
+  ctx.setLineDash([]);
+
+  // K线
+  for (let i=0; i<len; i++) {
+    const k = klines[i];
+    const x = xi(i);
+    const isUp = k.close >= k.open;
+    ctx.fillStyle = isUp?'#22c55e':'#ef4444';
+    ctx.strokeStyle = isUp?'#22c55e':'#ef4444';
+    ctx.lineWidth = 1;
+    const highY = px(k.high), lowY = px(k.low);
+    ctx.beginPath(); ctx.moveTo(x+barW/2,highY); ctx.lineTo(x+barW/2,lowY); ctx.stroke();
+    const openY = px(k.open), closeY = px(k.close);
+    const bodyH = Math.max(1, Math.abs(closeY-openY));
+    ctx.fillRect(x+gap/2, Math.min(openY,closeY), barW, bodyH);
+  }
+
+  // 价格标签
+  ctx.fillStyle='#64748b'; ctx.font='10px monospace';
+  for (let i=0; i<6; i++) {
+    const price = minP + (maxP-minP)*i/5;
+    ctx.fillText(price.toFixed(symbol==='BTCUSDT'?0:2), 4, px(price)+4);
+  }
+}
+
+// ═══════════════════════════════════════════
+// UI渲染
+// ═══════════════════════════════════════════
+function updateAll() {
+  if (klines.length<10) return;
+  const ind = calcAllIndicators();
+  const analysis = analyzeSignals(ind);
+
+  // 顶栏价格
+  const changeCls = ind.change>=0?'up':'down';
+  document.getElementById('priceBar').innerHTML = `
+    <span class="coin">${symbol==='BTCUSDT'?'₿':'Ξ'} ${ind.price.toFixed(symbol==='BTCUSDT'?1:2)}</span>
+    <span class="change ${changeCls}">${ind.change>=0?'+':''}${ind.change.toFixed(2)}%</span>
+    <span style="font-size:11px;color:#64748b">高 ${symbol==='BTCUSDT'?klines[klines.length-1].high.toFixed(1):klines[klines.length-1].high.toFixed(2)}</span>
+    <span style="font-size:11px;color:#64748b">低 ${symbol==='BTCUSDT'?klines[klines.length-1].low.toFixed(1):klines[klines.length-1].low.toFixed(2)}</span>
+  `;
+  document.getElementById('updateTime').textContent = new Date().toLocaleTimeString('zh-CN',{hour12:false});
+  document.getElementById('chartTitle').textContent = `${symbol==='BTCUSDT'?'BTC':'ETH'}/USDT · ${interval}`;
+
+  // 右侧面板
+  const dirMap = {long:'做多',short:'做空',neutral:'观望'};
+  const dirCls = analysis.direction==='long'?(analysis.strength==='strong'?'strong-long':''):
+                 analysis.direction==='short'?(analysis.strength==='strong'?'strong-short':''):'neutral';
+  const badgeCls = analysis.direction==='long'?'long':analysis.direction==='short'?'short':'wait';
+  const badgeIcon = analysis.direction==='long'?'📈':analysis.direction==='short'?'📉':'⏳';
+  const strengthStars = analysis.strength==='strong'?'⭐⭐⭐':'⭐⭐';
+
+  // 根据方向生成策略
+  let strategy = '';
+  if (analysis.direction==='long') {
+    strategy = `
+      <div class="strategy-box long-bg">
+        <strong>📈 做多策略：</strong><br>
+        入场：${ind.price.toFixed(symbol==='BTCUSDT'?1:2)} 附近<br>
+        止损：${(ind.boll.lower||ind.price*0.98).toFixed(symbol==='BTCUSDT'?1:2)}（布林下轨）<br>
+        止盈1：${(ind.boll.mid||ind.price*1.02).toFixed(symbol==='BTCUSDT'?1:2)}（布林中轨）<br>
+        止盈2：${(ind.boll.upper||ind.price*1.04).toFixed(symbol==='BTCUSDT'?1:2)}（布林上轨）<br>
+        仓位：${analysis.strength==='strong'?'30-40%':'15-20%'} 杠杆≤5x
+      </div>`;
+  } else if (analysis.direction==='short') {
+    strategy = `
+      <div class="strategy-box short-bg">
+        <strong>📉 做空策略：</strong><br>
+        入场：${ind.price.toFixed(symbol==='BTCUSDT'?1:2)} 附近<br>
+        止损：${(ind.boll.upper||ind.price*1.02).toFixed(symbol==='BTCUSDT'?1:2)}（布林上轨）<br>
+        止盈1：${(ind.boll.mid||ind.price*0.98).toFixed(symbol==='BTCUSDT'?1:2)}（布林中轨）<br>
+        止盈2：${(ind.boll.lower||ind.price*0.96).toFixed(symbol==='BTCUSDT'?1:2)}（布林下轨）<br>
+        仓位：${analysis.strength==='strong'?'30-40%':'15-20%'} 杠杆≤5x
+      </div>`;
+  }
+
+  document.getElementById('sidePanel').innerHTML = `
+    <!-- 主信号 -->
+    <div class="signal-card signal-main ${dirCls}">
+      <h3>
+        <span class="signal-badge ${badgeCls}">${badgeIcon} ${dirMap[analysis.direction]}</span>
+        <span style="margin-left:auto">${strengthStars}</span>
+      </h3>
+      <div style="font-size:12px;color:#94a3b8">多:${analysis.longScore}分 空:${analysis.shortScore}分</div>
+      <div style="margin-top:8px;font-size:12px;line-height:1.6">
+        ${analysis.signals.filter(s=>s.type!=='neutral').map(s=>
+          `<span style="color:${s.type==='long'?'#22c55e':'#ef4444'}">${s.type==='long'?'🟢':'🔴'} ${s.msg}</span>`
+        ).join(' · ') || '暂无明确信号'}
+      </div>
+    </div>
+
+    <!-- 策略 -->
+    ${strategy}
+
+    <!-- 指标面板 -->
+    <div class="indicator-grid">
+      <div class="ind-card">
+        <div class="title">MACD</div>
+        <div class="value" style="color:${ind.macd.hist>=0?'#22c55e':'#ef4444'}">${ind.macd.line.toFixed(2)}</div>
+        <div class="sub">信号 ${ind.macd.signal.toFixed(2)} | 柱 ${ind.macd.hist>=0?'+':''}${ind.macd.hist.toFixed(2)}</div>
+      </div>
+      <div class="ind-card">
+        <div class="title">RSI(14)</div>
+        <div class="value" style="color:${ind.rsi>70?'#ef4444':ind.rsi<30?'#22c55e':'#f59e0b'}">${ind.rsi.toFixed(1)}</div>
+        <div class="progress-bar"><div class="fill" style="width:${ind.rsi}%;background:${ind.rsi>70?'#ef4444':ind.rsi<30?'#22c55e':'#f59e0b'}"></div></div>
+      </div>
+      <div class="ind-card">
+        <div class="title">布林带</div>
+        <div class="value">${ind.boll.mid?.toFixed(symbol==='BTCUSDT'?1:2)||'--'}</div>
+        <div class="sub">上 ${ind.boll.upper?.toFixed(symbol==='BTCUSDT'?1:2)||'--'} | 下 ${ind.boll.lower?.toFixed(symbol==='BTCUSDT'?1:2)||'--'}</div>
+      </div>
+      <div class="ind-card">
+        <div class="title">量比</div>
+        <div class="value" style="color:${ind.volRatio>1.5?'#f59e0b':'#64748b'}">${ind.volRatio.toFixed(2)}x</div>
+        <div class="sub">${ind.volRatio>1.5?'放量':'正常'}</div>
+      </div>
+      <div class="ind-card">
+        <div class="title">EMA趋势</div>
+        <div class="value" style="color:${ind.ema7>ind.ema25?'#22c55e':'#ef4444'}">${ind.ema7>ind.ema25?'多头':'空头'}</div>
+        <div class="sub">7/${ind.ema7.toFixed(symbol==='BTCUSDT'?1:2)} 25/${ind.ema25.toFixed(symbol==='BTCUSDT'?1:2)}</div>
+      </div>
+      <div class="ind-card">
+        <div class="title">波动率</div>
+        <div class="value">${((ind.boll.upper-ind.boll.lower)/ind.boll.mid*100).toFixed(2)}%</div>
+        <div class="sub">布林带宽</div>
+      </div>
+    </div>
+
+    <!-- 多时间框架共振提示 -->
+    <div class="signal-card">
+      <h3>⏱️ 多周期参考</h3>
+      <div style="font-size:11px;color:#64748b;margin-top:4px">
+        当前 ${interval} · 信号：<strong style="color:${analysis.direction==='long'?'#22c55e':analysis.direction==='short'?'#ef4444':'#f59e0b'}">${dirMap[analysis.direction]}${analysis.strength==='strong'?'(强)':''}</strong>
+      </div>
+      <div style="font-size:11px;color:#64748b;margin-top:4px">
+        💡 建议同时观察 15m/30m/1h 三周期共振信号，多周期方向一致时确定性最高
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:#334155;padding:4px">
+      数据源: Binance · ${interval}K · 自动刷新
+    </div>
+  `;
+
+  drawChart();
+}
+
+// ═══════════════════════════════════════════
+// 切换逻辑
+// ═══════════════════════════════════════════
+function setSymbol(sym, btn) {
+  symbol = sym;
+  document.querySelectorAll('.coin-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  init();
+}
+function setInterval(tf, btn) {
+  interval = tf;
+  document.querySelectorAll('.tf-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  init();
+}
+
+// ═══════════════════════════════════════════
+// 初始化
+// ═══════════════════════════════════════════
+async function init() {
+  document.getElementById('sidePanel').innerHTML = '<div class="loading"><span class="spinner"></span>加载行情数据...</div>';
+  const ok = await fetchKlines();
+  if (!ok) {
+    document.getElementById('sidePanel').innerHTML = '<div class="loading">⚠️ 数据加载失败，请检查网络或刷新重试<br><small>国内用户请确保能访问 api.binance.com</small></div>';
+    setTimeout(init, 5000);
+    return;
+  }
+  updateAll();
+  connectWS();
+  setInterval(() => { if (!ws||ws.readyState!==WebSocket.OPEN) connectWS(); }, 30000);
+}
+
+window.addEventListener('resize', drawChart);
+init();
+</script>
+</body>
+</html>
