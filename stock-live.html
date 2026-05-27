@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>实时股票监测 - 东方财富</title>
+<style>
+  :root {
+    --bg:#0a0e1a; --card:#111827; --border:#1e293b; --text:#cbd5e1;
+    --gold:#e2b04a; --red:#ef4444; --green:#22c55e; --hover:#1e293b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;min-height:100vh}
+  .header{background:linear-gradient(135deg,#0f172a,#1a1a3e);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+  .header h1{font-size:18px;font-weight:700;color:var(--gold)}
+  .header h1 span{color:#94a3b8;font-weight:400;font-size:12px;margin-left:6px}
+  .status{display:flex;align-items:center;gap:10px;font-size:12px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .countdown{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-family:monospace}
+  .controls{padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:99}
+  .btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-size:12px;font-weight:500;transition:all .2s;white-space:nowrap;font-family:inherit}
+  .btn:hover{border-color:var(--gold);color:var(--gold)}
+  .btn.active{background:linear-gradient(135deg,#8b6914,#a67c00);border-color:var(--gold);color:#fff;font-weight:600}
+  .btn .arr{font-size:10px;margin-left:3px}
+  .controls select,.controls input{padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;outline:none;font-family:inherit}
+  .controls select{max-width:160px;cursor:pointer}
+  .controls input{width:140px}
+  .controls input:focus,.controls select:focus{border-color:var(--gold)}
+  .summary{padding:6px 20px;font-size:11px;color:#64748b;display:flex;gap:16px;flex-wrap:wrap}
+  .summary strong{color:var(--text)}
+  .table-wrap{padding:0 20px 20px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px;min-width:850px}
+  thead th{position:sticky;top:100px;background:#0f172a;color:#94a3b8;font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:2px solid var(--border);text-align:right;white-space:nowrap;z-index:10}
+  thead th:first-child,thead th:nth-child(2){text-align:left}
+  tbody td{padding:7px 10px;border-bottom:1px solid rgba(30,41,59,.6);text-align:right;white-space:nowrap;transition:background .15s}
+  tbody td:first-child{text-align:left;font-family:monospace;color:#94a3b8}
+  tbody td:nth-child(2){text-align:left;font-weight:500}
+  tbody tr:hover{background:var(--hover)}
+  .up{color:var(--red)!important}
+  .down{color:var(--green)!important}
+  .zero{color:#64748b}
+  .tag{display:inline-block;background:rgba(59,130,246,.12);color:#93c5fd;padding:1px 7px;border-radius:4px;font-size:10px;max-width:90px;overflow:hidden;text-overflow:ellipsis}
+  .loading{text-align:center;padding:60px;color:#64748b}
+  .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media(max-width:768px){.header{padding:8px 12px}.header h1{font-size:15px}.controls{padding:8px 12px;top:44px}.table-wrap{padding:0 8px 12px}table{font-size:11px;min-width:720px}thead th{font-size:10px;padding:6px 5px}tbody td{padding:6px 5px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📊 实时股票监测<span>· 东方财富 四大因子</span></h1>
+  <div class="status">
+    <span id="stockCount">--</span>
+    <span class="dot"></span>
+    <span id="updateTime">加载中...</span>
+    <span class="countdown" id="cd">3s</span>
+  </div>
+</div>
+<div class="controls">
+  <button class="btn active" data-sort="zhangsu" onclick="setSort('zhangsu')">⚡ 涨速<span class="arr">▼</span></button>
+  <button class="btn" data-sort="main_net" onclick="setSort('main_net')">💰 主力净额<span class="arr"></span></button>
+  <button class="btn" data-sort="vol_ratio" onclick="setSort('vol_ratio')">📊 量比<span class="arr"></span></button>
+  <button class="btn" data-sort="industry" onclick="setSort('industry')">🏭 行业<span class="arr"></span></button>
+  <span style="color:#334155">│</span>
+  <select id="indFilter" onchange="applyFilters()"><option value="">🏢 全部行业</option></select>
+  <input id="searchInput" placeholder="🔍 代码/名称..." oninput="applyFilters()">
+</div>
+<div class="summary">
+  <span>结果：<strong id="filterCount">--</strong></span>
+  <span>涨速：<strong id="zsRange">--</strong></span>
+  <span>主力合计：<strong id="netSum">--</strong></span>
+</div>
+<div class="table-wrap">
+  <div id="loadingArea" class="loading"><span class="spinner"></span>从东方财富获取实时行情...</div>
+  <table id="stockTable" style="display:none">
+    <thead><tr>
+      <th>代码</th><th>名称</th><th>最新价</th><th>涨跌幅</th><th>涨速</th>
+      <th>主力净额</th><th>量比</th><th>换手率</th><th>总市值</th><th>行业</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+<script>
+// ─── 配置 ───
+const API = 'http://push2.eastmoney.com/api/qt/clist/get';
+const FIELDS = 'f2,f3,f4,f8,f10,f12,f14,f20,f62,f100,f184';
+const MARKETS = [
+  {name:'沪市主板', fs:'m:1+t:2'},
+  {name:'深市主板', fs:'m:0+t:6'},
+  {name:'创业板',   fs:'m:0+t:80'},
+  {name:'科创板',   fs:'m:1+t:23'},
+  {name:'北交所',   fs:'m:0+t:81+s:2048'},
+];
+const LIMIT = 120; // 每个市场获取120只
+
+// ─── 状态 ───
+let allStocks = [];
+let priceSnaps = {};      // {code: [p1,p2,...]}
+let zsMap = {};           // {code: zhangsu}
+let sortField = 'zhangsu';
+let sortOrder = 'desc';
+let cd = 3;
+let cdTimer = null;
+
+// ─── API ───
+async function fetchMarket(fs) {
+  const url = `${API}?fid=f3&po=1&pz=${LIMIT}&pn=1&np=1&fltt=2&invt=2&fs=${encodeURIComponent(fs)}&fields=${FIELDS}`;
+  try {
+    const r = await fetch(url);
+    const d = await r.json();
+    return (d?.data?.diff || []).map(item => ({
+      code:   item.f12||'',
+      name:   item.f14||'',
+      price:  +(item.f2)||0,
+      chgPct: +(item.f3)||0,
+      chgVal: +(item.f4)||0,
+      turnover: +(item.f8)||0,
+      volRatio: +(item.f10)||0,
+      mktCap: +(item.f20)||0,
+      mainNet: +(item.f62)||0,
+      industry: item.f100||'',
+      mainPct: +(item.f184)||0,
+    }));
+  } catch(e) { return []; }
+}
+
+async function fetchAll() {
+  const results = await Promise.all(MARKETS.map(m => fetchMarket(m.fs)));
+  // 合并去重
+  const seen = new Set();
+  const merged = [];
+  for (const arr of results) {
+    for (const s of arr) {
+      if (!seen.has(s.code)) { seen.add(s.code); merged.push(s); }
+    }
+  }
+  return merged;
+}
+
+// ─── 涨速计算 ───
+function calcZhangsu(stocks) {
+  const newSnaps = {};
+  const newZs = {};
+  for (const s of stocks) {
+    if (!s.price) continue;
+    let snaps = priceSnaps[s.code] || [];
+    snaps.push(s.price);
+    if (snaps.length > 15) snaps = snaps.slice(-15);
+    newSnaps[s.code] = snaps;
+    if (snaps.length >= 2) {
+      const old = snaps[0];
+      newZs[s.code] = old > 0 ? +((s.price - old) / old * 100).toFixed(4) : 0;
+    } else {
+      newZs[s.code] = zsMap[s.code] || 0;
+    }
+  }
+  // 保留旧数据
+  for (const [k,v] of Object.entries(zsMap)) {
+    if (!(k in newZs)) newZs[k] = v;
+  }
+  priceSnaps = newSnaps;
+  zsMap = newZs;
+  // 注入涨速
+  for (const s of stocks) s.zhangsu = zsMap[s.code] || 0;
+}
+
+// ─── 渲染 ───
+function render() {
+  let data = [...allStocks];
+  // 筛选
+  const ind = document.getElementById('indFilter').value;
+  const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+  if (ind) data = data.filter(s => s.industry === ind);
+  if (kw) data = data.filter(s => s.code.toLowerCase().includes(kw) || s.name.includes(kw));
+
+  // 排序
+  const cmp = (a,b) => {
+    let va, vb;
+    if (sortField === 'zhangsu')  { va=a.zhangsu; vb=b.zhangsu; }
+    else if (sortField === 'main_net') { va=a.mainNet; vb=b.mainNet; }
+    else if (sortField === 'vol_ratio') { va=a.volRatio; vb=b.volRatio; }
+    else { va=a.industry; vb=b.industry; return va.localeCompare(vb); }
+    return sortOrder === 'desc' ? vb - va : va - vb;
+  };
+  data.sort(cmp);
+  data = data.slice(0, 100);
+
+  // 表格
+  let html = '';
+  for (const s of data) {
+    html += '<tr>';
+    html += `<td>${s.code}</td>`;
+    html += `<td>${esc(s.name)}</td>`;
+    html += `<td>${s.price?s.price.toFixed(2):'-'}</td>`;
+    html += `<td class="${clr(s.chgPct)}">${pct(s.chgPct)}</td>`;
+    html += `<td class="${clr(s.zhangsu)}">${pct4(s.zhangsu)}</td>`;
+    html += `<td class="${clr(s.mainNet)}" style="font-weight:600">${net(s.mainNet)}</td>`;
+    html += `<td>${s.volRatio?s.volRatio.toFixed(2):'-'}</td>`;
+    html += `<td>${pct(s.turnover)}</td>`;
+    html += `<td>${cap(s.mktCap)}</td>`;
+    html += `<td><span class="tag" title="${esc(s.industry)}">${esc(s.industry)}</span></td>`;
+    html += '</tr>';
+  }
+  document.getElementById('tbody').innerHTML = html;
+  document.getElementById('stockTable').style.display = '';
+  document.getElementById('loadingArea').style.display = 'none';
+
+  // 统计
+  document.getElementById('filterCount').textContent = data.length;
+  if (data.length) {
+    const zs = data.map(s=>s.zhangsu);
+    document.getElementById('zsRange').textContent = pct4(Math.min(...zs))+' ~ '+pct4(Math.max(...zs));
+    const sum = data.reduce((a,s)=>a+s.mainNet,0);
+    document.getElementById('netSum').textContent = net(sum);
+  }
+}
+
+// ─── 排序/筛选 ───
+function setSort(f) {
+  if (sortField === f) sortOrder = sortOrder==='desc'?'asc':'desc';
+  else { sortField = f; sortOrder = 'desc'; }
+  document.querySelectorAll('.btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sort === f);
+    const a = b.querySelector('.arr');
+    a.textContent = b.dataset.sort===f ? (sortOrder==='desc'?' ▼':' ▲') : '';
+  });
+  render();
+}
+function applyFilters() { render(); }
+
+// ─── 刷新 ───
+async function refresh() {
+  try {
+    const stocks = await fetchAll();
+    if (stocks.length) {
+      calcZhangsu(stocks);
+      allStocks = stocks;
+      document.getElementById('stockCount').textContent = stocks.length+' 只';
+      document.getElementById('updateTime').textContent = '更新 '+new Date().toLocaleTimeString('zh-CN',{hour12:false});
+      updateIndustries();
+      render();
+    }
+  } catch(e) { console.error(e); }
+  resetCd();
+}
+
+function updateIndustries() {
+  const industries = [...new Set(allStocks.map(s=>s.industry).filter(Boolean))].sort();
+  const sel = document.getElementById('indFilter');
+  sel.innerHTML = '<option value="">🏢 全部行业</option>';
+  for (const i of industries) {
+    sel.innerHTML += `<option value="${esc(i)}">${esc(i)}</option>`;
+  }
+}
+
+// ─── 倒计时 ───
+function resetCd() { cd=3; updateCd(); clearInterval(cdTimer); cdTimer=setInterval(()=>{cd--;updateCd();if(cd<=0)refresh();},1000); }
+function updateCd() { document.getElementById('cd').textContent = cd+'s'; }
+
+// ─── 格式化 ───
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function clr(v) { return v>0?'up':v<0?'down':'zero'; }
+function pct(v) { return v?((v>0?'+':'')+v.toFixed(2)+'%'):'0.00%'; }
+function pct4(v) { return v?((v>0?'+':'')+v.toFixed(4)+'%'):'0.00%'; }
+function net(v) {
+  if (!v) return '0';
+  const a=Math.abs(v);
+  if(a>=1e8) return (v/1e8).toFixed(2)+'亿';
+  if(a>=1e4) return (v/1e4).toFixed(0)+'万';
+  return v.toFixed(0);
+}
+function cap(v) {
+  if(!v) return '-';
+  if(v>=1e12) return (v/1e12).toFixed(2)+'万亿';
+  if(v>=1e8) return (v/1e8).toFixed(1)+'亿';
+  return (v/1e4).toFixed(0)+'万';
+}
+
+// ─── 启动 ───
+refresh();
+</script>
+</body>
+</html>
