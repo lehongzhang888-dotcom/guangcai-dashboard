@@ -83,7 +83,9 @@
 </div>
 <script>
 // ─── 配置 ───
-const API = 'http://push2.eastmoney.com/api/qt/clist/get';
+// 东方财富API（通过CORS代理访问，解决HTTPS→HTTP混合内容问题）
+const API_RAW = 'http://push2.eastmoney.com/api/qt/clist/get';
+const CORS_PROXY = 'https://corsproxy.io/?';  // 免费CORS代理
 const FIELDS = 'f2,f3,f4,f8,f10,f12,f14,f20,f62,f100,f184';
 const MARKETS = [
   {name:'沪市主板', fs:'m:1+t:2'},
@@ -105,7 +107,8 @@ let cdTimer = null;
 
 // ─── API ───
 async function fetchMarket(fs) {
-  const url = `${API}?fid=f3&po=1&pz=${LIMIT}&pn=1&np=1&fltt=2&invt=2&fs=${encodeURIComponent(fs)}&fields=${FIELDS}`;
+  const rawUrl = `${API_RAW}?fid=f3&po=1&pz=${LIMIT}&pn=1&np=1&fltt=2&invt=2&fs=${encodeURIComponent(fs)}&fields=${FIELDS}`;
+  const url = CORS_PROXY + encodeURIComponent(rawUrl);
   try {
     const r = await fetch(url);
     const d = await r.json();
